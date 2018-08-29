@@ -1,5 +1,5 @@
 {
-  "name": "wanderer-vue-builder-component",
+  "name": "wanderer-builder-vue",
   "version": "1.0.0",
   "description": "A Vue.js project",
   "author": "",
@@ -16,7 +16,10 @@
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.11",
     "vue": "^2.5.2",
-    "wanderer-vue-brain": "^1.0.0"
+    "wanderer-brain": "^1.0.0",
+    "wanderer-brain-base": "^1.0.0",
+    "wanderer-brain-questions": "^1.0.0",
+    "wanderer-brain-apis": "^1.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

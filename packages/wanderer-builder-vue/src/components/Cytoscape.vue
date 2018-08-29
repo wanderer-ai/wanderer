@@ -15,32 +15,6 @@ export default {
   mounted () {
     this.$brain.initCytoscape({
       container: document.getElementById('cy'),
-      style: [
-
-        {
-          selector: 'node',
-          style: {
-            'background-color': '#6C757D',
-            'background-fit': 'contain',
-            'label': 'data(label)',
-            'text-wrap': 'wrap',
-            'text-max-width': '200px'
-          }
-        },
-
-        {
-          selector: 'edge',
-          style: {
-            'line-color': '#6c757d',
-            'target-arrow-color': '#6c757d',
-            'source-arrow-color': '#6c757d',
-            'curve-style': 'unbundled-bezier',
-            'target-arrow-shape': 'triangle',
-            'source-arrow-shape': 'circle'
-          }
-        }
-
-      ],
 
       // initial viewport state:
       zoom: 1,
@@ -102,6 +76,22 @@ export default {
       '_origin': false,
       '_collection': 'suggestion',
       '_x': 400,
+      '_y': 400
+    })
+
+    this.$brain.addVertex({
+      '_cyid': '07890957b7678946897',
+      '_origin': false,
+      '_collection': 'request',
+      '_x': 500,
+      '_y': 400
+    })
+
+    this.$brain.addVertex({
+      '_cyid': '6734b76gh5785b3',
+      '_origin': false,
+      '_collection': 'response',
+      '_x': 600,
       '_y': 400
     })
   }

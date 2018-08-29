@@ -15,38 +15,6 @@ export default {
       }
     })*/
 
-    Brain.registerVertexCollection('flow',{
-      //store: store,
-      label: 'Flow',
-      color: '#DC3545',
-      cytoscapeClasses: 'flow',
-      cytoscapeCtxMenuSelector: '.flow',
-      createable: false,
-      toCytoscape: function(data){
-        return {
-          label: 'Flow'
-        }
-      },
-      editorComponent: Editor
-      // chatComponent:
-    })
-
-    Brain.registerVertexCollection('default',{
-      //store: store,
-      label: 'Default',
-      color: '#6C757D',
-      cytoscapeClasses: 'default',
-      cytoscapeCtxMenuSelector: '.default',
-      createable: false,
-      toCytoscape: function(data){
-        return {
-          label: 'Default'
-        }
-      },
-      editorComponent: Editor
-      // chatComponent:
-    })
-
     Brain.registerVertexCollection('question',{
       //store: store,
       label: 'Question',
@@ -54,6 +22,12 @@ export default {
       cytoscapeClasses: 'question',
       cytoscapeCtxMenuSelector: '.question',
       createable: true,
+      restrictOutgoingConnections: [
+        {
+          through: 'leadsTo',
+          to: 'suggestion'
+        }
+      ],
       defaultFields: {
         question: {
           en: 'New question',
@@ -76,6 +50,15 @@ export default {
       cytoscapeClasses: 'suggestion',
       cytoscapeCtxMenuSelector: '.suggestion',
       createable: true,
+      restrictIncommingConnections: [
+        {
+          from: 'question',
+          through: 'leadsTo'
+        }
+      ],
+      defaultFields: {
+        
+      },
       toCytoscape: function(data){
         return {
           label: 'Suggestion'
@@ -85,38 +68,7 @@ export default {
       // chatComponent:
     })
 
-    Brain.registerEdgeCollection('leadsTo',{
-      cytoscapeClasses: 'default',
-      toCytoscape: function(data){
-        return {
-          label: 'leadsTo'
-        }
-      }
-      // editorComponent: Editor
-    })
-
     Brain.addCytoscapeStylesheet([
-      {
-        selector: '.flow',
-        style: {
-          'height': '100px',
-          'width': '100px',
-          'font-size': '20px',
-          'background-color': '#DC3545',
-          'label': 'data(label)'
-        }
-      },
-
-      {
-        selector: '.default',
-        style: {
-          'height': '100px',
-          'width': '100px',
-          'font-size': '20px',
-          'background-color': '#6C757D',
-          'label': 'data(label)'
-        }
-      },
 
       {
         selector: '.question',
