@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    This is the default editor
+    This is the default editor for questions
 
   </div>
 </template>

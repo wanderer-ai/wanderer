@@ -4,24 +4,22 @@ export default {
 
   install (Brain) {
 
-    /*let store = Brain.storeFactory({
-      state: {
-        data: {}
-      },
-      mutations: {
-        increment (state) {
-          // state.count++
-        }
-      }
-    })*/
-
     Brain.registerVertexCollection('question',{
-      //store: store,
+      store: {
+        state: {
+          questions: {}
+        },
+        mutations: {
+          add (state, documentData){
+            state.questions[documentData._id] = documentData.question
+          }
+        }
+      },
       label: 'Question',
       color: '#007BFF',
       cytoscapeClasses: 'question',
       cytoscapeCtxMenuSelector: '.question',
-      createable: true,
+      creatable: true,
       restrictOutgoingConnections: [
         {
           through: 'leadsTo',
@@ -44,12 +42,21 @@ export default {
     })
 
     Brain.registerVertexCollection('suggestion',{
-      //store: store,
+      store: {
+        state: {
+          suggestions: {}
+        },
+        mutations: {
+          add (state, documentData){
+            state.suggestions[documentData._id] = documentData.suggestion
+          }
+        }
+      },
       label: 'Suggestion',
       color: '#28A745',
       cytoscapeClasses: 'suggestion',
       cytoscapeCtxMenuSelector: '.suggestion',
-      createable: true,
+      creatable: true,
       restrictIncommingConnections: [
         {
           from: 'question',
@@ -57,7 +64,10 @@ export default {
         }
       ],
       defaultFields: {
-        
+        'suggestion': {
+          'de': 'Antwort',
+          'en': 'Answer'
+        }
       },
       toCytoscape: function(data){
         return {

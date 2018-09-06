@@ -48,7 +48,7 @@ export default {
     })
 
     this.$brain.addVertex({
-      '_cyid': '3948v57c3902t85n',
+      '_id': '3948v57c3902t85n',
       '_origin': false,
       '_collection': 'flow',
       '_x': 100,
@@ -56,7 +56,7 @@ export default {
     })
 
     this.$brain.addVertex({
-      '_cyid': '349z8qp8ez',
+      '_id': '349z8qp8ez',
       '_origin': false,
       '_collection': 'default',
       '_x': 200,
@@ -64,23 +64,31 @@ export default {
     })
 
     this.$brain.addVertex({
-      '_cyid': '2vn764576f',
+      '_id': '2vn764576f',
       '_origin': false,
       '_collection': 'question',
       '_x': 300,
-      '_y': 300
+      '_y': 300,
+      'question': {
+        'de': 'Frage',
+        'en': 'Question'
+      }
     })
 
     this.$brain.addVertex({
-      '_cyid': '7v6bbv45687680',
+      '_id': '7v6bbv45687680',
       '_origin': false,
       '_collection': 'suggestion',
       '_x': 400,
-      '_y': 400
+      '_y': 400,
+      'suggestion': {
+        'de': 'Antwort',
+        'en': 'Answer'
+      }
     })
 
     this.$brain.addVertex({
-      '_cyid': '07890957b7678946897',
+      '_id': '07890957b7678946897',
       '_origin': false,
       '_collection': 'request',
       '_x': 500,
@@ -88,7 +96,7 @@ export default {
     })
 
     this.$brain.addVertex({
-      '_cyid': '6734b76gh5785b3',
+      '_id': '6734b76gh5785b3',
       '_origin': false,
       '_collection': 'response',
       '_x': 600,

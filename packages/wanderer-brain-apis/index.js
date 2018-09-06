@@ -21,7 +21,7 @@ export default {
       color: '#DC3545',
       cytoscapeClasses: 'request',
       cytoscapeCtxMenuSelector: '.request',
-      createable: true,
+      creatable: true,
       restrictOutgoingConnections: [
         {
           through: 'leadsTo',
@@ -46,7 +46,7 @@ export default {
       color: '#28A745',
       cytoscapeClasses: 'response',
       cytoscapeCtxMenuSelector: '.response',
-      createable: true,
+      creatable: true,
       restrictIncommingConnections: [
         {
           from: 'request',

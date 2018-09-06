@@ -21,7 +21,7 @@ export default {
       color: '#DC3545',
       cytoscapeClasses: 'flow',
       cytoscapeCtxMenuSelector: '.flow',
-      createable: false,
+      creatable: false,
       toCytoscape: function(data){
         return {
           label: 'Flow'
@@ -33,6 +33,10 @@ export default {
 
     Brain.registerEdgeCollection('leadsTo',{
       cytoscapeClasses: 'default',
+      creatable: true,
+      defaultFields: {
+        
+      },
       toCytoscape: function(data){
         return {
           label: 'leadsTo'
@@ -73,7 +77,7 @@ export default {
       },
 
       {
-        selector: '.unknown',
+        selector: '.unknown-vertex',
         style: {
           'height': '50px',
           'width': '50px',
@@ -87,6 +91,16 @@ export default {
         selector: 'node:selected',
         style: {
           'background-color': '#17a2b8'
+        }
+      },
+
+      {
+        selector: '.unknown-edge',
+        style: {
+          'line-color': '#17a2b8',
+          'target-arrow-color': '#17a2b8',
+          'source-arrow-color': '#17a2b8',
+          'label': 'data(label)'
         }
       },
 
