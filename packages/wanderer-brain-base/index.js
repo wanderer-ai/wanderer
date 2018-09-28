@@ -1,19 +1,8 @@
-import Editor from './components/Editor.vue'
+// import Editor from './components/Editor.vue'
 
 export default {
 
   install (Brain) {
-
-    /*let store = Brain.storeFactory({
-      state: {
-        data: {}
-      },
-      mutations: {
-        increment (state) {
-          // state.count++
-        }
-      }
-    })*/
 
     Brain.registerVertexCollection('flow',{
       //store: store,
@@ -27,7 +16,7 @@ export default {
           label: 'Flow'
         }
       },
-      editorComponent: Editor
+      // editorComponent: Editor
       // chatComponent:
     })
 
@@ -35,7 +24,7 @@ export default {
       cytoscapeClasses: 'default',
       creatable: true,
       defaultFields: {
-        
+
       },
       toCytoscape: function(data){
         return {

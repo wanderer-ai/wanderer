@@ -16,6 +16,7 @@
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.11",
     "vue": "^2.5.2",
+    "vuex": "^3.0.1",
     "wanderer-brain": "^1.0.0",
     "wanderer-brain-base": "^1.0.0",
     "wanderer-brain-questions": "^1.0.0",

@@ -1,19 +1,8 @@
-import Editor from './components/Editor.vue'
+// import Editor from './components/Editor.vue'
 
 export default {
 
   install (Brain) {
-
-    /*let store = Brain.storeFactory({
-      state: {
-        data: {}
-      },
-      mutations: {
-        increment (state) {
-          // state.count++
-        }
-      }
-    })*/
 
     Brain.registerVertexCollection('request',{
       //store: store,
@@ -36,7 +25,7 @@ export default {
           label: 'Request'
         }
       },
-      editorComponent: Editor
+      // editorComponent: Editor
       // chatComponent:
     })
 
@@ -61,7 +50,7 @@ export default {
           label: 'Response'
         }
       },
-      editorComponent: Editor
+      // editorComponent: Editor
       // chatComponent:
     })
 

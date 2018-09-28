@@ -1,20 +1,521 @@
-import Brain from './Brain.js'
+import cytoscape from 'cytoscape';
+import cxtmenu from 'cytoscape-cxtmenu';
+// import Vuex from 'vuex'
+const uuidv4 = require('uuid/v4');
 
-var brainInstance = null
+cytoscape.use( cxtmenu );
 
-export default {
+export default class Brain {
 
-    // Vue installer method
-    install (Vue, options) {
+  static init (store) {
 
-      brainInstance = new Brain(Vue)
+    // this.Vue = Vue;
+    // this.Vue.use(Vuex)
 
-      Vue.prototype.$brain = brainInstance // Push to vue
-    },
+    this.vertexCollections = {}
+    this.edgeCollections = {}
+    this.cytoscapeStylesheets = []
 
-    // "Use" function for installing new brain plugins
-    use (plugin){
-      brainInstance.use(plugin)
+    var brain = this
+
+    // Initiate vuex store module
+    this.store = store
+    this.store.registerModule('brain', {
+      namespaced: true,
+      state: {
+        editVertex: 0,
+        vertexDocumentIds: [],
+        vertexDocumentData: {},
+        edgeDocumentIds: [],
+        edgeDocumentData: {}
+      },
+      mutations: {
+        setEditVertex (state, id){
+          state.editVertex = id
+        },
+        addVertex (state, documentData){
+          // Push document id
+          state.vertexDocumentIds.push(documentData._id)
+          // Push document data
+          let data = {
+            _id: documentData._id,
+            _collection: documentData._collection,
+            _isOrigin: documentData._isOrigin,
+            _x: documentData._x,
+            _y: documentData._y
+          }
+          // Add custom model data
+          if(brain.vertexCollections[documentData._collection] !== undefined){
+            if(brain.vertexCollections[documentData._collection].models !== undefined){
+              for(var i in brain.vertexCollections[documentData._collection].models){
+                if(documentData[brain.vertexCollections[documentData._collection].models[i].name] === undefined){
+                  if(brain.vertexCollections[documentData._collection].models[i].isMultiLanguage){
+                    data[brain.vertexCollections[documentData._collection].models[i].name] = {}
+                  }else{
+                    data[brain.vertexCollections[documentData._collection].models[i].name] = ''
+                  }
+                }else{
+                  data[brain.vertexCollections[documentData._collection].models[i].name] = documentData[brain.vertexCollections[documentData._collection].models[i].name]
+                }
+              }
+            }
+          }
+          this._vm.$set(state.vertexDocumentData, documentData._id, data);
+        },
+        setVertexDataValue(state, {id, key, value, language}){
+          if(language !== undefined){
+            this._vm.$set(state.vertexDocumentData[id][key], language, value);
+          }else{
+            this._vm.$set(state.vertexDocumentData[id], key, value);
+          }
+        }
+      }
+    })
+
+    this.registerVertexCollection('unknown',{
+      label: 'Unknown',
+      color: '#6C757D',
+      cytoscapeClasses: 'unknown-vertex',
+      cytoscapeCtxMenuSelector: '.unknown',
+      creatable: false,
+      defaultFields: {},
+      toCytoscape: function(data){
+        return {
+          label: 'Unknown'
+        }
+      },
+    })
+
+    this.registerEdgeCollection('unknown',{
+      label: 'Unknown',
+      color: '#6C757D',
+      cytoscapeClasses: 'unknown-edge',
+      creatable: false,
+      defaultFields: {},
+      toCytoscape: function(data){
+        return {
+          label: 'Unknown'
+        }
+      }
+    })
+
+  }
+
+  static use (plugin) {
+    plugin.install(this)
+  }
+
+  // commit(name, method, payload){
+  //   this.store.commit(name+'/'+method, payload)
+  // }
+
+  static getEditVertexModel(key, language){
+    var brain = this
+    return {
+      get(){
+        if(brain.store.state.brain.editVertex){
+          if(brain.store.state.brain.vertexDocumentData[brain.store.state.brain.editVertex] !== undefined){
+            if(language !== undefined){
+              //console.log(this.$store.state.brain.vertexDocumentData[id][key][language])
+              return brain.store.state.brain.vertexDocumentData[brain.store.state.brain.editVertex][key][language]
+            }else{
+              //console.log(this.$store.state.brain.vertexDocumentData[id][key])
+              return brain.store.state.brain.vertexDocumentData[brain.store.state.brain.editVertex][key]
+            }
+          }
+        }
+      },
+      set(data){
+        if(language !== undefined){
+          brain.store.commit('brain/setVertexDataValue', {
+            id: brain.store.state.brain.editVertex,
+            key: key,
+            value: data,
+            language: language
+          })
+        }else{
+          brain.store.commit('brain/setVertexDataValue', {
+            id: brain.store.state.brain.editVertex,
+            key: key,
+            value: data
+          })
+        }
+      }
     }
+  }
+
+  static registerVertexCollection (name, configuration) {
+    this.vertexCollections[name] = configuration // Register the collection
+
+    // // The following lines will register a custom store in vuex for this collection
+    // if(configuration.store === undefined){ configuration.store = {} }
+    //
+    // // Prepare options
+    // if(configuration.store.state === undefined){ configuration.store.state = {} }
+    // if(configuration.store.mutations === undefined){ configuration.store.mutations = {} }
+    //
+    // configuration.store.state.documentIds = []; // Array for storing the IDs
+    // configuration.store.state.documentData = {}; // Object for storing the base data for every document
+    //
+    // // This module is always namespaced in vuex
+    // configuration.store.namespaced = true;
+    //
+    // // Convert user defined add mutation into a hook function
+    // if(configuration.store.mutations.add !== undefined){
+    //   // Use it as hook
+    //   var addHook = configuration.store.mutations.add
+    // }
+    //
+    // // Create the ADD mutation
+    // configuration.store.mutations.add = function(state, documentData){
+    //   // Execute hook function
+    //   if(addHook !== undefined){
+    //     addHook(state, {
+    //       documentData: documentData,
+    //       context: this
+    //     })
+    //   }
+    //   // Push document id
+    //   state.documentIds.push(documentData._id)
+    //   // Push basic document data
+    //   state.documentData[documentData._id] = {
+    //     _id: documentData._id,
+    //     _collection: documentData._collection,
+    //     _isOrigin: documentData._isOrigin,
+    //     _x: documentData._x,
+    //     _y: documentData._y
+    //   }
+    // }
+    //
+    // // Register the store in vuex
+    // this.store.registerModule(name, configuration.store)
+  }
+
+  static registerEdgeCollection (name, configuration) {
+    this.edgeCollections[name] = configuration // Register the collection
+  }
+
+  static getVertexCollection(name){
+    if(this.vertexCollections[name] === undefined){
+      return this.vertexCollections['unknown']
+    }
+    return this.vertexCollections[name]
+  }
+
+  static getVertexDataById(id){
+    //for(var c in this.vertexCollections){ // For each collection
+      //if(this.vertexCollections.hasOwnProperty(c)){
+        if(this.store.state.brain.vertexDocumentData[id] !== undefined){
+          return this.store.state.brain.vertexDocumentData[id]
+        }
+      //}
+    //}
+    return false
+  }
+
+  static getVertexCollectionById(id){
+    //console.log(id)
+    let vertexData = this.getVertexDataById(id)
+    if(vertexData){
+      return this.getVertexCollection(vertexData._collection)
+    }
+    return false
+  }
+
+  static getEdgeCollection(name){
+    if(this.edgeCollections[name] === undefined){
+      return this.edgeCollections['unknown']
+    }
+    return this.edgeCollections[name]
+  }
+
+  // Extra initiation is important because we may have to wait for a dom element if cy runs not headless
+  static initCytoscape (config) {
+
+    if(typeof this.cy === 'undefined'){
+
+      var brain = this
+
+      this.cy = cytoscape(config)
+
+      // Apply the style
+      this.cy.style(this.cytoscapeStylesheets)
+
+      // Init ctx menus for the different types of vertices
+      // For each vertex collection
+      for(var fromCollectionName in this.vertexCollections){
+        if (this.vertexCollections.hasOwnProperty(fromCollectionName)) {
+
+          let cxtmenuCommands = []; // an array of commands to list in the menu or a function that returns the array
+
+          let possibleOutgoingCollections = this.getPossibleOutgoingCollections(fromCollectionName)
+          for(let i in possibleOutgoingCollections){
+            (function(possibleOutgoingVertexCollection, possibleOutgoingEdgeCollection, parent) {
+              cxtmenuCommands.push({
+                fillColor: parent.vertexCollections[possibleOutgoingVertexCollection].color,
+                content: 'add '+parent.vertexCollections[possibleOutgoingVertexCollection].label,
+                select: function(vertex){
+                  vertex.trigger('append', {
+                    vertexCollectionName: possibleOutgoingVertexCollection,
+                    edgeCollectionName: possibleOutgoingEdgeCollection
+                  })
+                }
+              });
+            })(possibleOutgoingCollections[i].to, possibleOutgoingCollections[i].through[0], this);
+          }
+
+          // Add general add more function
+          // cxtmenuCommands.push({
+          //   fillColor: '#6C757D',
+          //   content: 'More',
+          //   select: function(vertex){
+          //
+          //   }
+          // });
+
+          // Add new context menu
+          this.cy.cxtmenu( {
+            menuRadius: 150, // the radius of the circular menu in pixels
+            selector: this.vertexCollections[fromCollectionName].cytoscapeCtxMenuSelector, // elements matching this Cytoscape.js selector will trigger cxtmenus
+            commands: cxtmenuCommands, // function( ele ){ return [ /*...*/ ] }, // example function for commands
+            fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
+            activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
+            activePadding: 20, // additional size in pixels for the active command
+            indicatorSize: 24, // the size in pixels of the pointer to the active command
+            separatorWidth: 3, // the empty spacing in pixels between successive commands
+            spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
+            minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
+            maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
+            openMenuEvents: 'cxttapstart', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
+            //openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
+            itemColor: 'black', // the colour of text in the command's content
+            //itemTextShadowColor: 'black', // the text shadow colour of the command's content
+            zIndex: 9999, // the z-index of the ui div
+            atMouse: false // draw menu at mouse position
+          });
+
+        }
+      }
+
+      // Implement dbl click
+      var clickedBefore;
+      var clickedTimeout;
+      this.cy.on('click', function(event) {
+        var tappedNow = event.target;
+        if (clickedTimeout && clickedBefore) {
+          clearTimeout(clickedTimeout);
+        }
+        if(clickedBefore === tappedNow) {
+          tappedNow.trigger('dblclick');
+          clickedBefore = null;
+        } else {
+          clickedTimeout = setTimeout(function(){ clickedBefore = null; }, 300);
+          clickedBefore = tappedNow;
+        }
+      });
+
+      // Edit vertex
+      this.cy.on('dblclick','node', function(){
+        brain.store.commit('brain/setEditVertex',this.id())
+      });
+
+      // Unselect nodes
+      this.cy.on('unselect', 'node', function(evt){
+        brain.store.commit('brain/setEditVertex',0)
+      });
+
+      // Append event
+      this.cy.on('append', 'node', function(evt, {vertexCollectionName, edgeCollectionName}){
+        brain.append(this.id(), vertexCollectionName, edgeCollectionName)
+      })
+
+    }
+  }
+
+  static append(cytoscapeNodeId, vertexCollectionName, edgeCollectionName){
+    this.initCytoscape()
+
+    // Deep clone the default fields
+    let newVertexData = JSON.parse(JSON.stringify(this.vertexCollections[vertexCollectionName].defaultFields))
+    let newEdgeData = JSON.parse(JSON.stringify(this.edgeCollections[edgeCollectionName].defaultFields))
+
+    // Get the position of the source vertex
+    let position = this.cy.getElementById( cytoscapeNodeId ).position()
+
+    // Add base data
+    newVertexData._id = uuidv4()
+    newVertexData._collection = vertexCollectionName
+    newVertexData._isOrigin = false
+    newVertexData._x = position.x + 100
+    newVertexData._y = position.y + 100
+
+    newEdgeData._id = uuidv4()
+    newEdgeData._from = cytoscapeNodeId
+    newEdgeData._to = newVertexData._id
+    newEdgeData._collection = edgeCollectionName
+
+    this.addVertex(newVertexData)
+    this.addEdge(newEdgeData)
+
+  }
+
+  static isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName = false){
+    // If the from collection restricts the outgoing connections
+    if(this.vertexCollections[fromCollectionName].restrictOutgoingConnections !== undefined){
+      // Search for the requested connection in the allowed connections of the collection
+      for(var i in this.vertexCollections[fromCollectionName].restrictOutgoingConnections){
+        if(this.vertexCollections[fromCollectionName].restrictOutgoingConnections[i].to == toCollectionName){
+          // Check the edge too
+          if(throughCollectionName){
+            if(this.vertexCollections[fromCollectionName].restrictOutgoingConnections[i].through == throughCollectionName){
+              // Return true if the target collection and the edge are allowed
+              return true;
+            }
+          // Drop the edge check
+          }else{
+            // Return true if the target collection is allowed
+            return true;
+          }
+        }
+      }
+      // Always return false if the outgoing connections are restricted and no rule matches
+      return false;
+    }
+    // Always return true if the outgoing connections are not restricted
+    return true;
+  }
+
+  static isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName = false){
+    // If the to collection restricts the incomming connections
+    if(this.vertexCollections[toCollectionName].restrictIncommingConnections !== undefined){
+      // Search for the requested connection in the allowed connections of the collection
+      for(var i in this.vertexCollections[toCollectionName].restrictIncommingConnections){
+        if(this.vertexCollections[toCollectionName].restrictIncommingConnections[i].from == fromCollectionName){
+          // Check the edge too
+          if(throughCollectionName){
+            if(this.vertexCollections[toCollectionName].restrictIncommingConnections[i].through == throughCollectionName){
+              // Return true if the from collection and the edge are allowed
+              return true;
+            }
+          // Drop the edge check
+          }else{
+            // Return true if the from collection is allowed
+            return true;
+          }
+        }
+      }
+      // Always return false if the incomming connections are restricted and no rule matches
+      return false;
+    }
+    // Always return true if the incomming connections are not restricted
+    return true;
+  }
+
+  static getPossibleOutgoingCollections(fromCollectionName){
+    var possibleOutgoingCollections = []
+    // For each possible target node
+    for(var toCollectionName in this.vertexCollections){
+      if (this.vertexCollections.hasOwnProperty(toCollectionName)) {
+        if(this.vertexCollections[toCollectionName].creatable){
+
+          var possibleOutgoingCollection = {
+            to: toCollectionName,
+            through: []
+          }
+
+          for(var throughCollectionName in this.edgeCollections){
+            if (this.edgeCollections.hasOwnProperty(throughCollectionName)) {
+              if(this.edgeCollections[throughCollectionName].creatable){
+                if(
+                  this.isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName)&&
+                  this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName)
+                ){
+                  possibleOutgoingCollection.through.push(throughCollectionName)
+                }
+              }
+            }
+          }
+
+          // If this possible outgoing connection has possible hideEdgesOnViewport
+          if(possibleOutgoingCollection.through.length){
+            possibleOutgoingCollections.push(possibleOutgoingCollection)
+          }
+        }
+      }
+    }
+    return possibleOutgoingCollections
+  }
+
+  static destroy () {
+    this.initCytoscape()
+    this.cy.destroy()
+  }
+
+  static addCytoscapeStylesheet(stylesheet){
+    this.cytoscapeStylesheets = this.cytoscapeStylesheets.concat(stylesheet)
+  }
+
+  static addVertex(vertexData){
+    this.initCytoscape()
+
+    let collection = this.getVertexCollection(vertexData._collection)
+
+    var data = {
+      id:vertexData._id, // Set required cytoscape id
+    };
+
+    var position = {
+      x: vertexData._x,
+      y: vertexData._y
+    };
+
+    if(vertexData._origin){
+      var position = {
+        x: 0,
+        y: 0
+      };
+    }
+
+    // Add vertex to Cytoscape
+    let newCyVertex = this.cy.add({
+      data: data,
+      position: position,
+      classes: collection.cytoscapeClasses
+    });
+
+    // Convert data to Cytoscape
+    this.toCytoscape(vertexData)
+
+    // Add data to store
+    this.store.commit('brain/addVertex', vertexData)
+
+  }
+
+  static addEdge(edgeData){
+
+    let collection = this.getEdgeCollection(edgeData._collection)
+
+    this.cy.add({
+      data: {
+        id: edgeData._id, //Set required cytoscape id
+        source: edgeData._from, //Set cytoscape source
+        target: edgeData._to //Set cytoscape target
+      },
+      classes: collection.cytoscapeClasses
+    });
+
+  }
+
+  static toCytoscape(vertexData){
+    this.initCytoscape()
+    let cytoscapeData = {}
+    let collection = this.getVertexCollection(vertexData._collection);
+    if(collection.toCytoscape !== undefined){
+      cytoscapeData = collection.toCytoscape(vertexData);
+    }
+    cytoscapeData.id = vertexData._id; // You cannot override the id
+    let vertex = this.cy.getElementById(vertexData._id);
+    vertex.data(cytoscapeData);
+  }
 
 }

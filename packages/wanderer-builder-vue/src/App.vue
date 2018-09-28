@@ -7,6 +7,7 @@
 
     <modal :title="editVertexCollection.label" :show="showVertexEditorModal" >
         <component v-bind:is="editVertexCollection.editorComponent"></component>
+        <!--<QuestionEditorComponent />-->
     </modal>
 
   </div>
@@ -17,6 +18,7 @@
 import Toolbar from './components/Toolbar.vue'
 import Cytoscape from './components/Cytoscape.vue'
 import Modal from './components/Modal.vue'
+import Brain from 'wanderer-brain'
 
 export default {
   name: 'App',
@@ -27,14 +29,14 @@ export default {
   },
   computed: {
     showVertexEditorModal () {
-      if (this.$brain.store.state.editVertex !== 0) {
+      if (this.$store.state.brain.editVertex !== 0) {
         return true
       }
       return false
     },
     editVertexCollection () {
-      if (this.$brain.store.state.editVertex !== 0) {
-        var collection = this.$brain.getVertexCollectionById(this.$brain.store.state.editVertex)
+      if (this.$store.state.brain.editVertex !== 0) {
+        var collection = Brain.getVertexCollectionById(this.$store.state.brain.editVertex)
         if (collection) {
           return collection
         }

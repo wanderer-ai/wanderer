@@ -10,10 +10,12 @@
 
 <script>
 
+import Brain from 'wanderer-brain'
+
 export default {
 
   mounted () {
-    this.$brain.initCytoscape({
+    Brain.initCytoscape({
       container: document.getElementById('cy'),
 
       // initial viewport state:
@@ -47,7 +49,7 @@ export default {
       pixelRatio: 'auto'
     })
 
-    this.$brain.addVertex({
+    Brain.addVertex({
       '_id': '3948v57c3902t85n',
       '_origin': false,
       '_collection': 'flow',
@@ -55,7 +57,7 @@ export default {
       '_y': 100
     })
 
-    this.$brain.addVertex({
+    Brain.addVertex({
       '_id': '349z8qp8ez',
       '_origin': false,
       '_collection': 'default',
@@ -63,7 +65,7 @@ export default {
       '_y': 200
     })
 
-    this.$brain.addVertex({
+    Brain.addVertex({
       '_id': '2vn764576f',
       '_origin': false,
       '_collection': 'question',
@@ -72,10 +74,14 @@ export default {
       'question': {
         'de': 'Frage',
         'en': 'Question'
-      }
+      },
+      'complexProp': {
+        'foo': 'bar'
+      },
+      simpleProp: 'hallo wlet'
     })
 
-    this.$brain.addVertex({
+    Brain.addVertex({
       '_id': '7v6bbv45687680',
       '_origin': false,
       '_collection': 'suggestion',
@@ -87,7 +93,7 @@ export default {
       }
     })
 
-    this.$brain.addVertex({
+    Brain.addVertex({
       '_id': '07890957b7678946897',
       '_origin': false,
       '_collection': 'request',
@@ -95,7 +101,7 @@ export default {
       '_y': 400
     })
 
-    this.$brain.addVertex({
+    Brain.addVertex({
       '_id': '6734b76gh5785b3',
       '_origin': false,
       '_collection': 'response',
