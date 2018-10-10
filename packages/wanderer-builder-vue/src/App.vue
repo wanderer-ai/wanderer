@@ -3,12 +3,16 @@
   <div>
 
     <toolbar />
+
     <cytoscape />
 
-    <modal :title="editVertexCollection.label" :show="showVertexEditorModal" >
-        <component v-bind:is="editVertexCollection.editorComponent"></component>
-        <!--<QuestionEditorComponent />-->
-    </modal>
+    <portal-target name="modals" multiple />
+
+    <info-tool />
+
+    <edit-vertex-tool />
+
+    <remove-tool />
 
   </div>
 </template>
@@ -17,32 +21,18 @@
 
 import Toolbar from './components/Toolbar.vue'
 import Cytoscape from './components/Cytoscape.vue'
-import Modal from './components/Modal.vue'
-import Brain from 'wanderer-brain'
+import InfoTool from './components/tools/Info.vue'
+import EditVertexTool from './components/tools/EditVertex.vue'
+import RemoveTool from './components/tools/Remove.vue'
 
 export default {
   name: 'App',
   components: {
     Toolbar,
     Cytoscape,
-    Modal
-  },
-  computed: {
-    showVertexEditorModal () {
-      if (this.$store.state.brain.editVertex !== 0) {
-        return true
-      }
-      return false
-    },
-    editVertexCollection () {
-      if (this.$store.state.brain.editVertex !== 0) {
-        var collection = Brain.getVertexCollectionById(this.$store.state.brain.editVertex)
-        if (collection) {
-          return collection
-        }
-      }
-      return false
-    }
+    InfoTool,
+    EditVertexTool,
+    RemoveTool
   }
 }
 </script>

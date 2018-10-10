@@ -27,7 +27,9 @@ export default class Brain {
         vertexDocumentIds: [],
         vertexDocumentData: {},
         edgeDocumentIds: [],
-        edgeDocumentData: {}
+        edgeDocumentData: {},
+        selectedVertexIds: [],
+        selectedEdgeIds: []
       },
       mutations: {
         setEditVertex (state, id){
@@ -68,6 +70,12 @@ export default class Brain {
           }else{
             this._vm.$set(state.vertexDocumentData[id], key, value);
           }
+        },
+        setSelectedVertexIds(state, verticeIds){
+          state.selectedVertexIds = verticeIds
+        },
+        setSelectedEdgeIds(state, edgeIds){
+          state.selectedEdgeIds = edgeIds
         }
       }
     })
@@ -104,10 +112,6 @@ export default class Brain {
   static use (plugin) {
     plugin.install(this)
   }
-
-  // commit(name, method, payload){
-  //   this.store.commit(name+'/'+method, payload)
-  // }
 
   static getEditVertexModel(key, language){
     var brain = this
@@ -146,49 +150,6 @@ export default class Brain {
 
   static registerVertexCollection (name, configuration) {
     this.vertexCollections[name] = configuration // Register the collection
-
-    // // The following lines will register a custom store in vuex for this collection
-    // if(configuration.store === undefined){ configuration.store = {} }
-    //
-    // // Prepare options
-    // if(configuration.store.state === undefined){ configuration.store.state = {} }
-    // if(configuration.store.mutations === undefined){ configuration.store.mutations = {} }
-    //
-    // configuration.store.state.documentIds = []; // Array for storing the IDs
-    // configuration.store.state.documentData = {}; // Object for storing the base data for every document
-    //
-    // // This module is always namespaced in vuex
-    // configuration.store.namespaced = true;
-    //
-    // // Convert user defined add mutation into a hook function
-    // if(configuration.store.mutations.add !== undefined){
-    //   // Use it as hook
-    //   var addHook = configuration.store.mutations.add
-    // }
-    //
-    // // Create the ADD mutation
-    // configuration.store.mutations.add = function(state, documentData){
-    //   // Execute hook function
-    //   if(addHook !== undefined){
-    //     addHook(state, {
-    //       documentData: documentData,
-    //       context: this
-    //     })
-    //   }
-    //   // Push document id
-    //   state.documentIds.push(documentData._id)
-    //   // Push basic document data
-    //   state.documentData[documentData._id] = {
-    //     _id: documentData._id,
-    //     _collection: documentData._collection,
-    //     _isOrigin: documentData._isOrigin,
-    //     _x: documentData._x,
-    //     _y: documentData._y
-    //   }
-    // }
-    //
-    // // Register the store in vuex
-    // this.store.registerModule(name, configuration.store)
   }
 
   static registerEdgeCollection (name, configuration) {
@@ -203,13 +164,9 @@ export default class Brain {
   }
 
   static getVertexDataById(id){
-    //for(var c in this.vertexCollections){ // For each collection
-      //if(this.vertexCollections.hasOwnProperty(c)){
-        if(this.store.state.brain.vertexDocumentData[id] !== undefined){
-          return this.store.state.brain.vertexDocumentData[id]
-        }
-      //}
-    //}
+    if(this.store.state.brain.vertexDocumentData[id] !== undefined){
+      return this.store.state.brain.vertexDocumentData[id]
+    }
     return false
   }
 
@@ -314,14 +271,42 @@ export default class Brain {
         }
       });
 
+      // Select vertices
+      this.cy.on('select', 'node', function(evt){
+        let lastSelectedVerticesIds = brain.getSelectedVertexIds()
+        brain.store.commit('brain/setSelectedVertexIds',lastSelectedVerticesIds);
+      });
+
       // Edit vertex
       this.cy.on('dblclick','node', function(){
         brain.store.commit('brain/setEditVertex',this.id())
       });
 
-      // Unselect nodes
+      // Unselect vertices
       this.cy.on('unselect', 'node', function(evt){
-        brain.store.commit('brain/setEditVertex',0)
+        let lastSelectedVerticesIds = brain.getSelectedVertexIds()
+        brain.store.commit('brain/setSelectedVertexIds',lastSelectedVerticesIds);
+      });
+
+      // // Unselect nodes
+      // this.cy.on('unselect', 'node', function(evt){
+      //   brain.store.commit('brain/setEditVertex',0)
+      // });
+
+      // Select edge(s)
+      this.cy.on('select', 'edge', function(evt){
+        let lastSelectedEdgesIds = getSelectedEdgeIds()
+        brain.store.commit('brain/setSelectedEdgeIds',lastSelectedEdgesIds);
+      });
+
+      // Unselect edge(s)
+      this.cy.on('unselect', 'edge', function(evt){
+        let lastSelectedEdges = brain.cy.$('edge:selected');
+        let lastSelectedEdgesIds = [];
+        lastSelectedEdges.each(function(edge){
+          lastSelectedEdgesIds.push(edge.id());
+        });
+        brain.store.commit('documents/setSelectedEdgeIds',lastSelectedEdgesIds);
       });
 
       // Append event
@@ -330,6 +315,26 @@ export default class Brain {
       })
 
     }
+  }
+
+  static getSelectedVertexIds() {
+    this.initCytoscape()
+    let selectedVertices = this.cy.$('node:selected');
+    let selectedVertexIds = [];
+    selectedVertices.each(function(vertex){
+      selectedVertexIds.push(vertex.id());
+    });
+    return selectedVertexIds
+  }
+
+  static getSelectedEdgeIds() {
+    this.initCytoscape()
+    let selectedEdges = this.cy.$('edge:selected');
+    let selectedEdgeIds = [];
+    lastSelectedEdges.each(function(edge){
+      lastSelectedEdgeIds.push(edge.id());
+    });
+    return lastSelectedEdgeIds
   }
 
   static append(cytoscapeNodeId, vertexCollectionName, edgeCollectionName){

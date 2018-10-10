@@ -9,29 +9,13 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-      <!--<div class="btn-group">
-        <remove-tool />
-        <connect-tool />
-        <edit-tool />
-      </div>-->
+      <portal-target class="btn-group" name="actionbar" multiple />
 
     </div>
 
     <span class="navbar-text navbar-right">
 
-      <div class="btn-group">
-        <!--<chat-tool />-->
-        <!--<topic-selector-tool />-->
-        <!--<language-tool />
-        <file-tool />
-        <search-tool />
-        <functions-tool />
-        <info-tool />-->
-
-        <!--<no-ssr>
-          <logout-tool />
-        </no-ssr>-->
-      </div>
+      <portal-target class="btn-group" name="toolbar" multiple slim />
 
     </span>
 
@@ -41,12 +25,7 @@
 <script>
 
 export default {
-  components: {
 
-  },
-  methods: {
-
-  }
 }
 
 </script>

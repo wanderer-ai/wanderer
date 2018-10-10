@@ -1,10 +1,6 @@
 <template>
   <div>
 
-    This is the default editor for questions
-
-    https://github.com/vuejs/vuex/issues/409
-
     <div class="form-group">
       <label for="label">Question</label>
       <input v-model="question" type="text" class="form-control" id="label" placeholder="Enter your question">
@@ -22,7 +18,6 @@
       <input v-model="complexProp" type="text" class="form-control" id="label" placeholder="Enter your complex prop">
     </div>
     {{complexProp}}
-
 
   </div>
 </template>

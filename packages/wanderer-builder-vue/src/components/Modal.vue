@@ -25,7 +25,7 @@
 
               </slot>
 
-              <button v-if="showClose" class="btn btn-secondary modal-default-button" @click="close()">
+              <button v-if="showClose" class="btn btn-secondary modal-default-button" @click="$emit('closeButton')">
                 Close
               </button>
 
@@ -62,17 +62,8 @@ export default {
     }
   },
   watch: {
-    // whenever question changes, this function will run
     show: function (newValue, oldValue) {
       this.showModal = newValue
-    }
-  },
-  methods: {
-    open () {
-      this.showModal = true
-    },
-    close () {
-      this.showModal = false
     }
   }
 }

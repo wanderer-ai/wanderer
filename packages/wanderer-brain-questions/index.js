@@ -4,18 +4,6 @@ export default {
 
   install (Brain) {
 
-    //console.log('importing register Module...')
-    //var Editor = require('./components/Editor.vue')
-    //console.log('after importing ')
-
-    // Editor.$brain = Brain
-
-    //Brain.Vue.component('QuestionEditorComponent', Editor)
-
-    // https://vuejs.org/v2/cookbook/packaging-sfc-for-npm.html
-
-    // Brain.Vue.component('MyComponent', Editor);
-
     Brain.registerVertexCollection('question',{
       models:[
         {
@@ -31,35 +19,6 @@ export default {
           isMultiLanguage: true
         }
       ],
-      /*store: {
-        state: {
-          questions: {},
-          simpleProp: {},
-          complexProp: {}
-        },
-        mutations: {
-          add (state, {documentData, context}){
-            context._vm.$set(state.questions, documentData._id, documentData.question)
-            context._vm.$set(state.simpleProp, documentData._id, documentData.simpleProp)
-            context._vm.$set(state.complexProp, documentData._id, documentData.complexProp)
-          },
-          setQuestion (state, {id, language, question}){
-            if(state.questions[id] === undefined){
-              this._vm.$set(state.questions, [id], {})
-            }
-            this._vm.$set(state.questions[id], language, question)
-          },
-          setSimpleProp (state, {id, data}){
-            this._vm.$set(state.simpleProp, id, data)
-          },
-          setComplexProp (state, {id, data}){
-            if(state.complexProp[id] === undefined){
-              this._vm.$set(state.complexProp, [id], {})
-            }
-            this._vm.$set(state.complexProp[id], 'foo', data)
-          },
-        }
-      },*/
       label: 'Question',
       color: '#007BFF',
       cytoscapeClasses: 'question',
@@ -83,7 +42,6 @@ export default {
         }
       },
       editorComponent: Editor
-      // chatComponent:
     })
 
     Brain.registerVertexCollection('suggestion',{
