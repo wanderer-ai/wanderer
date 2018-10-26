@@ -24,21 +24,12 @@
 
 <script>
 
-// import Toolbar from './components/Toolbar.vue'
-// import Cytoscape from './components/Cytoscape.vue'
-
 import Brain from 'wanderer-brain'
 
 console.log(Brain)
 
 export default {
-  // name: 'App',
-  components: {
-    // Toolbar,
-    // Cytoscape
-  },
   computed: {
-    // test: this.$store.state.brain
     question: Brain.getEditVertexModel('question', 'de'),
     simpleProp: Brain.getEditVertexModel('simpleProp'),
     complexProp: Brain.getEditVertexModel('complexProp', 'foo')

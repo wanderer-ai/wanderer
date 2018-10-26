@@ -60,13 +60,13 @@ export default {
           'height': '200px',
           'width': '200px',
           'font-size': '20px',
-          'background-color': '#DC3545',
+          'background-color': '#6C757D',
           'label': 'data(label)'
         }
       },
 
       {
-        selector: '.unknown-vertex',
+        selector: '.default-vertex',
         style: {
           'height': '50px',
           'width': '50px',
@@ -84,7 +84,7 @@ export default {
       },
 
       {
-        selector: '.unknown-edge',
+        selector: '.default-edge',
         style: {
           'line-color': '#17a2b8',
           'target-arrow-color': '#17a2b8',

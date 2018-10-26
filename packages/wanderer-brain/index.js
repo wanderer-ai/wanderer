@@ -32,10 +32,10 @@ export default class Brain {
         selectedEdgeIds: []
       },
       mutations: {
-        setEditVertex (state, id){
+        setEditVertex (state, id) {
           state.editVertex = id
         },
-        addVertex (state, documentData){
+        addVertex (state, documentData) {
           // Push document id
           state.vertexDocumentIds.push(documentData._id)
           // Push document data
@@ -62,47 +62,93 @@ export default class Brain {
               }
             }
           }
-          this._vm.$set(state.vertexDocumentData, documentData._id, data);
+          this._vm.$set(state.vertexDocumentData, documentData._id, data)
         },
-        setVertexDataValue(state, {id, key, value, language}){
+        removeVertex (state, vertexId) {
+          // Remove id from stack
+          state.vertexDocumentIds.splice(state.vertexDocumentIds.indexOf(vertexId), 1)
+          // Remove object
+          this._vm.$delete(state.vertexDocumentData, vertexId)
+        },
+        addEdge (state, documentData) {
+          // Push document id
+          state.edgeDocumentIds.push(documentData._id)
+          // Push document data
+          let data = {
+            _id: documentData._id,
+            _collection: documentData._collection,
+            _from: documentData._from,
+            _to: documentData._to
+          }
+          this._vm.$set(state.edgeDocumentData, documentData._id, data)
+        },
+        removeEdge (state, edgeId) {
+          // Remove id from stack
+          state.edgeDocumentIds.splice(state.edgeDocumentIds.indexOf(edgeId), 1)
+          // Remove object
+          this._vm.$delete(state.edgeDocumentData, edgeId)
+        },
+        setVertexDataValue (state, {id, key, value, language}) {
           if(language !== undefined){
-            this._vm.$set(state.vertexDocumentData[id][key], language, value);
+            this._vm.$set(state.vertexDocumentData[id][key], language, value)
           }else{
-            this._vm.$set(state.vertexDocumentData[id], key, value);
+            this._vm.$set(state.vertexDocumentData[id], key, value)
           }
         },
-        setSelectedVertexIds(state, verticeIds){
-          state.selectedVertexIds = verticeIds
+        setSelectedVertexIds (state, verticeIds) {
+          // Its important to keep the order of the selected vertics
+          // This is the reason why we do not simply replace the array here
+          // First add the new vertices that do not exist
+          for (let i in verticeIds) {
+            if(state.selectedVertexIds.indexOf(verticeIds[i])==-1){
+              state.selectedVertexIds.push(verticeIds[i])
+            }
+          }
+          // Than delete the the rest
+          for (let i in state.selectedVertexIds) {
+            if(verticeIds.indexOf(state.selectedVertexIds[i])==-1){
+              state.selectedVertexIds.splice(state.selectedVertexIds.indexOf(state.selectedVertexIds[i]), 1)
+            }
+          }
         },
-        setSelectedEdgeIds(state, edgeIds){
+        setSelectedEdgeIds (state, edgeIds) {
           state.selectedEdgeIds = edgeIds
+        },
+        truncate (state) {
+          this._vm.$set(state, 'editVertex', 0)
+          this._vm.$set(state, 'vertexDocumentIds', [])
+          this._vm.$set(state, 'vertexDocumentData', {})
+          this._vm.$set(state, 'edgeDocumentIds', [])
+          this._vm.$set(state, 'edgeDocumentData', {})
+          this._vm.$set(state, 'selectedVertexIds', [])
+          this._vm.$set(state, 'selectedEdgeIds', [])
         }
       }
     })
 
-    this.registerVertexCollection('unknown',{
-      label: 'Unknown',
+    this.registerVertexCollection('default',{
+      label: 'Default',
       color: '#6C757D',
-      cytoscapeClasses: 'unknown-vertex',
-      cytoscapeCtxMenuSelector: '.unknown',
+      cytoscapeClasses: 'default-vertex',
+      cytoscapeCtxMenuSelector: '.default',
       creatable: false,
       defaultFields: {},
       toCytoscape: function(data){
         return {
-          label: 'Unknown'
+          label: 'Default'
         }
       },
     })
 
-    this.registerEdgeCollection('unknown',{
-      label: 'Unknown',
+    this.registerEdgeCollection('default',{
+      label: 'Default',
       color: '#6C757D',
-      cytoscapeClasses: 'unknown-edge',
+      cytoscapeClasses: 'default-edge',
       creatable: false,
       defaultFields: {},
       toCytoscape: function(data){
         return {
-          label: 'Unknown'
+          label: 'Default'
         }
       }
     })
@@ -158,7 +204,7 @@ export default class Brain {
 
   static getVertexCollection(name){
     if(this.vertexCollections[name] === undefined){
-      return this.vertexCollections['unknown']
+      return this.vertexCollections['default']
     }
     return this.vertexCollections[name]
   }
@@ -181,7 +227,7 @@ export default class Brain {
 
   static getEdgeCollection(name){
     if(this.edgeCollections[name] === undefined){
-      return this.edgeCollections['unknown']
+      return this.edgeCollections['default']
     }
     return this.edgeCollections[name]
   }
@@ -295,18 +341,14 @@ export default class Brain {
 
       // Select edge(s)
       this.cy.on('select', 'edge', function(evt){
-        let lastSelectedEdgesIds = getSelectedEdgeIds()
+        let lastSelectedEdgesIds = brain.getSelectedEdgeIds()
         brain.store.commit('brain/setSelectedEdgeIds',lastSelectedEdgesIds);
       });
 
       // Unselect edge(s)
       this.cy.on('unselect', 'edge', function(evt){
-        let lastSelectedEdges = brain.cy.$('edge:selected');
-        let lastSelectedEdgesIds = [];
-        lastSelectedEdges.each(function(edge){
-          lastSelectedEdgesIds.push(edge.id());
-        });
-        brain.store.commit('documents/setSelectedEdgeIds',lastSelectedEdgesIds);
+        let lastSelectedEdgesIds = brain.getSelectedEdgeIds()
+        brain.store.commit('brain/setSelectedEdgeIds',lastSelectedEdgesIds);
       });
 
       // Append event
@@ -314,10 +356,48 @@ export default class Brain {
         brain.append(this.id(), vertexCollectionName, edgeCollectionName)
       })
 
+      // Implement drop event
+      let dropTimer = null;
+      this.cy.on('drag', 'node', function(event){
+        if(dropTimer){clearTimeout(dropTimer);} // Clear the timeout if set
+        // get all grabbed nodes
+        var lastGrabbedNodes = brain.cy.$('node:grabbed');
+        // Set new timeout
+        dropTimer = setTimeout(function(){
+          lastGrabbedNodes.forEach(function(vertex){
+            vertex.trigger('drop');
+          });
+        },500);
+      });
+
+      // On drop
+      this.cy.on('drop','node', function(evt){
+
+        console.log('drop')
+
+        // Check if this is a origin vertex
+        // We cannot disable drag for this vertice but we can set it back to 0
+        if(brain.store.state.brain.vertexDocumentData[this.id()]._isOrigin){
+          this.position({x: 0, y: 0});
+        }else{
+          let position = this.position(); // get position
+          brain.store.commit('brain/setVertexDataValue', {
+            id: this.id(),
+            key: '_x',
+            value: position.x
+          })
+          brain.store.commit('brain/setVertexDataValue', {
+            id: this.id(),
+            key: '_y',
+            value: position.y
+          })
+        }
+      });
+
     }
   }
 
-  static getSelectedVertexIds() {
+  static getSelectedVertexIds () {
     this.initCytoscape()
     let selectedVertices = this.cy.$('node:selected');
     let selectedVertexIds = [];
@@ -331,13 +411,17 @@ export default class Brain {
     this.initCytoscape()
     let selectedEdges = this.cy.$('edge:selected');
     let selectedEdgeIds = [];
-    lastSelectedEdges.each(function(edge){
-      lastSelectedEdgeIds.push(edge.id());
+    selectedEdges.each(function(edge){
+      selectedEdgeIds.push(edge.id());
     });
-    return lastSelectedEdgeIds
+    return selectedEdgeIds
   }
 
-  static append(cytoscapeNodeId, vertexCollectionName, edgeCollectionName){
+  static generateId () {
+    return uuidv4();
+  }
+
+  static append (cytoscapeNodeId, vertexCollectionName, edgeCollectionName){
     this.initCytoscape()
 
     // Deep clone the default fields
@@ -348,13 +432,13 @@ export default class Brain {
     let position = this.cy.getElementById( cytoscapeNodeId ).position()
 
     // Add base data
-    newVertexData._id = uuidv4()
+    newVertexData._id = this.generateId()
     newVertexData._collection = vertexCollectionName
     newVertexData._isOrigin = false
     newVertexData._x = position.x + 100
     newVertexData._y = position.y + 100
 
-    newEdgeData._id = uuidv4()
+    newEdgeData._id = this.generateId()
     newEdgeData._from = cytoscapeNodeId
     newEdgeData._to = newVertexData._id
     newEdgeData._collection = edgeCollectionName
@@ -460,7 +544,7 @@ export default class Brain {
     this.cytoscapeStylesheets = this.cytoscapeStylesheets.concat(stylesheet)
   }
 
-  static addVertex(vertexData){
+  static addVertex (vertexData) {
     this.initCytoscape()
 
     let collection = this.getVertexCollection(vertexData._collection)
@@ -496,7 +580,21 @@ export default class Brain {
 
   }
 
-  static addEdge(edgeData){
+  static removeVertexById (vertexId) {
+    let vertex = this.cy.getElementById(vertexId)
+
+    // Remove from cy
+    vertex.remove()
+
+    // Remove from store
+    this.store.commit('brain/removeVertex', vertexId)
+
+    // Rebuild the selection
+    let lastSelectedVerticesIds = this.getSelectedVertexIds()
+    this.store.commit('brain/setSelectedVertexIds',lastSelectedVerticesIds);
+  }
+
+  static addEdge (edgeData) {
 
     let collection = this.getEdgeCollection(edgeData._collection)
 
@@ -509,18 +607,45 @@ export default class Brain {
       classes: collection.cytoscapeClasses
     });
 
+    // Add data to store
+    this.store.commit('brain/addEdge', edgeData)
+
   }
 
-  static toCytoscape(vertexData){
+  static removeEdgeById (edgeId) {
+    let edge = this.cy.getElementById(edgeId)
+
+    // Remove from cy
+    edge.remove();
+
+    // Remove from store
+    this.store.commit('brain/removeEdge', edgeId)
+
+    // Rebuild the selection
+    let lastSelectedEdgesIds = this.getSelectedEdgeIds()
+    this.store.commit('brain/setSelectedEdgeIds',lastSelectedEdgesIds);
+  }
+
+  static connectById (fromEdgeId, toEdgeId) {
+    // Create new edge
+    this.addEdge({
+      _id: this.generateId(),
+      _collection: 'Default',
+      _from: fromEdgeId,
+      _to: toEdgeId
+    });
+  }
+
+  static toCytoscape (vertexData) {
     this.initCytoscape()
     let cytoscapeData = {}
-    let collection = this.getVertexCollection(vertexData._collection);
+    let collection = this.getVertexCollection(vertexData._collection)
     if(collection.toCytoscape !== undefined){
-      cytoscapeData = collection.toCytoscape(vertexData);
+      cytoscapeData = collection.toCytoscape(vertexData)
     }
     cytoscapeData.id = vertexData._id; // You cannot override the id
-    let vertex = this.cy.getElementById(vertexData._id);
-    vertex.data(cytoscapeData);
+    let vertex = this.cy.getElementById(vertexData._id)
+    vertex.data(cytoscapeData)
   }
 
 }

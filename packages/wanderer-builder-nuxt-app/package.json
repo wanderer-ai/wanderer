@@ -1,0 +1,28 @@
+{
+  "name": "wanderer-builder-nuxt-app",
+  "version": "1.0.0",
+  "description": "My exceptional Nuxt.js project",
+  "author": "",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "cross-env": "^5.2.0",
+    "nuxt": "^2.0.0",
+    "wanderer-builder-vue-component": "^1.0.0",
+    "bootstrap-vue": "^2.0.0-rc.11",
+    "portal-vue": "^1.4.0",
+    "vuex": "^3.0.1",
+    "wanderer-brain": "^1.0.0",
+    "wanderer-brain-apis": "^1.0.0",
+    "wanderer-brain-base": "^1.0.0",
+    "wanderer-brain-questions": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}

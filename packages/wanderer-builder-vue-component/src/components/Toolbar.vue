@@ -9,13 +9,13 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-      <portal-target class="btn-group" name="actionbar" multiple />
+      <portal-target class="btn-group" name="toolbar" multiple />
 
     </div>
 
     <span class="navbar-text navbar-right">
 
-      <portal-target class="btn-group" name="toolbar" multiple slim />
+      <portal-target class="btn-group" name="actionbar" multiple />
 
     </span>
 

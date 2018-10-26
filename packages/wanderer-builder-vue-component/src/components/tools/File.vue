@@ -1,0 +1,207 @@
+
+<template>
+
+  <div>
+
+    <portal to="actionbar" :order="1">
+      <button class="btn btn-secondary navbar-btn" title="Save or restore project" v-on:click="showModal=true">
+        <icon name="save"></icon>
+      </button>
+    </portal>
+
+    <portal to="modals" :order="1">
+      <modal title="Save or restore project" :show="showModal"  v-on:closeButton="showModal=false">
+
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Start new project</h5>
+                <p class="card-text">Start a completly new project</p>
+                <a href="#" class="btn btn-primary" v-on:click="startEmptyProject()">Start new</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Restore existing project</h5>
+                <p class="card-text">Restore an existing project from a project file.</p>
+                <input class="btn" type="file" @change="loadFromFile">
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Save current project</h5>
+                <p class="card-text">Save and download the current project to a file.</p>
+                <a href="#" class="btn btn-primary" v-on:click="exportJsonFile()">Save current</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </modal>
+    </portal>
+
+  </div>
+
+</template>
+
+<script>
+
+import Modal from '../Modal.vue'
+import 'vue-awesome/icons/save'
+import Icon from 'vue-awesome/components/Icon'
+
+import Brain from 'wanderer-brain'
+
+export default {
+  components: {
+    Modal, Icon
+  },
+  data: function () {
+    return {
+      showModal: false
+    }
+  },
+  methods: {
+    startEmptyProject(){
+
+      // Lets reset the IDs. So we have no conflicts with other import data in the future
+      this.loadFromJson(this.resetIds({
+        "version": "1.0.0",
+        "languages": ["en","de"],
+        "vertices": [
+          {
+            "_collection": "flow",
+            "_id": "d3fab08d-e05e-4885-8eba-f1e86a374c98",
+            "_isOrigin": true,
+            "_x": 0,
+            "_y": 0,
+            "topic": {
+              "en": "Cat consultant",
+              "de": "Katzenberater"
+            },
+            "onboarding": {
+              "en": "Hey! I am your cat consultant! ",
+              "de": "Hey! Ich bin dein Katzenberater!"
+            },
+            "offboarding": {
+              "en": "Thanks for participating. I have no further questions.",
+              "de": "Danke, dass du mitgemacht hast. Ich habe keine weiteren Fragen."
+            }
+          }
+        ]
+      }))
+
+    },
+    loadFromJson(data){
+      // Clean cy
+      Brain.cy.remove( '*' )
+
+      // Clean store
+      this.$store.commit('brain/truncate')
+
+      // Load vertices
+      for (var key in data.vertices) {
+        Brain.addVertex(data.vertices[key])
+      }
+
+      // Load edges
+      for (var key in data.edges) {
+        Brain.addEdge(data.edges[key])
+      }
+
+      // Center
+      // Brain.cy.center(Brain.cy.$id(data.vertices[0]));
+      Brain.cy.zoom(1);
+
+      // Close modal
+      this.showModal = false
+
+    },
+    loadFromFile(ev) {
+      const file = ev.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = e => {
+        try {
+          this.loadFromJson(JSON.parse(e.target.result))
+        } catch(e) {
+          console.log(e);
+          // this.$store.dispatch('alerts/add',{message:'The file structure seems to be invalid',type:'danger'})
+        }
+      };
+
+      reader.readAsText(file);
+    },
+    resetIds(data){
+
+      let dataString = JSON.stringify(data);
+
+      for(let i in data.vertices){
+        let oldId = data.vertices[i]._id
+        let newId = Brain.generateId()
+        var re = new RegExp(oldId, 'g')
+        dataString = dataString.replace(re,newId)
+      }
+
+      for(let i in data.edges){
+        let oldId = data.edges[i]._id
+        let newId = Brain.generateId()
+        var re = new RegExp(oldId, 'g')
+        dataString = dataString.replace(re,newId)
+      }
+
+      return JSON.parse(dataString)
+    },
+    generateExportData(){
+
+      let exportData = {
+        // version: WandererConfig.version,
+        date: new Date(),
+        vertices: [],
+        edges: []
+      }
+
+      // export vertices
+      for(let i in this.$store.state.brain.vertexDocumentIds){
+        exportData.vertices.push(this.$store.state.brain.vertexDocumentData[this.$store.state.brain.vertexDocumentIds[i]])
+      }
+
+      // export edges
+      for(let i in this.$store.state.brain.edgeDocumentIds){
+        exportData.edges.push(this.$store.state.brain.edgeDocumentData[this.$store.state.brain.edgeDocumentIds[i]])
+      }
+
+      return exportData
+    },
+    exportJsonFile(){
+
+      let exportData = this.generateExportData();
+
+      // Trigger download
+      var element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2)));
+      element.setAttribute('download', 'conver.json');
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+
+      // Hide modal
+      this.showModal = false
+
+    }
+  }
+}
+</script>
+
+<style>
+
+</style>

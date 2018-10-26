@@ -3,7 +3,7 @@
 
   <div>
 
-    <portal to="actionbar" :order="1">
+    <portal to="toolbar" :order="1">
       <button class="btn btn-primary navbar-btn" title="Edit" v-on:click="openVertexEditorModal()" v-if="selectedVertices==1">
         <icon name="edit"></icon>
       </button>

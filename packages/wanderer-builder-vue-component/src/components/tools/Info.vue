@@ -3,7 +3,7 @@
 
   <div>
 
-    <portal to="toolbar" :order="1">
+    <portal to="actionbar" :order="1">
       <button class="btn btn-secondary navbar-btn" title="Info" v-on:click="showModal=true">
         <icon name="info"></icon>
       </button>
@@ -23,13 +23,13 @@
           Do you need Help? Check out the documentation.
         </p>
         <p>
-          Are you interested in the technologie behind?
+          Are you interested in the technology behind?
           Visit <a target="_blank" href="https://wanderer.ai">Wanderer.ai</a> and read <a target="_blank" href="https://steampixel.de/en/tag/lets-build-an-open-source-chatbot-builder/">SteamPixel's blog series</a> about this topic.
         </p>
         <p>
-          Are you interested in developing applications like this? Are you an open source entusiast?
-          Help us to improve this software!
-          Checkout the <a target="_blank" href="https://github.com/wanderer-ai">repositories</a> or open a new issue on <a target="_blank" href="https://github.com/wanderer-ai">GitHub</a>.
+          Are you interested in developing applications like this? Are you an open source enthusiast?
+          Help me to improve this software!
+          Check out the <a target="_blank" href="https://github.com/wanderer-ai">repositories</a> or open a new issue on <a target="_blank" href="https://github.com/wanderer-ai">GitHub</a>.
         </p>
 
       </modal>
@@ -51,7 +51,7 @@ export default {
   },
   data: function () {
     return {
-      version: '1.0.0',
+      version: '0.0.1',
       license: 'Apache2.0',
       showModal: false
     }
