@@ -24,15 +24,13 @@
 
 <script>
 
-import Brain from 'wanderer-brain'
-
-console.log(Brain)
+import WandererBuilder from 'wanderer-builder-singleton'
 
 export default {
   computed: {
-    question: Brain.getEditVertexModel('question', 'de'),
-    simpleProp: Brain.getEditVertexModel('simpleProp'),
-    complexProp: Brain.getEditVertexModel('complexProp', 'foo')
+    question: WandererBuilder.getEditVertexModel('question', 'de'),
+    simpleProp: WandererBuilder.getEditVertexModel('simpleProp'),
+    complexProp: WandererBuilder.getEditVertexModel('complexProp', 'foo')
   }
 }
 </script>

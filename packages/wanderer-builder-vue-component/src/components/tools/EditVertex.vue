@@ -25,7 +25,7 @@ import Modal from '../Modal.vue'
 import 'vue-awesome/icons/edit'
 import Icon from 'vue-awesome/components/Icon'
 
-import Brain from 'wanderer-brain'
+// import Brain from 'wanderer-brain'
 
 export default {
   components: {
@@ -33,14 +33,15 @@ export default {
   },
   computed: {
     showVertexEditorModal () {
-      if (this.$store.state.brain.editVertex !== 0) {
+      if (this.$store.state.wanderer.builder.editVertex !== 0) {
         return true
       }
       return false
     },
     editVertexCollection () {
-      if (this.$store.state.brain.editVertex !== 0) {
-        var collection = Brain.getVertexCollectionById(this.$store.state.brain.editVertex)
+      if (this.$store.state.wanderer.builder.editVertex !== 0) {
+        var collection = this.$wanderer.getVertexCollection(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.builder.editVertex]._collection).builder
+        console.log(collection)
         if (collection) {
           return collection
         }
@@ -48,17 +49,17 @@ export default {
       return false
     },
     selectedVertices () {
-      return this.$store.state.brain.selectedVertexIds.length
+      return this.$store.state.wanderer.builder.selectedVertexIds.length
     }
   },
   methods: {
     closeVertexEditorModal () {
-      this.$store.commit('brain/setEditVertex', 0)
+      this.$store.commit('wanderer/builder/setEditVertex', 0)
     },
     openVertexEditorModal () {
-      let selectedVertexIds = Brain.getSelectedVertexIds()
+      let selectedVertexIds = this.$wandererBuilder.getSelectedVertexIds()
       if (selectedVertexIds.length === 1) {
-        this.$store.commit('brain/setEditVertex', selectedVertexIds[0])
+        this.$store.commit('wanderer/builder/setEditVertex', selectedVertexIds[0])
       }
     }
 

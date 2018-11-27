@@ -41,7 +41,7 @@ import Modal from '../Modal.vue'
 import 'vue-awesome/icons/trash'
 import Icon from 'vue-awesome/components/Icon'
 
-import Brain from 'wanderer-brain'
+// import Brain from 'wanderer-brain'
 
 export default {
   components: {
@@ -54,35 +54,35 @@ export default {
   },
   computed: {
     selectedVertexIds () {
-      return this.$store.state.brain.selectedVertexIds
+      return this.$store.state.wanderer.builder.selectedVertexIds
     },
     selectedEdgeIds () {
-      return this.$store.state.brain.selectedEdgeIds
+      return this.$store.state.wanderer.builder.selectedEdgeIds
     }
   },
   methods: {
     removeVertices () {
       this.showModal = false
-
-      let vertexIds = Brain.getSelectedVertexIds()
+      var component = this
+      let vertexIds = this.$wandererBuilder.getSelectedVertexIds()
 
       for (let i in vertexIds) {
         // Remove the connected edges
-        Brain.cy.getElementById(vertexIds[i]).connectedEdges().forEach(function (edge) {
-          Brain.removeEdgeById(edge.id())
+        this.$cytoscape.cy.getElementById(vertexIds[i]).connectedEdges().forEach(function (edge) {
+          component.$wanderer.removeEdge(edge.id())
         })
         // Remove the vertex
-        Brain.removeVertexById(vertexIds[i])
+        this.$wanderer.removeVertex(vertexIds[i])
       }
     },
     removeEdges () {
       this.showModal = false
 
-      let edgeIds = Brain.getSelectedEdgeIds()
+      let edgeIds = this.$wandererBuilder.getSelectedEdgeIds()
 
       for (let i in edgeIds) {
         // Remove the edge
-        Brain.removeEdgeById(edgeIds[i])
+        this.$wanderer.removeEdge(edgeIds[i])
       }
     }
   }

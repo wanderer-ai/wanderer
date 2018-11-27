@@ -27,7 +27,10 @@
               <div class="card-body">
                 <h5 class="card-title">Restore existing project</h5>
                 <p class="card-text">Restore an existing project from a project file.</p>
-                <input class="btn" type="file" @change="loadFromFile">
+                <div class="upload-btn-wrapper">
+                  <button class="btn btn-primary">Restore</button>
+                  <input class="btn" type="file" @change="loadFromFile">
+                </div>
               </div>
             </div>
           </div>
@@ -55,7 +58,7 @@ import Modal from '../Modal.vue'
 import 'vue-awesome/icons/save'
 import Icon from 'vue-awesome/components/Icon'
 
-import Brain from 'wanderer-brain'
+// import Brain from 'wanderer-brain'
 
 export default {
   components: {
@@ -99,24 +102,24 @@ export default {
     },
     loadFromJson(data){
       // Clean cy
-      Brain.cy.remove( '*' )
+      this.$cytoscape.cy.remove( '*' )
 
       // Clean store
-      this.$store.commit('brain/truncate')
+      this.$store.commit('wanderer/truncate')
 
       // Load vertices
       for (var key in data.vertices) {
-        Brain.addVertex(data.vertices[key])
+        this.$wanderer.addVertex(data.vertices[key])
       }
 
       // Load edges
       for (var key in data.edges) {
-        Brain.addEdge(data.edges[key])
+        this.$wanderer.addEdge(data.edges[key])
       }
 
       // Center
       // Brain.cy.center(Brain.cy.$id(data.vertices[0]));
-      Brain.cy.zoom(1);
+      this.$cytoscape.cy.zoom(1);
 
       // Close modal
       this.showModal = false
@@ -143,14 +146,14 @@ export default {
 
       for(let i in data.vertices){
         let oldId = data.vertices[i]._id
-        let newId = Brain.generateId()
+        let newId = this.$wanderer.generateId()
         var re = new RegExp(oldId, 'g')
         dataString = dataString.replace(re,newId)
       }
 
       for(let i in data.edges){
         let oldId = data.edges[i]._id
-        let newId = Brain.generateId()
+        let newId = this.$wanderer.generateId()
         var re = new RegExp(oldId, 'g')
         dataString = dataString.replace(re,newId)
       }
@@ -167,13 +170,13 @@ export default {
       }
 
       // export vertices
-      for(let i in this.$store.state.brain.vertexDocumentIds){
-        exportData.vertices.push(this.$store.state.brain.vertexDocumentData[this.$store.state.brain.vertexDocumentIds[i]])
+      for(let i in this.$store.state.wanderer.vertexDocumentIds){
+        exportData.vertices.push(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
       }
 
       // export edges
-      for(let i in this.$store.state.brain.edgeDocumentIds){
-        exportData.edges.push(this.$store.state.brain.edgeDocumentData[this.$store.state.brain.edgeDocumentIds[i]])
+      for(let i in this.$store.state.wanderer.edgeDocumentIds){
+        exportData.edges.push(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
       }
 
       return exportData
@@ -203,5 +206,19 @@ export default {
 </script>
 
 <style>
+
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
 
 </style>

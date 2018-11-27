@@ -1,5 +1,5 @@
 {
-  "name": "wanderer-chat-vue",
+  "name": "wanderer-chat-vue-component",
   "version": "1.0.0",
   "description": "A Vue.js project",
   "author": "",
@@ -16,8 +16,7 @@
   },
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.11",
-    "vue": "^2.5.2",
-    "wanderer-brain": "^1.0.0"
+    "vue": "^2.5.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

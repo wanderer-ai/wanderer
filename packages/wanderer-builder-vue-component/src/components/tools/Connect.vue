@@ -18,7 +18,7 @@
 import 'vue-awesome/icons/link'
 import Icon from 'vue-awesome/components/Icon'
 
-import Brain from 'wanderer-brain'
+// import Brain from 'wanderer-brain'
 
 export default {
   components: {
@@ -26,13 +26,13 @@ export default {
   },
   computed: {
     selectedVertexIds () {
-      return this.$store.state.brain.selectedVertexIds
+      return this.$store.state.wanderer.builder.selectedVertexIds
     }
   },
   methods: {
     connect () {
       this.showModal = false
-      Brain.connectById(this.selectedVertexIds[0], this.selectedVertexIds[1])
+      this.$wandererBuilder.connectById(this.selectedVertexIds[0], this.selectedVertexIds[1])
     }
   }
 }
