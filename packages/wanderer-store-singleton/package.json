@@ -1,5 +1,5 @@
 {
-  "name": "wanderer-builder-singleton",
+  "name": "wanderer-store-singleton",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,8 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "wanderer-singleton": "^1.0.0",
-    "wanderer-store-singleton": "^1.0.0",
-    "cytoscape-singleton": "^1.0.0"
+
   }
 }

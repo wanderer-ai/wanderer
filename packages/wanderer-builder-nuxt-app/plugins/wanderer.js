@@ -14,7 +14,8 @@ import WandererPluginBase from 'wanderer-plugin-base'
 import WandererPluginQuestion from 'wanderer-plugin-question'
 import WandererPluginApi from 'wanderer-plugin-api'
 
-import CytoscapeSingleton from 'cytoscape-singleton'
+// import CytoscapeSingleton from 'cytoscape-singleton'
+import StoreSingeton from 'wanderer-store-singleton'
 
 export default ({ app, store }) => {
 
@@ -24,10 +25,15 @@ export default ({ app, store }) => {
   // Install Vue Bootstrap
   Vue.use(BootstrapVue)
 
-  // Install wanderer plugin
-  Vue.use(WandererVuePlugin, {store: store, cytoscape: CytoscapeSingleton, plugins: [WandererBuilderComponent, WandererPluginBase, WandererPluginQuestion, WandererPluginApi ]})
+  // Init vuex store singleton
+  StoreSingeton.set(store)
 
-  // Install builder plugin
-  // Vue.use(WandererBuilderComponent, {store: store, cytoscape: CytoscapeSingleton, wanderer: Wanderer, wandererPlugins: [ WandererPluginBase, WandererPluginQuestion, WandererPluginApi ]})
+  // Install wanderer plugin
+  Vue.use(WandererVuePlugin, {plugins: [
+    WandererBuilderComponent,
+    WandererPluginBase,
+    WandererPluginQuestion,
+    WandererPluginApi ]
+  })
 
 }

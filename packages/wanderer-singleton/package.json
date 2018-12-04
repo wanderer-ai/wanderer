@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "wanderer-store-singleton": "^1.0.0",
+    "cytoscape-singleton": "^1.0.0"
   }
 }

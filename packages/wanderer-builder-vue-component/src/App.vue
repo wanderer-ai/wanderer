@@ -13,6 +13,7 @@
     <remove-tool />
     <connect-tool />
     <file-tool />
+    <language-tool />
     <chat-tool v-on:toggle="toggleChatPanel()"/>
 
   </div>
@@ -29,6 +30,7 @@ import EditVertexTool from './components/tools/EditVertex.vue'
 import RemoveTool from './components/tools/Remove.vue'
 import ConnectTool from './components/tools/Connect.vue'
 import FileTool from './components/tools/File.vue'
+import LanguageTool from './components/tools/Language.vue'
 import ChatTool from './components/tools/Chat.vue'
 
 export default {
@@ -42,6 +44,7 @@ export default {
     RemoveTool,
     ConnectTool,
     FileTool,
+    LanguageTool,
     ChatTool
   },
   data: function () {

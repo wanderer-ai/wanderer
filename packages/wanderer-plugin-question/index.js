@@ -1,12 +1,13 @@
 import Editor from './components/Editor.vue'
+import WandererSingleton from 'wanderer-singleton'
 
 export default {
 
-  install (Vue, {store, cytoscape, wanderer, wandererPlugins}) {
+  install (Vue) {
 
     Vue.component('wanderer-editor-question', Editor)
 
-    wanderer.registerVertexCollection('question',{
+    WandererSingleton.registerVertexCollection('question',{
       builder: {
         label: 'Question',
         color: '#007BFF',
@@ -37,14 +38,19 @@ export default {
         },
         editorComponent: 'wanderer-editor-question'
       },
-      toCytoscape: function(data){
+      toCytoscape: function(data, language){
+        if(data.question[language]){
+          return {
+            label: data.question[language]
+          }
+        }
         return {
           label: 'Question'
         }
       }
     })
 
-    wanderer.registerVertexCollection('suggestion',{
+    WandererSingleton.registerVertexCollection('suggestion',{
       builder: {
         label: 'Suggestion',
         color: '#28A745',

@@ -21,7 +21,7 @@
     "wanderer-plugin-api": "^1.0.0",
     "wanderer-plugin-base": "^1.0.0",
     "wanderer-plugin-question": "^1.0.0",
-    "cytoscape-singleton": "^1.0.0"
+    "wanderer-store-singleton": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"

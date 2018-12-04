@@ -1,24 +1,26 @@
 import BuilderComponent from './App'
-import WandererBuilder from 'wanderer-builder-singleton'
+import WandererBuilderSingleton from 'wanderer-builder-singleton'
+import WandererStoreSingleton from 'wanderer-store-singleton'
+import WandererSingleton from 'wanderer-singleton'
 // import cxtmenu from 'cytoscape-cxtmenu';
 // import Wanderer from 'wanderer'
 
 export default {
 
-  install (Vue, {store, cytoscape, wanderer, wandererPlugins}) {
+  install (Vue) {
 
     // Register visual cytoscape plugins
     // cytoscape.use( cxtmenu )
 
     // Init WandererBuilder
     // We have to inject these props
-    WandererBuilder.init(cytoscape, store, wanderer)
+    // WandererBuilder.init(cytoscape, store, wanderer)
 
     // Register builder component
     Vue.component('wanderer-builder', BuilderComponent)
 
     // Extend vuex with new namespace
-    store.registerModule(['wanderer', 'builder'], {
+    WandererStoreSingleton.store.registerModule(['wanderer', 'builder'], {
       namespaced: true,
       state: {
         editVertex: 0,
@@ -60,20 +62,20 @@ export default {
     // Vue.prototype.$wandererCytoscape = class {
 
     // Add wanderer builder events
-    wanderer.on('afterRemoveVertex',function(){
+    WandererSingleton.on('afterRemoveVertex',function(){
       // Rebuild the selection
-      let lastSelectedVerticesIds = WandererBuilder.getSelectedVertexIds()
-      store.commit('wanderer/builder/setSelectedVertexIds',lastSelectedVerticesIds);
+      let lastSelectedVerticesIds = WandererBuilderSingleton.getSelectedVertexIds()
+      WandererStoreSingleton.store.commit('wanderer/builder/setSelectedVertexIds',lastSelectedVerticesIds);
     })
 
-    wanderer.on('afterRemoveEdge',function(){
+    WandererSingleton.on('afterRemoveEdge',function(){
       // Rebuild the selection
-      let lastSelectedEdgesIds = WandererBuilder.getSelectedEdgeIds()
-      store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
+      let lastSelectedEdgesIds = WandererBuilderSingleton.getSelectedEdgeIds()
+      WandererStoreSingleton.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
     })
 
     // Add instance methods
-    Vue.prototype.$wandererBuilder = WandererBuilder
+    Vue.prototype.$wandererBuilder = WandererBuilderSingleton
 
   }
 

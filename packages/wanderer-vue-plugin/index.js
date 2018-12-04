@@ -1,27 +1,30 @@
-import Wanderer from 'wanderer-singleton'
+import WandererSingleton from 'wanderer-singleton'
+import StoreSingleton from 'wanderer-store-singleton'
+import CytoscapeSingleton from 'cytoscape-singleton'
 
 export default {
 
   // Vue installer method
-  install (Vue, {store, cytoscape, plugins}) {
+  install (Vue, {plugins}) {
 
     // Init Wanderer
     // We have to inject these props
-    Wanderer.init(cytoscape, store)
+    // Wanderer.init(cytoscape, store)
 
     // Add instance methods
-    Vue.prototype.$wanderer = Wanderer
-
-    Vue.prototype.$cytoscape = cytoscape
+    Vue.prototype.$wanderer = WandererSingleton
+    Vue.prototype.$cytoscape = CytoscapeSingleton
 
     // Register wanderer store module
-    store.registerModule('wanderer', {
+    StoreSingleton.store.registerModule('wanderer', {
       namespaced: true,
       state: {
         vertexDocumentIds: [],
         vertexDocumentData: {},
         edgeDocumentIds: [],
         edgeDocumentData: {},
+        enabledLanguages: ['en', 'de'],
+        currentLanguage: 'en'
       },
       mutations: {
         addVertex (state, documentData) {
@@ -59,6 +62,15 @@ export default {
             this._vm.$set(state.vertexDocumentData[id], key, value)
           }
         },
+        enableLanguage (state, language) {
+          state.enabledLanguages.push(language)
+        },
+        disableLanguage (state, language) {
+          state.enabledLanguages.splice(state.enabledLanguages.indexOf(language), 1)
+        },
+        setCurrentLanguage (state, language) {
+          state.currentLanguage = language
+        },
         truncate (state) {
           this._vm.$set(state, 'vertexDocumentIds', [])
           this._vm.$set(state, 'vertexDocumentData', {})
@@ -70,7 +82,7 @@ export default {
 
     // Register child plugins
     for(let i in plugins){
-      Vue.use(plugins[i], {wanderer: Wanderer, store: store, cytoscape: cytoscape })
+      Vue.use(plugins[i])
     }
 
   }

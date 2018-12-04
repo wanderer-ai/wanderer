@@ -1,10 +1,11 @@
 // import Editor from './components/Editor.vue'
+import WandererSingleton from 'wanderer-singleton'
 
 export default {
 
-  install (Vue, {store, cytoscape, wanderer, wandererPlugins}) {
+  install (Vue) {
 
-    wanderer.registerVertexCollection('request',{
+    WandererSingleton.registerVertexCollection('request',{
       builder: {
         label: 'Request',
         color: '#DC3545',
@@ -38,7 +39,7 @@ export default {
       }
     })
 
-    wanderer.registerVertexCollection('response',{
+    WandererSingleton.registerVertexCollection('response',{
       builder: {
         label: 'Response',
         color: '#28A745',

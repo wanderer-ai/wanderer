@@ -289,6 +289,8 @@ export default {
         vertexDocumentData: {},
         edgeDocumentIds: [],
         edgeDocumentData: {},
+        enabledLanguages: ['en', 'de'],
+        currentLanguage: 'en'
       },
       mutations: {
         addVertex (state, documentData) {
@@ -326,11 +328,22 @@ export default {
             this._vm.$set(state.vertexDocumentData[id], key, value)
           }
         },
+        enableLanguage (state, language) {
+          state.enabledLanguages.push(language)
+        },
+        disableLanguage (state, language) {
+          state.enabledLanguages.splice(state.enabledLanguages.indexOf(language), 1)
+        },
+        setCurrentLanguage (state, language) {
+          state.currentLanguage = language
+        },
         truncate (state) {
           this._vm.$set(state, 'vertexDocumentIds', [])
           this._vm.$set(state, 'vertexDocumentData', {})
           this._vm.$set(state, 'edgeDocumentIds', [])
           this._vm.$set(state, 'edgeDocumentData', {})
+          this._vm.$set(state, 'enabledLanguages', ['en', 'de'])
+          this._vm.$set(state, 'currentLanguage', 'en')
         }
       }
     })

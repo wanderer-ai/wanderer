@@ -1,52 +1,62 @@
+import WandererSingleton from 'wanderer-singleton'
+import StoreSingleton from 'wanderer-store-singleton'
+import CytoscapeSingleton from 'cytoscape-singleton'
 
 export default class WandererBuilder {
 
-  static cytoscape = null;
-  static store = null;
-  static wanderer = null;
+  // static cytoscape = null;
+  // static store = null;
+  // static wanderer = null;
+  //
+  // static init (cytoscape, store, wanderer) {
+  //   this.cytoscape = cytoscape
+  //   this.store = store
+  //   this.wanderer = wanderer
+  // }
 
-  static init (cytoscape, store, wanderer) {
-    this.cytoscape = cytoscape
-    this.store = store
-    this.wanderer = wanderer
-  }
-
-  static getEditVertexModel(key, language){
+  static getVertexModel(key){
+    var builder = this
     return {
       get(){
-        if(this.store.state.wanderer.builder.editVertex){
-          if(this.store.state.wanderer.vertexDocumentData[this.store.state.wanderer.builder.editVertex] !== undefined){
-            if(language !== undefined){
-              //console.log(this.$store.state.brain.vertexDocumentData[id][key][language])
-              return this.store.state.wanderer.vertexDocumentData[this.store.state.wanderer.builder.editVertex][key][language]
-            }else{
-              //console.log(this.$store.state.brain.vertexDocumentData[id][key])
-              return this.store.state.wanderer.vertexDocumentData[this.store.state.wanderer.builder.editVertex][key]
-            }
+        if(StoreSingleton.store.state.wanderer.builder.editVertex){
+          if(StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex] !== undefined){
+            return StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex][key]
           }
         }
       },
       set(data){
-        if(language !== undefined){
-          this.store.commit('wanderer/setVertexDataValue', {
-            id: this.store.state.wanderer.builder.editVertex,
-            key: key,
-            value: data,
-            language: language
-          })
-        }else{
-          this.store.commit('wanderer/setVertexDataValue', {
-            id: this.store.state.wanderer.builder.editVertex,
-            key: key,
-            value: data
-          })
+        StoreSingleton.store.commit('wanderer/setVertexDataValue', {
+          id: StoreSingleton.store.state.wanderer.builder.editVertex,
+          key: key,
+          value: data
+        })
+      }
+    }
+  }
+
+  static getTranslatableVertexModel(key){
+    var builder = this
+    return {
+      get(){
+        if(StoreSingleton.store.state.wanderer.builder.editVertex){
+          if(StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex] !== undefined){
+            return StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex][key][StoreSingleton.store.state.wanderer.currentLanguage]
+          }
         }
+      },
+      set(data){
+        StoreSingleton.store.commit('wanderer/setVertexDataValue', {
+          id: StoreSingleton.store.state.wanderer.builder.editVertex,
+          key: key,
+          value: data,
+          language: StoreSingleton.store.state.wanderer.currentLanguage
+        })
       }
     }
   }
 
   static getSelectedVertexIds () {
-    let selectedVertices = this.cytoscape.cy.$('node:selected');
+    let selectedVertices = CytoscapeSingleton.cy.$('node:selected');
     let selectedVertexIds = [];
     selectedVertices.each(function(vertex){
       selectedVertexIds.push(vertex.id());
@@ -55,7 +65,7 @@ export default class WandererBuilder {
   }
 
   static getSelectedEdgeIds() {
-    let selectedEdges = this.cytoscape.cy.$('edge:selected');
+    let selectedEdges = CytoscapeSingleton.cy.$('edge:selected');
     let selectedEdgeIds = [];
     selectedEdges.each(function(edge){
       selectedEdgeIds.push(edge.id());
@@ -65,35 +75,35 @@ export default class WandererBuilder {
 
   static append (cytoscapeNodeId, vertexCollectionName, edgeCollectionName){
 
-    let vertexCollections = this.wanderer.getVertexCollections()
-    let edgeCollections = this.wanderer.getEdgeCollections()
+    let vertexCollections = WandererSingleton.getVertexCollections()
+    let edgeCollections = WandererSingleton.getEdgeCollections()
 
     // Deep clone the default fields
     let newVertexData = JSON.parse(JSON.stringify(vertexCollections[vertexCollectionName].builder.defaultFields))
     let newEdgeData = JSON.parse(JSON.stringify(edgeCollections[edgeCollectionName].builder.defaultFields))
 
     // Get the position of the source vertex
-    let position = this.cytoscape.cy.getElementById( cytoscapeNodeId ).position()
+    let position = CytoscapeSingleton.cy.getElementById( cytoscapeNodeId ).position()
 
     // Add base data
-    newVertexData._id = this.wanderer.generateId()
+    newVertexData._id = WandererSingleton.generateId()
     newVertexData._collection = vertexCollectionName
     newVertexData._isOrigin = false
     newVertexData._x = position.x + 100
     newVertexData._y = position.y + 100
 
-    newEdgeData._id = this.wanderer.generateId()
+    newEdgeData._id = WandererSingleton.generateId()
     newEdgeData._from = cytoscapeNodeId
     newEdgeData._to = newVertexData._id
     newEdgeData._collection = edgeCollectionName
 
-    this.wanderer.addVertex(newVertexData)
-    this.wanderer.addEdge(newEdgeData)
+    WandererSingleton.addVertex(newVertexData)
+    WandererSingleton.addEdge(newEdgeData)
 
   }
 
   static isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName = false){
-    let vertexCollections = this.wanderer.getVertexCollections()
+    let vertexCollections = WandererSingleton.getVertexCollections()
 
     // If the from collection restricts the outgoing connections
     if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections !== undefined){
@@ -121,7 +131,7 @@ export default class WandererBuilder {
   }
 
   static isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName = false){
-    let vertexCollections = this.wanderer.getVertexCollections()
+    let vertexCollections = WandererSingleton.getVertexCollections()
 
     // If the to collection restricts the incomming connections
     if(vertexCollections[toCollectionName].builder.restrictIncommingConnections !== undefined){
@@ -149,8 +159,8 @@ export default class WandererBuilder {
   }
 
   static getPossibleOutgoingCollections(fromCollectionName){
-    let vertexCollections = this.wanderer.getVertexCollections()
-    let edgeCollections = this.wanderer.getEdgeCollections()
+    let vertexCollections = WandererSingleton.getVertexCollections()
+    let edgeCollections = WandererSingleton.getEdgeCollections()
 
     var possibleOutgoingCollections = []
     // For each possible target node
@@ -188,8 +198,8 @@ export default class WandererBuilder {
 
   static connectById (fromEdgeId, toEdgeId) {
     // Create new edge
-    this.wanderer.addEdge({
-      _id: this.wanderer.generateId(),
+    WandererSingleton.addEdge({
+      _id: WandererSingleton.generateId(),
       _collection: 'Default',
       _from: fromEdgeId,
       _to: toEdgeId
@@ -198,13 +208,13 @@ export default class WandererBuilder {
 
   static initCytoscape (config) {
 
-    this.cytoscape.init(config)
+    CytoscapeSingleton.init(config)
 
     // Lets define a variable that will hold the parent scope
     let builder = this;
 
-    let vertexCollections = this.wanderer.getVertexCollections()
-    let edgeCollections = this.wanderer.getEdgeCollections()
+    let vertexCollections = WandererSingleton.getVertexCollections()
+    let edgeCollections = WandererSingleton.getEdgeCollections()
 
     // Apply the collection styles
     let cytoscapeStylesheets = []
@@ -254,7 +264,7 @@ export default class WandererBuilder {
       }
     )
 
-    this.cytoscape.cy.style().fromJson(cytoscapeStylesheets).update();
+    CytoscapeSingleton.cy.style().fromJson(cytoscapeStylesheets).update();
 
     // Init ctx menus for the different types of vertices
     // For each vertex collection
@@ -290,7 +300,7 @@ export default class WandererBuilder {
         // });
 
         // Add new context menu
-        this.cytoscape.cy.cxtmenu( {
+        CytoscapeSingleton.cy.cxtmenu( {
           menuRadius: 150, // the radius of the circular menu in pixels
           selector: vertexCollections[fromCollectionName].builder.cytoscapeCxtMenuSelector, // elements matching this Cytoscape.js selector will trigger cxtmenus
           commands: cxtmenuCommands, // function( ele ){ return [ /*...*/ ] }, // example function for commands
@@ -316,7 +326,7 @@ export default class WandererBuilder {
     // Implement dbl click
     var clickedBefore;
     var clickedTimeout;
-    this.cytoscape.cy.on('click', function(event) {
+    CytoscapeSingleton.cy.on('click', function(event) {
       var tappedNow = event.target;
       if (clickedTimeout && clickedBefore) {
         clearTimeout(clickedTimeout);
@@ -331,20 +341,20 @@ export default class WandererBuilder {
     });
 
     // Select vertices
-    this.cytoscape.cy.on('select', 'node', function(evt){
+    CytoscapeSingleton.cy.on('select', 'node', function(evt){
       let lastSelectedVerticesIds = builder.getSelectedVertexIds()
-      builder.store.commit('wanderer/builder/setSelectedVertexIds',lastSelectedVerticesIds);
+      StoreSingleton.store.commit('wanderer/builder/setSelectedVertexIds',lastSelectedVerticesIds);
     });
 
     // Edit vertex
-    this.cytoscape.cy.on('dblclick','node', function(){
-      builder.store.commit('wanderer/builder/setEditVertex',this.id())
+    CytoscapeSingleton.cy.on('dblclick','node', function(){
+      StoreSingleton.store.commit('wanderer/builder/setEditVertex',this.id())
     });
 
     // Unselect vertices
-    this.cytoscape.cy.on('unselect', 'node', function(evt){
+    CytoscapeSingleton.cy.on('unselect', 'node', function(evt){
       let lastSelectedVerticesIds = builder.getSelectedVertexIds()
-      builder.store.commit('wanderer/builder/setSelectedVertexIds',lastSelectedVerticesIds);
+      StoreSingleton.store.commit('wanderer/builder/setSelectedVertexIds',lastSelectedVerticesIds);
     });
 
     // // Unselect nodes
@@ -353,28 +363,28 @@ export default class WandererBuilder {
     // });
 
     // Select edge(s)
-    this.cytoscape.cy.on('select', 'edge', function(evt){
+    CytoscapeSingleton.cy.on('select', 'edge', function(evt){
       let lastSelectedEdgesIds = builder.getSelectedEdgeIds()
-      builder.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
+      StoreSingleton.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
     });
 
     // Unselect edge(s)
-    this.cytoscape.cy.on('unselect', 'edge', function(evt){
+    CytoscapeSingleton.cy.on('unselect', 'edge', function(evt){
       let lastSelectedEdgesIds = builder.getSelectedEdgeIds()
-      builder.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
+      StoreSingleton.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
     });
 
     // Append event
-    this.cytoscape.cy.on('append', 'node', function(evt, {vertexCollectionName, edgeCollectionName}){
+    CytoscapeSingleton.cy.on('append', 'node', function(evt, {vertexCollectionName, edgeCollectionName}){
       builder.append(this.id(), vertexCollectionName, edgeCollectionName)
     })
 
     // Implement drop event
     let dropTimer = null;
-    this.cytoscape.cy.on('drag', 'node', function(event){
+    CytoscapeSingleton.cy.on('drag', 'node', function(event){
       if(dropTimer){clearTimeout(dropTimer);} // Clear the timeout if set
       // get all grabbed nodes
-      var lastGrabbedNodes = builder.cytoscape.cy.$('node:grabbed');
+      var lastGrabbedNodes = CytoscapeSingleton.cy.$('node:grabbed');
       // Set new timeout
       dropTimer = setTimeout(function(){
         lastGrabbedNodes.forEach(function(vertex){
@@ -384,20 +394,20 @@ export default class WandererBuilder {
     });
 
     // On drop
-    this.cytoscape.cy.on('drop','node', function(evt){
+    CytoscapeSingleton.cy.on('drop','node', function(evt){
 
       // Check if this is a origin vertex
       // We cannot disable drag for this vertex but we can set it back to 0
-      if(builder.store.state.wanderer.vertexDocumentData[this.id()]._isOrigin){
+      if(StoreSingleton.store.state.wanderer.vertexDocumentData[this.id()]._isOrigin){
         this.position({x: 0, y: 0});
       }else{
         let position = this.position(); // get position
-        builder.store.commit('wanderer/setVertexDataValue', {
+        StoreSingleton.store.commit('wanderer/setVertexDataValue', {
           id: this.id(),
           key: '_x',
           value: position.x
         })
-        builder.store.commit('wanderer/setVertexDataValue', {
+        StoreSingleton.store.commit('wanderer/setVertexDataValue', {
           id: this.id(),
           key: '_y',
           value: position.y

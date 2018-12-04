@@ -1,10 +1,11 @@
 // import Editor from './components/Editor.vue'
+import WandererSingleton from 'wanderer-singleton'
 
 export default {
 
-  install (Vue, {store, cytoscape, wanderer, wandererPlugins}) {
+  install (Vue) {
 
-    wanderer.registerVertexCollection('flow',{
+    WandererSingleton.registerVertexCollection('flow',{
       builder: {
         label: 'Flow',
         color: '#DC3545',
@@ -29,7 +30,7 @@ export default {
       },
     })
 
-    wanderer.registerEdgeCollection('leadsTo',{
+    WandererSingleton.registerEdgeCollection('leadsTo',{
       builder: {
         cytoscapeClasses: 'default',
         creatable: true,
@@ -44,7 +45,7 @@ export default {
       }
     })
 
-    wanderer.registerVertexCollection('default',{
+    WandererSingleton.registerVertexCollection('default',{
       builder: {
         label: 'Default',
         color: '#6C757D',
@@ -70,7 +71,7 @@ export default {
       },
     })
 
-    wanderer.registerEdgeCollection('default',{
+    WandererSingleton.registerEdgeCollection('default',{
       builder: {
         label: 'Default',
         color: '#6C757D',
