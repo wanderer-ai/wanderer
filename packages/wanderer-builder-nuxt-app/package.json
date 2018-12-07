@@ -14,6 +14,7 @@
     "cross-env": "^5.2.0",
     "nuxt": "^2.0.0",
     "wanderer-builder-vue-component": "^1.0.0",
+    "wanderer-chat-vue-component": "^1.0.0",
     "bootstrap-vue": "^2.0.0-rc.11",
     "portal-vue": "^1.4.0",
     "vuex": "^3.0.1",

@@ -1,6 +1,6 @@
 import WandererSingleton from 'wanderer-singleton'
 import StoreSingleton from 'wanderer-store-singleton'
-import CytoscapeSingleton from 'cytoscape-singleton'
+import CytoscapeSingleton from 'wanderer-cytoscape-singleton'
 
 export default {
 

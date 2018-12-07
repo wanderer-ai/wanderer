@@ -1,11 +1,13 @@
-import Editor from './components/Editor.vue'
+import EditorQuestion from './components/EditorQuestion.vue'
+import EditorSuggestion from './components/EditorSuggestion.vue'
 import WandererSingleton from 'wanderer-singleton'
 
 export default {
 
   install (Vue) {
 
-    Vue.component('wanderer-editor-question', Editor)
+    Vue.component('wanderer-editor-question', EditorQuestion)
+    Vue.component('wanderer-editor-suggestion', EditorSuggestion)
 
     WandererSingleton.registerVertexCollection('question',{
       builder: {
@@ -47,6 +49,12 @@ export default {
         return {
           label: 'Question'
         }
+      },
+      visitor: function (nodeId, vertexData, language) {
+        console.log(vertexData.question[language])
+      },
+      expander: function (nodeId, vertexData, outboundCyEdges) {
+        return outboundCyEdges
       }
     })
 
@@ -79,13 +87,17 @@ export default {
             'label': 'data(label)'
           }
         },
-        // editorComponent: Editor
+        editorComponent: 'wanderer-editor-suggestion'
       },
       toCytoscape: function(data){
         return {
           label: 'Suggestion'
         }
       }
+    })
+
+    WandererSingleton.on('traversalFinished', function() {
+      console.log('finish')
     })
 
   }

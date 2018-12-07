@@ -6,6 +6,8 @@
         Close
       </button>
 
+      <wanderer-chat />
+
     </div>
   </transition>
 </template>

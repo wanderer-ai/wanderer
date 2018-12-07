@@ -8,7 +8,7 @@
 0 silly argv   '$0':
 0 silly argv    'C:\\Users\\Chris\\AppData\\Roaming\\npm\\node_modules\\lerna\\cli.js' }
 1 info version 3.0.0-rc.0
-2 verbose rootPath C:\Projekte\Wanderer.ai\Repositories\Wanderer
-3 error JSONError: Unexpected token } in JSON at position 299 while parsing near '...tmenu": "^3.0.1",  }}' in ..\cytoscape-singleton\package.json
+2 verbose rootPath G:\SteamPixelProjekte\Wanderer.ai\Repositories\Wanderer
+3 error JSONError: Unexpected token } in JSON at position 776 while parsing near '...leton": "^1.0.0",  },  "devDependencie...' in ..\wanderer-chat-vue-component\package.json
 3 error     at module.exports (C:\Users\Chris\AppData\Roaming\npm\node_modules\lerna\node_modules\parse-json\index.js:26:19)
 3 error     at parse (C:\Users\Chris\AppData\Roaming\npm\node_modules\lerna\node_modules\load-json-file\index.js:8:29)

@@ -1,5 +1,5 @@
 import StoreSingleton from 'wanderer-store-singleton'
-import CytoscapeSingleton from 'cytoscape-singleton'
+import CytoscapeSingleton from 'wanderer-cytoscape-singleton'
 const uuidv4 = require('uuid/v4');
 
 // Bei dieser Klasse geht es nur darum einen Singleton zu haben, den ich dann später in Vue injecten kann, aber auch an die Plugins weitergeben kann.
@@ -177,94 +177,65 @@ export default class Wanderer {
     return uuidv4()
   }
 
-  static traverse (startId, preExpander, expander, visitor) {
+  static traverse (nodeId, visitorData) {
 
-    // Define defaults
-    if(!preExpander){
-      preExpander = function(edges){
-        edges = edges.sort(function(a, b){
-          return true
-        })
-        return edges
+    // Get node data
+    let currentCytoscapeVertex = CytoscapeSingleton.cy.getElementById( nodeId )
+    let currentVertexData = StoreSingleton.store.state.wanderer.vertexDocumentData[nodeId]
+    let currentVertexCollection = this.getVertexCollection(currentVertexData._collection);
+
+    var isRecursiveCall = true;
+
+    if(visitorData == undefined){
+      var visitorData = {
+        _visitedEdges: [],
+        _visitedVertices: []
+      }
+      isRecursiveCall = false;
+    }
+
+    // Remember this vertex as visited
+    visitorData._visitedVertices.push(currentCytoscapeVertex.id())
+
+    // Is there a visitor available for this kind of node?
+    if(currentVertexCollection.visitor){
+      currentVertexCollection.visitor(nodeId, currentVertexData, StoreSingleton.store.state.wanderer.currentLanguage)
+    }
+
+    // Get edges
+    let cytoscapeEdges = currentCytoscapeVertex.connectedEdges()
+
+    // Get outbound edges
+    let cytoscapeOutboundEdges = []
+    cytoscapeEdges.forEach(function(currentCytoscapeEdge){
+      if(currentCytoscapeVertex.id()==currentCytoscapeEdge.data('source')){
+        cytoscapeOutboundEdges.push(currentCytoscapeEdge);
+      }
+    })
+
+    // Are there outbound edges?
+    if(cytoscapeOutboundEdges.length){
+      let expandEdges = cytoscapeOutboundEdges
+      // Is there a expander available for this kind of node which will alter the expand edges?
+      if(currentVertexCollection.expander){
+        expandEdges = currentVertexCollection.expander(nodeId, currentVertexData, cytoscapeOutboundEdges)
+      }
+      // expand the edges
+      for(let i in expandEdges){
+        // Remember this vertex as visited
+        visitorData._visitedEdges.push(expandEdges[i].id())
+        // traverse the node
+        this.traverse(expandEdges[i].target().id(), visitorData)
       }
     }
 
-    if(!expander){
-      expander = function({edge, source, target}){
-        return true
-      }
+    // is this the first function call in the recursive stack?
+    if(!isRecursiveCall){
+      this.trigger('traversalFinished')
     }
 
-    if(!visitor){
-      visitor = function({edge, vertex}){
-        return vertex
-      }
-    }
-
-    let visitedEdges = [];
-    let visitedVertices = [];
-
-    // Traverse function
-    let cycle = function(currentVertex, referringEdge){
-
-      visitedVertices.push(currentVertex.id()) // Remember this vertex as visited
-
-      // Run the visitor function
-      visitor({
-        referringEdge: referringEdge, // May undefined
-        currentVertex: currentVertex
-      })
-
-      // Get the edges of the current vertex
-      let edges = currentVertex.connectedEdges()
-
-      // Run the preExpander function
-      edges = preExpander(edges)
-
-      // For each connected edge
-      edges.forEach(function(edge){
-
-        let target = edge.target()
-
-        if(
-          currentVertex.id()==edge.data('source') // Follow only outbound edges
-          // &&visitedEdges.indexOf(edge.id())==-1 // Visit edge only if it was not visited before
-          // &&visitedVertices.indexOf(target.id())==-1 // Visit vertex only if it was not visited before
-        ){
-
-          // Run expander for each edge
-          // And check if the target should be traversed
-          if(expander({
-            edge: edge,
-            source: edge.source(),
-            target: target
-          })){
-
-            // Remember this edge as visited
-            visitedEdges.push(edge.id())
-
-            // Go into deep first
-            cycle(target,edge)
-
-          }
-        }
-
-      })
-
-    }
-
-    // Find the start vertex
-    let startVertex = CytoscapeSingleton.cy.getElementById( startId );
-
-    // Expand the edges and get the next vertices to visit
-    cycle(startVertex);
 
   }
 
-  static wander (startId, onMessage) {
-
-    this.traverse (startId, preExpander, expander, visitor)
-
-  }
 
 }

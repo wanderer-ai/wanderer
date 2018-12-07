@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import WandererBuilderComponent from 'wanderer-builder-vue-component'
+import WandererChatComponent from 'wanderer-chat-vue-component'
 
 import PortalVue from 'portal-vue'
 
@@ -14,7 +15,6 @@ import WandererPluginBase from 'wanderer-plugin-base'
 import WandererPluginQuestion from 'wanderer-plugin-question'
 import WandererPluginApi from 'wanderer-plugin-api'
 
-// import CytoscapeSingleton from 'cytoscape-singleton'
 import StoreSingeton from 'wanderer-store-singleton'
 
 export default ({ app, store }) => {
@@ -31,6 +31,7 @@ export default ({ app, store }) => {
   // Install wanderer plugin
   Vue.use(WandererVuePlugin, {plugins: [
     WandererBuilderComponent,
+    WandererChatComponent,
     WandererPluginBase,
     WandererPluginQuestion,
     WandererPluginApi ]
