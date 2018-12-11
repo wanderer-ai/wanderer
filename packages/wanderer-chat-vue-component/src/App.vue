@@ -5,7 +5,11 @@
     Chat
     <button class="btn" v-on:click="traverse">Start traverse</button>
 
-
+    <div>
+      <div v-for="message in messages" :key="message.id">
+        <component v-bind:is="message.component" :data="message.data"></component>
+      </div>
+    </div>
 
   </div>
 </template>
@@ -18,6 +22,11 @@ import WandererCytoscapeSingleton from 'wanderer-cytoscape-singleton'
 
 export default {
   name: 'App',
+  computed: {
+    messages: function () {
+      return WandererStoreSingleton.store.state.wanderer.chat.messages
+    }
+  },
   methods: {
     traverse () {
 

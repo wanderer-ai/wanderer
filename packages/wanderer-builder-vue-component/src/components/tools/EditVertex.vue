@@ -11,7 +11,7 @@
 
     <portal to="modals" :order="1">
       <modal :title="editVertexCollection.label" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
-          <component v-bind:is="editVertexCollection.editorComponent"></component>
+          <component v-bind:is="editVertexCollection.component"></component>
       </modal>
     </portal>
 
@@ -24,6 +24,7 @@
 import Modal from '../Modal.vue'
 import 'vue-awesome/icons/edit'
 import Icon from 'vue-awesome/components/Icon'
+import WandererSingleton from 'wanderer-singleton'
 
 // import Brain from 'wanderer-brain'
 
@@ -55,6 +56,11 @@ export default {
   methods: {
     closeVertexEditorModal () {
       this.$store.commit('wanderer/builder/setEditVertex', 0)
+
+      // Rebuild cytoscape data
+      for(let i in this.$store.state.wanderer.vertexDocumentIds){
+        WandererSingleton.toCytoscape(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
+      }
     },
     openVertexEditorModal () {
       let selectedVertexIds = this.$wandererBuilder.getSelectedVertexIds()

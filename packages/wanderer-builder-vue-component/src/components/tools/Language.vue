@@ -45,7 +45,7 @@
 import Modal from '../Modal.vue'
 import 'vue-awesome/icons/flag'
 import Icon from 'vue-awesome/components/Icon'
-
+import WandererSingleton from 'wanderer-singleton'
 // import Brain from 'wanderer-brain'
 
 export default {
@@ -222,9 +222,9 @@ export default {
 
       this.$store.commit('wanderer/setCurrentLanguage',language)
 
+      // Rebuild cytoscape data
       for(let i in this.$store.state.wanderer.vertexDocumentIds){
-        //this.$cytoscape.updateVertexData(this.$store.getters['documents/getVertexDataById'](this.$store.state.documents.vertexList[i]),language);
-        this.$cytoscape.updateVertexData(this.$store.state.documents.vertexData[this.$store.state.documents.vertexList[i]],language);
+        WandererSingleton.toCytoscape(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
       }
 
       this.showModal = false

@@ -162,6 +162,18 @@ export default class Wanderer {
     this.trigger('afterRemoveEdge');
   }
 
+  static getVertexValue(vertexId, key){
+    if(StoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
+      return StoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key]
+    }
+  }
+
+  static getTranslatableVertexValue(vertexId, key){
+    if(StoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
+      return StoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][StoreSingleton.store.state.wanderer.currentLanguage]
+    }
+  }
+
   static toCytoscape (vertexData) {
     let cytoscapeData = {}
     let collection = this.getVertexCollection(vertexData._collection)
@@ -184,14 +196,14 @@ export default class Wanderer {
     let currentVertexData = StoreSingleton.store.state.wanderer.vertexDocumentData[nodeId]
     let currentVertexCollection = this.getVertexCollection(currentVertexData._collection);
 
-    var isRecursiveCall = true;
+    var traversalFinished = true;
 
     if(visitorData == undefined){
       var visitorData = {
         _visitedEdges: [],
         _visitedVertices: []
       }
-      isRecursiveCall = false;
+      traversalFinished = false;
     }
 
     // Remember this vertex as visited
@@ -229,8 +241,8 @@ export default class Wanderer {
       }
     }
 
-    // is this the first function call in the recursive stack?
-    if(!isRecursiveCall){
+    // Is this the first function call in the recursive stack?
+    if(!traversalFinished){
       this.trigger('traversalFinished')
     }
 
