@@ -4,7 +4,7 @@
     {{question}}
 
     <div v-for="suggestion in suggestions" :key="suggestion._id">
-      <button class="btn">{{suggestion.suggestion}}</button>
+      <button class="btn" v-on:click="answerSingle(suggestion._id)">{{suggestion.suggestion}}</button>
     </div>
 
   </div>
@@ -13,6 +13,7 @@
 <script>
 
 import WandererSingleton from 'wanderer-singleton'
+import WandererStoreSingleton from 'wanderer-store-singleton'
 
 export default {
   props: {
@@ -37,6 +38,12 @@ export default {
         }
         return returnData
       }
+    }
+  },
+  methods: {
+    answerSingle(suggestionVertexId){
+      WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.data.vertexId)
+      WandererStoreSingleton.store.commit('wanderer/plugin-question/answerSuggestion', suggestionVertexId)
     }
   }
 }

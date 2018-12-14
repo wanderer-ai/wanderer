@@ -4,6 +4,7 @@
 
     Chat
     <button class="btn" v-on:click="traverse">Start traverse</button>
+    <button class="btn" v-on:click="clean">Clean</button>
 
     <div>
       <div v-for="message in messages" :key="message.id">
@@ -35,6 +36,9 @@ export default {
       //let nodes = WandererCytoscapeSingleton.cy.$('node[_collection = "flow"]')
       // console.log(nodes)
       WandererSingleton.traverse(startNodeId);
+    },
+    clean () {
+      WandererStoreSingleton.store.commit('wanderer/chat/cleanMessages')
     }
   }
 }

@@ -12,8 +12,30 @@ export default {
     Vue.component('wanderer-suggestion-editor', SuggestionEditor)
     Vue.component('wanderer-question-message', QuestionMessage)
 
+    // Extend vuex with new namespace and create store instance for the questions and its answers
+    WandererStoreSingleton.store.registerModule(['wanderer', 'plugin-question'], {
+      namespaced: true,
+      state: {
+        answeredQuestions: [],
+        answeredSuggestions: []
+      },
+      mutations: {
+        answerQuestion (state, vertexId) {
+          state.answeredQuestions.push(vertexId)
+        },
+        answerSuggestion (state, vertexId) {
+          state.answeredSuggestions.push(vertexId)
+        },
+        clean (state) {
+          state.answeredQuestions = []
+          state.answeredSuggestions = []
+        }
+      }
+    })
+
     var traversalResult = {};
 
+    // Register the question vertex
     WandererSingleton.registerVertexCollection('question',{
       builder: {
         label: 'Question',
@@ -21,12 +43,6 @@ export default {
         cytoscapeClasses: 'question',
         cytoscapeCxtMenuSelector: '.question',
         creatable: true,
-        restrictOutgoingConnections: [
-          {
-            through: 'leadsTo',
-            to: 'suggestion'
-          }
-        ],
         defaultFields: {
           question: {
             en: 'New question',
@@ -58,15 +74,48 @@ export default {
           label: 'Question'
         }
       },
-      visitor: function (nodeId, vertexData, language) {
-        traversalResult.lastFoundQuestionId = nodeId
+      visitor: function (cytoscapeVertex, vertexData, language) {
+        console.log('cleaning suggestions')
+        traversalResult.lastFoundQuestionId = cytoscapeVertex.id()
         traversalResult.lastFoundSuggestionIds = []
+        // Find and add suggestions to result
+        let cytoscapeEdges = cytoscapeVertex.connectedEdges()
+        cytoscapeEdges.forEach(function(cytoscapeEdge){
+          let currentEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[cytoscapeEdge.id()]
+          if(
+            cytoscapeVertex.id()==cytoscapeEdge.data('source') && // If this is an outbound edge
+            currentEdgeData._collection=='isAnswerableBy' // If this edge is of the type isAnswerableBy
+          ){
+            traversalResult.lastFoundSuggestionIds.push(cytoscapeEdge.target().id()) // Add the target vertex (suggestion)
+          }
+        })
       },
-      expander: function (nodeId, vertexData, outboundCyEdges) {
-        return outboundCyEdges
+      expander: function (cytoscapeVertex, vertexData, outboundCyEdges) {
+
+        let returnEdges = []
+
+        // Iterate over he outbound cytoscape edges
+        outboundCyEdges.forEach(function(outboundCyEdge){
+          let targetVertex = outboundCyEdge.target()
+          let targetVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[targetVertex.id()]
+
+          // If the target node is a suggestion
+          if(targetVertexData['_collection']=='suggestion'){
+            returnEdges.push(outboundCyEdge)
+          }else{
+            // Push the edge only if the question was answered
+            if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredQuestions.indexOf(cytoscapeVertex.id())!=-1){
+              returnEdges.push(outboundCyEdge)
+            }
+          }
+
+        })
+
+        return returnEdges
       }
     })
 
+    // Register the suggestion vertex
     WandererSingleton.registerVertexCollection('suggestion',{
       builder: {
         label: 'Suggestion',
@@ -77,13 +126,13 @@ export default {
         restrictIncommingConnections: [
           {
             from: 'question',
-            through: 'leadsTo'
+            through: 'isAnswerableBy'
           }
         ],
         defaultFields: {
           'suggestion': {
-            'de': 'Antwort',
-            'en': 'Answer'
+            'de': 'Antwortvorschlag',
+            'en': 'Suggestion'
           }
         },
         cytoscapeStyle: {
@@ -108,13 +157,55 @@ export default {
           label: 'Suggestion'
         }
       },
-      visitor: function (nodeId, vertexData, language) {
-        traversalResult.lastFoundSuggestionIds.push(nodeId)
+      visitor: function (cytoscapeVertex, vertexData, language) {
+        // console.log('add new suggestion')
+        // traversalResult.lastFoundSuggestionIds.push(cytoscapeVertex.id())
+      },
+      expander: function (cytoscapeVertex, currentVertexData, outboundCyEdges) {
+        let returnEdges = []
+
+        // Iterate over he outbound cytoscape edges
+        outboundCyEdges.forEach(function(outboundCyEdge){
+
+          // Push the edge only if the suggestion was answered
+          if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredSuggestions.indexOf(cytoscapeVertex.id())!=-1){
+            returnEdges.push(outboundCyEdge)
+          }
+
+        })
+
+        return returnEdges
+      }
+    })
+
+    // Register the isAnswerableBy edge
+    WandererSingleton.registerEdgeCollection('isAnswerableBy',{
+      builder: {
+        label: 'isAnswerableBy',
+        cytoscapeClasses: 'isAnswerableBy',
+        creatable: true,
+        defaultFields: {},
+        cytoscapeStyle: {
+          selector: '.isAnswerableBy',
+          style: {
+            'line-color': '#28A745',
+            'target-arrow-color': '#28A745',
+            'source-arrow-color': '#28A745',
+            'label': 'data(label)'
+          }
+        }
+      },
+      toCytoscape: function(data){
+        return {
+          label: 'isAnswerableBy'
+        }
       }
     })
 
     var addedMessages = []
 
+    // ToDo: Place this event listener in chat
+    // That would require a not globalized traversal result
     // Listen for traversal event
     WandererSingleton.on('traversalFinished', function() {
 
@@ -125,7 +216,7 @@ export default {
         // Add message if not already added
         if(addedMessages.indexOf(traversalResult.lastFoundQuestionId)==-1){
 
-          addedMessages.push(traversalResult.lastFoundQuestionId)
+          // addedMessages.push(traversalResult.lastFoundQuestionId)
 
           WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
             id: traversalResult.lastFoundQuestionId,

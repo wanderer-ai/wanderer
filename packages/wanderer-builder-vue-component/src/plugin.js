@@ -23,13 +23,18 @@ export default {
     WandererStoreSingleton.store.registerModule(['wanderer', 'builder'], {
       namespaced: true,
       state: {
+        alerts: [],
         editVertex: 0,
+        editEdge: 0,
         selectedVertexIds: [],
         selectedEdgeIds: []
       },
       mutations: {
         setEditVertex (state, id) {
           state.editVertex = id
+        },
+        setEditEdge (state, id) {
+          state.editEdge = id
         },
         setSelectedVertexIds (state, verticeIds) {
           // It's important to keep the order of the selected vertics
@@ -50,10 +55,29 @@ export default {
         setSelectedEdgeIds (state, edgeIds) {
           state.selectedEdgeIds = edgeIds
         },
+        addAlert(state,{message,type}){
+          if(type == undefined){
+            type = 'primary'
+          }
+          state.alerts.push({message:message,type:type});
+        },
+        removeFirstAlert(state){
+          state.alerts.shift();
+        },
         truncate (state) {
+          this._vm.$set(state, 'alerts', [])
           this._vm.$set(state, 'editVertex', 0)
+          this._vm.$set(state, 'editEdge', 0)
           this._vm.$set(state, 'selectedVertexIds', [])
           this._vm.$set(state, 'selectedEdgeIds', [])
+        }
+      },
+      actions: {
+        async addAlert(context,{message,type}) {
+          context.commit('addAlert',{message:message,type:type})
+          setTimeout(function(){
+              context.commit('removeFirstAlert')
+          }, 5000);
         }
       }
     })

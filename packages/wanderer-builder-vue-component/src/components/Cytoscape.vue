@@ -55,7 +55,7 @@ export default {
 
     this.$wanderer.addVertex({
       '_id': '3948v57c3902t85n',
-      '_origin': false,
+      '_origin': true,
       '_collection': 'flow',
       '_x': 100,
       '_y': 100

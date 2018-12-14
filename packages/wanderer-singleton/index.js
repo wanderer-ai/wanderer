@@ -194,7 +194,7 @@ export default class Wanderer {
     // Get node data
     let currentCytoscapeVertex = CytoscapeSingleton.cy.getElementById( nodeId )
     let currentVertexData = StoreSingleton.store.state.wanderer.vertexDocumentData[nodeId]
-    let currentVertexCollection = this.getVertexCollection(currentVertexData._collection);
+    let currentVertexCollection = this.getVertexCollection(currentVertexData._collection)
 
     var traversalFinished = true;
 
@@ -211,7 +211,7 @@ export default class Wanderer {
 
     // Is there a visitor available for this kind of node?
     if(currentVertexCollection.visitor){
-      currentVertexCollection.visitor(nodeId, currentVertexData, StoreSingleton.store.state.wanderer.currentLanguage)
+      currentVertexCollection.visitor(currentCytoscapeVertex, currentVertexData, StoreSingleton.store.state.wanderer.currentLanguage)
     }
 
     // Get edges
@@ -230,7 +230,7 @@ export default class Wanderer {
       let expandEdges = cytoscapeOutboundEdges
       // Is there a expander available for this kind of node which will alter the expand edges?
       if(currentVertexCollection.expander){
-        expandEdges = currentVertexCollection.expander(nodeId, currentVertexData, cytoscapeOutboundEdges)
+        expandEdges = currentVertexCollection.expander(currentCytoscapeVertex, currentVertexData, cytoscapeOutboundEdges)
       }
       // expand the edges
       for(let i in expandEdges){

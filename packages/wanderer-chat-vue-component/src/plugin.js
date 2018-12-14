@@ -19,6 +19,9 @@ export default {
         addMessage (state, message) {
           state.messages.push(message)
         },
+        cleanMessages (state) {
+          state.messages = []
+        }
       }
     })
 

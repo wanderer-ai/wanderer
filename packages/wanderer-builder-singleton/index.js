@@ -368,6 +368,11 @@ export default class WandererBuilder {
       StoreSingleton.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
     });
 
+    // Edit edge
+    CytoscapeSingleton.cy.on('dblclick','edge', function(){
+      StoreSingleton.store.commit('wanderer/builder/setEditEdge',this.id())
+    });
+
     // Unselect edge(s)
     CytoscapeSingleton.cy.on('unselect', 'edge', function(evt){
       let lastSelectedEdgesIds = builder.getSelectedEdgeIds()
@@ -396,10 +401,13 @@ export default class WandererBuilder {
     // On drop
     CytoscapeSingleton.cy.on('drop','node', function(evt){
 
+      console.log(StoreSingleton.store.state.wanderer.vertexDocumentData[this.id()])
+
       // Check if this is a origin vertex
       // We cannot disable drag for this vertex but we can set it back to 0
-      if(StoreSingleton.store.state.wanderer.vertexDocumentData[this.id()]._isOrigin){
+      if(StoreSingleton.store.state.wanderer.vertexDocumentData[this.id()]._origin){
         this.position({x: 0, y: 0});
+        StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message:'You cannot move the origin node',type:'warning'})
       }else{
         let position = this.position(); // get position
         StoreSingleton.store.commit('wanderer/setVertexDataValue', {

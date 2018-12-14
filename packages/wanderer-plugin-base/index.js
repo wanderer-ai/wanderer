@@ -32,11 +32,19 @@ export default {
 
     WandererSingleton.registerEdgeCollection('leadsTo',{
       builder: {
-        cytoscapeClasses: 'default',
+        label: 'leadsTo',
+        cytoscapeClasses: 'leadsTo',
         creatable: true,
-        defaultFields: {
-
-        },
+        defaultFields: {},
+        cytoscapeStyle: {
+          selector: '.leadsTo',
+          style: {
+            'line-color': '#6C757D',
+            'target-arrow-color': '#6C757D',
+            'source-arrow-color': '#6C757D',
+            'label': 'data(label)'
+          }
+        }
       },
       toCytoscape: function(data){
         return {

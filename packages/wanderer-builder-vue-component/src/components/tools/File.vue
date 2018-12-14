@@ -4,7 +4,7 @@
   <div>
 
     <portal to="actionbar" :order="1">
-      <button class="btn btn-secondary navbar-btn" title="Save or restore project" v-on:click="showModal=true">
+      <button class="btn btn-secondary navbar-btn" title="Save or restore a project" v-on:click="showModal=true">
         <icon name="save"></icon>
       </button>
     </portal>
@@ -16,7 +16,7 @@
           <div class="col-sm-4">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Start new project</h5>
+                <h5 class="card-title">Start a new project</h5>
                 <p class="card-text">Start a completly new project</p>
                 <a href="#" class="btn btn-primary" v-on:click="startEmptyProject()">Start new</a>
               </div>
@@ -25,7 +25,7 @@
           <div class="col-sm-4">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Restore existing project</h5>
+                <h5 class="card-title">Restore an existing project</h5>
                 <p class="card-text">Restore an existing project from a project file.</p>
                 <div class="upload-btn-wrapper">
                   <button class="btn btn-primary">Restore</button>
@@ -37,7 +37,7 @@
           <div class="col-sm-4">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Save current project</h5>
+                <h5 class="card-title">Save the current project</h5>
                 <p class="card-text">Save and download the current project to a file.</p>
                 <a href="#" class="btn btn-primary" v-on:click="exportJsonFile()">Save current</a>
               </div>

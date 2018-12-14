@@ -67,12 +67,18 @@ export default {
       let vertexIds = this.$wandererBuilder.getSelectedVertexIds()
 
       for (let i in vertexIds) {
-        // Remove the connected edges
-        this.$cytoscape.cy.getElementById(vertexIds[i]).connectedEdges().forEach(function (edge) {
-          component.$wanderer.removeEdge(edge.id())
-        })
-        // Remove the vertex
-        this.$wanderer.removeVertex(vertexIds[i])
+
+        if(this.$store.state.wanderer.vertexDocumentData[vertexIds[i]]._origin){
+          this.$store.dispatch('wanderer/builder/addAlert',{message:'You cannot remove the origin node',type:'warning'})
+        }else{
+          // Remove the connected edges
+          this.$cytoscape.cy.getElementById(vertexIds[i]).connectedEdges().forEach(function (edge) {
+            component.$wanderer.removeEdge(edge.id())
+          })
+          // Remove the vertex
+          this.$wanderer.removeVertex(vertexIds[i])
+        }
+
       }
     },
     removeEdges () {
