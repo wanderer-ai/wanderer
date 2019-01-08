@@ -1,13 +1,10 @@
 <template>
   <div>
 
-    id: {{id}}
-
     <div class="form-group">
       <label for="label">Question</label>
       <input v-model="question" type="text" class="form-control" id="label" placeholder="Enter your question">
     </div>
-    {{question}}
 
   </div>
 </template>
@@ -20,8 +17,7 @@ import WandererBuilder from 'wanderer-builder-singleton'
 export default {
   computed: {
     question: WandererBuilder.getTranslatableVertexModel('question'),
-    id: WandererBuilder.getVertexModel('_id'),
-    // complexProp: WandererBuilder.getEditVertexModel('complexProp', 'foo')
+    // id: WandererBuilder.getVertexModel('_id'),
   }
 }
 </script>

@@ -42,8 +42,22 @@ export default {
   },
   methods: {
     answerSingle(suggestionVertexId){
+      // Answer question
       WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.data.vertexId)
+      // Answer suggestion
       WandererStoreSingleton.store.commit('wanderer/plugin-question/answerSuggestion', suggestionVertexId)
+      // Add answer message
+      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+        id: suggestionVertexId,
+        component: 'wanderer-suggestion-message',
+        from: 'local',
+        delay: 0,
+        data: {
+          vertexId: suggestionVertexId
+        }
+      })
+      // Start next traversal tick
+      WandererSingleton.traverse()
     }
   }
 }

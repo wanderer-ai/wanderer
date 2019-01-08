@@ -1,5 +1,5 @@
-import StoreSingleton from 'wanderer-store-singleton'
-import CytoscapeSingleton from 'wanderer-cytoscape-singleton'
+import WandererStoreSingleton from 'wanderer-store-singleton'
+import WandererCytoscapeSingleton from 'wanderer-cytoscape-singleton'
 const uuidv4 = require('uuid/v4');
 
 // Bei dieser Klasse geht es nur darum einen Singleton zu haben, den ich dann später in Vue injecten kann, aber auch an die Plugins weitergeben kann.
@@ -104,7 +104,7 @@ export default class Wanderer {
     }
 
     // Add vertex to Cytoscape
-    let newCyVertex = CytoscapeSingleton.cy.add({
+    let newCyVertex = WandererCytoscapeSingleton.cy.add({
       data: data,
       position: position,
       classes: collection.builder.cytoscapeClasses
@@ -114,7 +114,7 @@ export default class Wanderer {
     this.toCytoscape(vertexData)
 
     // Add data to store
-    StoreSingleton.store.commit('wanderer/addVertex', vertexData)
+    WandererStoreSingleton.store.commit('wanderer/addVertex', vertexData)
 
     this.trigger('afterAddVertex');
   }
@@ -123,7 +123,7 @@ export default class Wanderer {
 
     let collection = this.getEdgeCollection(edgeData._collection)
 
-    CytoscapeSingleton.cy.add({
+    WandererCytoscapeSingleton.cy.add({
       data: {
         id: edgeData._id, //Set required cytoscape id
         source: edgeData._from, //Set cytoscape source
@@ -133,44 +133,46 @@ export default class Wanderer {
     });
 
     // Add data to store
-    StoreSingleton.store.commit('wanderer/addEdge', edgeData)
+    WandererStoreSingleton.store.commit('wanderer/addEdge', edgeData)
 
     this.trigger('afterAddEdge');
   }
 
   static removeVertex (vertexId) {
-    let vertex = CytoscapeSingleton.cy.getElementById(vertexId)
+    let vertex = WandererCytoscapeSingleton.cy.getElementById(vertexId)
 
     // Remove from cy
     vertex.remove()
 
     // Remove from store
-    StoreSingleton.store.commit('wanderer/removeVertex', vertexId)
+    WandererStoreSingleton.store.commit('wanderer/removeVertex', vertexId)
 
     this.trigger('afterRemoveVertex');
   }
 
   static removeEdge (edgeId) {
-    let edge = CytoscapeSingleton.cy.getElementById(edgeId)
+    let edge = WandererCytoscapeSingleton.cy.getElementById(edgeId)
 
     // Remove from cy
     edge.remove();
 
     // Remove from store
-    StoreSingleton.store.commit('brain/removeEdge', edgeId)
+    WandererStoreSingleton.store.commit('brain/removeEdge', edgeId)
 
     this.trigger('afterRemoveEdge');
   }
 
   static getVertexValue(vertexId, key){
-    if(StoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
-      return StoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key]
+    if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
+      return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key]
     }
   }
 
   static getTranslatableVertexValue(vertexId, key){
-    if(StoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
-      return StoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][StoreSingleton.store.state.wanderer.currentLanguage]
+    if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
+      if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key] !== undefined){
+        return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][WandererStoreSingleton.store.state.wanderer.currentLanguage]
+      }
     }
   }
 
@@ -178,10 +180,10 @@ export default class Wanderer {
     let cytoscapeData = {}
     let collection = this.getVertexCollection(vertexData._collection)
     if(collection.toCytoscape !== undefined){
-      cytoscapeData = collection.toCytoscape(vertexData, StoreSingleton.store.state.wanderer.currentLanguage)
+      cytoscapeData = collection.toCytoscape(vertexData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
     }
     cytoscapeData.id = vertexData._id; // You cannot override the id
-    let vertex = CytoscapeSingleton.cy.getElementById(vertexData._id)
+    let vertex = WandererCytoscapeSingleton.cy.getElementById(vertexData._id)
     vertex.data(cytoscapeData)
   }
 
@@ -191,9 +193,13 @@ export default class Wanderer {
 
   static traverse (nodeId, visitorData) {
 
+    if(nodeId == undefined){
+      var nodeId = WandererStoreSingleton.store.state.wanderer.vertexDocumentIds[0]
+    }
+
     // Get node data
-    let currentCytoscapeVertex = CytoscapeSingleton.cy.getElementById( nodeId )
-    let currentVertexData = StoreSingleton.store.state.wanderer.vertexDocumentData[nodeId]
+    let currentCytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById( nodeId )
+    let currentVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[nodeId]
     let currentVertexCollection = this.getVertexCollection(currentVertexData._collection)
 
     var traversalFinished = true;
@@ -211,7 +217,7 @@ export default class Wanderer {
 
     // Is there a visitor available for this kind of node?
     if(currentVertexCollection.visitor){
-      currentVertexCollection.visitor(currentCytoscapeVertex, currentVertexData, StoreSingleton.store.state.wanderer.currentLanguage)
+      currentVertexCollection.visitor(currentCytoscapeVertex, currentVertexData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
     }
 
     // Get edges

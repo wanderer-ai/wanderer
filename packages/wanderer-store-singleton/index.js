@@ -8,8 +8,8 @@ export default class Store {
 
   }
 
-  static get cy () {
-    return this.store
-  }
+  // static get store () {
+  //   return this.store
+  // }
 
 }

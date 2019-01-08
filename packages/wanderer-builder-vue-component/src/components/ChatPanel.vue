@@ -2,9 +2,9 @@
   <transition>
     <div class="chat-panel" v-if="showPanel">
 
-      <button class="btn btn-secondary modal-default-button" @click="$emit('closeButton')">
+      <!--<button class="btn btn-secondary modal-default-button" @click="$emit('closeButton')">
         Close
-      </button>
+      </button>-->
 
       <wanderer-chat />
 
@@ -44,7 +44,7 @@ export default {
   width:25%;
   height:100%;
   width: 800px;
-  padding: 100px 30px 20px 30px;
+  padding: 70px 0 0 0;
   background-color: #fff;
   border-radius: 2px;
   -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, .33);

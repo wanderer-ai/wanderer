@@ -53,65 +53,6 @@ export default {
       pixelRatio: 'auto'
     })
 
-    this.$wanderer.addVertex({
-      '_id': '3948v57c3902t85n',
-      '_origin': true,
-      '_collection': 'flow',
-      '_x': 100,
-      '_y': 100
-    })
-
-    this.$wanderer.addVertex({
-      '_id': '349z8qp8ez',
-      '_origin': false,
-      '_collection': 'default',
-      '_x': 200,
-      '_y': 200
-    })
-
-    this.$wanderer.addVertex({
-      '_id': '2vn764576f',
-      '_origin': false,
-      '_collection': 'question',
-      '_x': 300,
-      '_y': 300,
-      'question': {
-        'de': 'Frage',
-        'en': 'Question'
-      },
-      'complexProp': {
-        'foo': 'bar'
-      },
-      simpleProp: 'hallo wlet'
-    })
-
-    this.$wanderer.addVertex({
-      '_id': '7v6bbv45687680',
-      '_origin': false,
-      '_collection': 'suggestion',
-      '_x': 400,
-      '_y': 400,
-      'suggestion': {
-        'de': 'Antwort',
-        'en': 'Answer'
-      }
-    })
-
-    this.$wanderer.addVertex({
-      '_id': '07890957b7678946897',
-      '_origin': false,
-      '_collection': 'request',
-      '_x': 500,
-      '_y': 400
-    })
-
-    this.$wanderer.addVertex({
-      '_id': '6734b76gh5785b3',
-      '_origin': false,
-      '_collection': 'response',
-      '_x': 600,
-      '_y': 400
-    })
   },
   methods: {
     // initHead () {

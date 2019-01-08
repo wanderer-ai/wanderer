@@ -13,7 +13,7 @@
       <modal title="Save or restore project" :show="showModal"  v-on:closeButton="showModal=false">
 
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col">
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title">Start a new project</h5>
@@ -22,7 +22,7 @@
               </div>
             </div>
           </div>
-          <div class="col-sm-4">
+          <div class="col">
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title">Restore an existing project</h5>
@@ -34,11 +34,11 @@
               </div>
             </div>
           </div>
-          <div class="col-sm-4">
+          <div class="col" v-if="vertexCount">
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title">Save the current project</h5>
-                <p class="card-text">Save and download the current project to a file.</p>
+                <p class="card-text">Save and download the current project as {{fileName}}</p>
                 <a href="#" class="btn btn-primary" v-on:click="exportJsonFile()">Save current</a>
               </div>
             </div>
@@ -66,7 +66,20 @@ export default {
   },
   data: function () {
     return {
-      showModal: false
+      showModal: true
+    }
+  },
+  computed: {
+    vertexCount () {
+      return this.$store.state.wanderer.vertexDocumentIds.length;
+    },
+    fileName () {
+      if(this.$store.state.wanderer.vertexDocumentIds.length){
+        if(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[0]].topic){
+          return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[0]].topic[this.$store.state.wanderer.currentLanguage]+'.json';
+        }
+      }
+      return 'untitled.json'
     }
   },
   methods: {
@@ -88,13 +101,15 @@ export default {
               "de": "Katzenberater"
             },
             "onboarding": {
-              "en": "Hey! I am your cat consultant! ",
+              "en": "Hey! I am your cat consultant!",
               "de": "Hey! Ich bin dein Katzenberater!"
             },
             "offboarding": {
               "en": "Thanks for participating. I have no further questions.",
               "de": "Danke, dass du mitgemacht hast. Ich habe keine weiteren Fragen."
-            }
+            },
+            "author": "Unknown",
+            "license": "MIT"
           }
         ]
       }))
@@ -188,7 +203,7 @@ export default {
       // Trigger download
       var element = document.createElement('a');
       element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2)));
-      element.setAttribute('download', 'conver.json');
+      element.setAttribute('download', this.fileName);
 
       element.style.display = 'none';
       document.body.appendChild(element);

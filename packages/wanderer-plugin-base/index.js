@@ -1,9 +1,20 @@
 // import Editor from './components/Editor.vue'
 import WandererSingleton from 'wanderer-singleton'
+import WandererStoreSingleton from 'wanderer-store-singleton'
+
+import FlowEditor from './components/FlowEditor.vue'
+import OnboardingMessage from './components/OnboardingMessage.vue'
+import OffboardingMessage from './components/OffboardingMessage.vue'
 
 export default {
 
   install (Vue) {
+
+    Vue.component('wanderer-flow-editor', FlowEditor)
+    Vue.component('wanderer-onboarding-message', OnboardingMessage)
+    Vue.component('wanderer-offboarding-message', OffboardingMessage)
+
+    var traversalResult = {};
 
     WandererSingleton.registerVertexCollection('flow',{
       builder: {
@@ -21,13 +32,37 @@ export default {
             'background-color': '#6C757D',
             'label': 'data(label)'
           }
-        }
+        },
+        component: 'wanderer-flow-editor'
       },
       toCytoscape: function(data){
         return {
           label: 'Flow'
         }
       },
+      visitor: function (cytoscapeVertex, vertexData, language) {
+        traversalResult.flowVertexId = cytoscapeVertex.id()
+      },
+    })
+
+    WandererSingleton.on('traversalFinished', function() {
+      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+        id: traversalResult.flowVertexId+'_onboarding',
+        component: 'wanderer-onboarding-message',
+        data: {
+          vertexId: traversalResult.flowVertexId
+        }
+      })
+    })
+
+    WandererSingleton.on('flowFinished', function() {
+      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+        id: traversalResult.flowVertexId+'_offboarding',
+        component: 'wanderer-offboarding-message',
+        data: {
+          vertexId: traversalResult.flowVertexId
+        }
+      })
     })
 
     WandererSingleton.registerEdgeCollection('leadsTo',{

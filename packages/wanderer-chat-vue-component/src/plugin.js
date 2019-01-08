@@ -13,14 +13,22 @@ export default {
     WandererStoreSingleton.store.registerModule(['wanderer', 'chat'], {
       namespaced: true,
       state: {
-        messages: []
+        messages: [],
+        messageIds : []
       },
       mutations: {
         addMessage (state, message) {
-          state.messages.push(message)
+          if(message.id==undefined){throw Error('Every message needs an unique id!')}
+          if(message.component==undefined){throw Error('Every message needs an component!')}
+          // Add the message to stack if it does not exist already
+          if(state.messageIds.indexOf(message.id)==-1){
+            state.messageIds.push(message.id)
+            state.messages.push(message)
+          }
         },
         cleanMessages (state) {
           state.messages = []
+          state.messageIds = []
         }
       }
     })
