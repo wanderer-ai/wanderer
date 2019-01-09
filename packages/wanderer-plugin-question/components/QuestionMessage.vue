@@ -3,7 +3,7 @@
 
     {{question}}
 
-    <div v-for="suggestion in suggestions" :key="suggestion._id">
+    <div v-if="!answered" v-for="suggestion in suggestions" :key="suggestion._id">
       <button class="btn" v-on:click="answerSingle(suggestion._id)">{{suggestion.suggestion}}</button>
     </div>
 
@@ -38,6 +38,12 @@ export default {
         }
         return returnData
       }
+    },
+    answered: function () {
+      if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredQuestions.indexOf(this.data.vertexId)===-1){
+        return false
+      }
+      return true
     }
   },
   methods: {
@@ -51,6 +57,7 @@ export default {
         id: suggestionVertexId,
         component: 'wanderer-suggestion-message',
         from: 'local',
+        backgroundColor: '#28A745',
         delay: 0,
         data: {
           vertexId: suggestionVertexId

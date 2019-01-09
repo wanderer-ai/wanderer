@@ -53,7 +53,10 @@ export default {
         }
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
-        traversalResult.lastFoundConclusionId = cytoscapeVertex.id()
+        if(traversalResult.lastFoundConclusionIds == undefined){
+          traversalResult.lastFoundConclusionIds = []
+        }
+        traversalResult.lastFoundConclusionIds.push(cytoscapeVertex.id())
       },
       // expander: function (cytoscapeVertex, vertexData, outboundCyEdges) {
       //   return outboundCyEdges
@@ -62,13 +65,26 @@ export default {
 
     WandererSingleton.on('traversalFinished', function() {
 
-      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-        id: traversalResult.lastFoundConclusionId,
-        component: 'wanderer-conclusion-message',
-        data: {
-          vertexId: traversalResult.lastFoundConclusionId
+      if(traversalResult.lastFoundConclusionIds != undefined){
+
+        for(var i in traversalResult.lastFoundConclusionIds){
+
+          // Add the conclusion message
+          WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+            id: traversalResult.lastFoundConclusionIds[i],
+            component: 'wanderer-conclusion-message',
+            backgroundColor: '#FEC106',
+            data: {
+              vertexId: traversalResult.lastFoundConclusionIds[i]
+            }
+          })
+
         }
-      })
+
+      }
+
+      // Reset the result object
+      traversalResult = {};
 
     })
 

@@ -14,8 +14,7 @@ export default class Cytoscape {
   // }
 
   static init (config) {
-
-    if (this.instance){
+    if (this.instance !== undefined) {
 
       // Export data
       let json = this.instance.json()
@@ -28,18 +27,20 @@ export default class Cytoscape {
 
       // Import to cy
       this.instance.json(json)
-
-    }else{
-
+    } else {
       // Init cy
       this.instance = cytoscape(config)
-
     }
+  }
 
+  static initiated () {
+    if (this.instance === undefined) {
+      return false
+    }
+    return true
   }
 
   static get cy () {
     return this.instance
   }
-
 }

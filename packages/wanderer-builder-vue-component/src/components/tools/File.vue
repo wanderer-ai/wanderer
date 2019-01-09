@@ -13,6 +13,15 @@
       <modal title="Save or restore project" :show="showModal"  v-on:closeButton="showModal=false">
 
         <div class="row">
+          <div class="col" v-if="vertexCount">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Save the current project</h5>
+                <p class="card-text">Save and download the current project as {{fileName}}</p>
+                <a href="#" class="btn btn-primary" v-on:click="exportJsonFile()">Save current</a>
+              </div>
+            </div>
+          </div>
           <div class="col">
             <div class="card">
               <div class="card-body">
@@ -34,15 +43,6 @@
               </div>
             </div>
           </div>
-          <div class="col" v-if="vertexCount">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Save the current project</h5>
-                <p class="card-text">Save and download the current project as {{fileName}}</p>
-                <a href="#" class="btn btn-primary" v-on:click="exportJsonFile()">Save current</a>
-              </div>
-            </div>
-          </div>
         </div>
 
       </modal>
@@ -58,7 +58,7 @@ import Modal from '../Modal.vue'
 import 'vue-awesome/icons/save'
 import Icon from 'vue-awesome/components/Icon'
 
-// import Brain from 'wanderer-brain'
+import WandererSingleton from 'wanderer-singleton'
 
 export default {
   components: {
@@ -84,8 +84,7 @@ export default {
   },
   methods: {
     startEmptyProject(){
-
-      // Lets reset the IDs. So we have no conflicts with other import data in the future
+      // Lets reset the IDs. So we have no conflicts with imported data in the future
       this.loadFromJson(this.resetIds({
         "version": "1.0.0",
         "languages": ["en","de"],
@@ -116,47 +115,32 @@ export default {
 
     },
     loadFromJson(data){
-      // Clean cy
-      this.$cytoscape.cy.remove( '*' )
-
-      // Clean store
-      this.$store.commit('wanderer/truncate')
-
-      // Load vertices
-      for (var key in data.vertices) {
-        this.$wanderer.addVertex(data.vertices[key])
-      }
-
-      // Load edges
-      for (var key in data.edges) {
-        this.$wanderer.addEdge(data.edges[key])
-      }
+      WandererSingleton.load(data)
 
       // Center
-      // Brain.cy.center(Brain.cy.$id(data.vertices[0]));
-      this.$cytoscape.cy.zoom(1);
+      this.$cytoscape.cy.center(this.$cytoscape.cy.$id(data.vertices[0]._id))
+      this.$cytoscape.cy.zoom(1)
 
       // Close modal
       this.showModal = false
 
     },
     loadFromFile(ev) {
-      const file = ev.target.files[0];
-      const reader = new FileReader();
+      const file = ev.target.files[0]
+      const reader = new FileReader()
 
       reader.onload = e => {
         try {
           this.loadFromJson(JSON.parse(e.target.result))
         } catch(e) {
-          console.log(e);
+          console.log(e)
           // this.$store.dispatch('alerts/add',{message:'The file structure seems to be invalid',type:'danger'})
         }
       };
 
-      reader.readAsText(file);
+      reader.readAsText(file)
     },
     resetIds(data){
-
       let dataString = JSON.stringify(data);
 
       for(let i in data.vertices){
@@ -175,8 +159,7 @@ export default {
 
       return JSON.parse(dataString)
     },
-    generateExportData(){
-
+    generateExportData () {
       let exportData = {
         // version: WandererConfig.version,
         date: new Date(),
@@ -196,8 +179,7 @@ export default {
 
       return exportData
     },
-    exportJsonFile(){
-
+    exportJsonFile () {
       let exportData = this.generateExportData();
 
       // Trigger download

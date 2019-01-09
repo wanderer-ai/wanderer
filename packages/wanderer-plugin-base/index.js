@@ -35,7 +35,12 @@ export default {
         },
         component: 'wanderer-flow-editor'
       },
-      toCytoscape: function(data){
+      toCytoscape: function(data, language){
+        if(data.topic[language]){
+          return {
+            label: data.topic[language]
+          }
+        }
         return {
           label: 'Flow'
         }
@@ -49,16 +54,6 @@ export default {
       WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
         id: traversalResult.flowVertexId+'_onboarding',
         component: 'wanderer-onboarding-message',
-        data: {
-          vertexId: traversalResult.flowVertexId
-        }
-      })
-    })
-
-    WandererSingleton.on('flowFinished', function() {
-      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-        id: traversalResult.flowVertexId+'_offboarding',
-        component: 'wanderer-offboarding-message',
         data: {
           vertexId: traversalResult.flowVertexId
         }
@@ -88,7 +83,47 @@ export default {
       }
     })
 
-    WandererSingleton.registerVertexCollection('default',{
+    var traversalResult = {
+      lastTraversedRequiredEdgeIds: []
+    }
+
+    WandererSingleton.registerEdgeCollection('isRequiredBy', {
+      builder: {
+        label: 'isRequiredBy',
+        cytoscapeClasses: 'isRequiredBy',
+        creatable: true,
+        defaultFields: {},
+        cytoscapeStyle: {
+          selector: '.isRequiredBy',
+          style: {
+            'line-color': '#DC3545',
+            'target-arrow-color': '#DC3545',
+            'source-arrow-color': '#DC3545',
+            'label': 'data(label)'
+          }
+        }
+      },
+      toCytoscape: function (data) {
+        return {
+          label: 'isRequiredBy'
+        }
+      },
+      visitor: function (cytoscapeEdge, edgeData, language) {
+        // Just remember this edges
+        console.log('calling the visitor')
+        traversalResult.lastTraversedRequiredEdgeIds.push(cytoscapeEdge.id())
+      },
+      allowTargetTraversal: function (cytoscapeVertex, vertexData, cytoscapeEdge, edgeData, language) {
+        console.log('allowTargetTraversal')
+        // Have I already visited this required edge?
+        if (traversalResult.lastTraversedRequiredEdgeIds.indexOf(cytoscapeEdge.id()) === -1) {
+          return false
+        }
+        return true
+      }
+    })
+
+    WandererSingleton.registerVertexCollection('default', {
       builder: {
         label: 'Default',
         color: '#6C757D',
@@ -136,6 +171,23 @@ export default {
           label: 'Default'
         }
       }
+    })
+
+    WandererSingleton.on('traversalFinished', function() {
+      // Reset the result object
+      traversalResult = {
+        lastTraversedRequiredEdgeIds: []
+      }
+    })
+
+    WandererSingleton.on('flowFinished', function() {
+      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+        id: traversalResult.flowVertexId+'_offboarding',
+        component: 'wanderer-offboarding-message',
+        data: {
+          vertexId: traversalResult.flowVertexId
+        }
+      })
     })
 
   },

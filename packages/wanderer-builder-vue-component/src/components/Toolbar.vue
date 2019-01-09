@@ -1,16 +1,18 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
-    <a class="navbar-brand" href="#">Wanderer.ai <small>Builder</small></a>
+    <a class="navbar-brand" href="#">Wanderer.ai <small>Conversation Builder</small></a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
+    <div class="collapse navbar-collapse">
       <portal-target class="btn-group" name="toolbar" multiple />
+    </div>
 
+    <div class="collapse navbar-collapse">
+      {{name}}
     </div>
 
     <span class="navbar-text navbar-right">
@@ -25,7 +27,16 @@
 <script>
 
 export default {
-
+  computed: {
+    name () {
+      if(this.$store.state.wanderer.vertexDocumentIds.length){
+        if(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[0]].topic){
+          return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[0]].topic[this.$store.state.wanderer.currentLanguage];
+        }
+      }
+      return 'untitled'
+    }
+  },
 }
 
 </script>

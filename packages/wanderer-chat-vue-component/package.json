@@ -16,11 +16,19 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "bootstrap-vue": "^2.0.0-rc.11",
+    "portal-vue": "^1.4.0",
     "vue": "^2.5.2",
+    "vuex": "^3.0.1",
+    "wanderer-cytoscape-singleton": "^1.0.0",
+    "wanderer-plugin-api": "^1.0.0",
+    "wanderer-plugin-base": "^1.0.0",
+    "wanderer-plugin-conclusion": "^1.0.0",
+    "wanderer-plugin-question": "^1.0.0",
     "wanderer-singleton": "^1.0.0",
     "wanderer-store-singleton": "^1.0.0",
-    "wanderer-cytoscape-singleton": "^1.0.0"
+    "wanderer-vue-plugin": "^1.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

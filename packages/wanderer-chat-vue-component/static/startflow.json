@@ -1,0 +1,327 @@
+{
+  "date": "2019-01-04T12:36:07.081Z",
+  "vertices": [
+    {
+      "_id": "3948v57c3902t85n",
+      "_origin": true,
+      "_collection": "flow",
+      "_x": -31,
+      "_y": 73,
+      "topic": {
+        "en": "Cat consultant",
+        "de": "Katzenberater"
+      },
+      "onboarding": {
+        "en": "Hey! I am your cat consultant!",
+        "de": "Hey! Ich bin dein Katzenberater!"
+      },
+      "offboarding": {
+        "en": "Thanks for participating. I have no further questions.",
+        "de": "Danke, dass du mitgemacht hast. Ich habe keine weiteren Fragen."
+      },
+      "author": "Unknown",
+      "license": "MIT"
+    },
+    {
+      "_id": "2vn764576f",
+      "_origin": false,
+      "_collection": "question",
+      "_x": 129,
+      "_y": 327,
+      "question": {
+        "de": "Frage",
+        "en": "Question 1"
+      },
+      "complexProp": {
+        "foo": "bar"
+      },
+      "simpleProp": "hallo wlet"
+    },
+    {
+      "question": {
+        "en": "New question 2",
+        "de": "Neue Frage"
+      },
+      "_id": "96e35544-2c56-4850-8069-c84f42fdea65",
+      "_collection": "question",
+      "_isOrigin": false,
+      "_x": 464,
+      "_y": 164
+    },
+    {
+      "question": {
+        "en": "New question 3",
+        "de": "Neue Frage"
+      },
+      "_id": "5235e793-9c9b-495c-816a-e65c22388222",
+      "_collection": "question",
+      "_isOrigin": false,
+      "_x": 943,
+      "_y": 132
+    },
+    {
+      "question": {
+        "en": "New question 4",
+        "de": "Neue Frage"
+      },
+      "_id": "29b8b770-59be-4fcc-a5d5-343d54dd2ab9",
+      "_collection": "question",
+      "_isOrigin": false,
+      "_x": 1263,
+      "_y": 341
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion a"
+      },
+      "_id": "e64024d9-f05b-4d46-ba7f-56bb8d062a01",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 19,
+      "_y": 419
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion b"
+      },
+      "_id": "cd689814-153f-4342-899b-b5581ac06376",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 156,
+      "_y": 471
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion c"
+      },
+      "_id": "866cf03d-6639-4896-8d35-d857f39fd0a5",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 411,
+      "_y": 351
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion d"
+      },
+      "_id": "600f6aa8-4a39-4e69-a010-661098dc335c",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 539,
+      "_y": 413
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion e"
+      },
+      "_id": "17dd7c37-e8cb-4223-a7b5-5f31b821e915",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 611,
+      "_y": 289
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion f"
+      },
+      "_id": "140d1273-2130-4808-a4c8-c34ac0df33a7",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 831,
+      "_y": 245
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion g"
+      },
+      "_id": "4931e71d-032e-45d0-881e-49b4e0af99a6",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 906,
+      "_y": 319
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion h"
+      },
+      "_id": "b4caadba-2750-4bef-8152-85e53b24c113",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 1158,
+      "_y": 412
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion i"
+      },
+      "_id": "dea14c9e-f9e1-470d-96cf-aa9c7fccada0",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 1230,
+      "_y": 471
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion j"
+      },
+      "_id": "1083e5a5-1c62-4bcc-b056-351d66281949",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 1363,
+      "_y": 441
+    },
+    {
+      "question": {
+        "en": "super hot question",
+        "de": "Neue Frage"
+      },
+      "_id": "7e9293b3-57e2-4b3e-8e6b-8d2a3e0bef01",
+      "_collection": "question",
+      "_isOrigin": false,
+      "_x": 360,
+      "_y": 652
+    },
+    {
+      "suggestion": {
+        "de": "Antwortvorschlag",
+        "en": "Suggestion"
+      },
+      "_id": "b3ab36c7-2ddd-42e7-b591-733449c08a8c",
+      "_collection": "suggestion",
+      "_isOrigin": false,
+      "_x": 509,
+      "_y": 725
+    },
+    {
+      "conclusion": {
+        "en": "New conclusion",
+        "de": "Neue Schlussfolgerung"
+      },
+      "_id": "d223fe00-778b-4337-a135-8754090ee9f6",
+      "_collection": "conclusion",
+      "_isOrigin": false,
+      "_x": 639,
+      "_y": 513
+    }
+  ],
+  "edges": [
+    {
+      "_id": "9a8f1ac0-74ff-4ff2-81ed-a6bf7dff70ea",
+      "_collection": "leadsTo",
+      "_from": "2vn764576f",
+      "_to": "96e35544-2c56-4850-8069-c84f42fdea65"
+    },
+    {
+      "_id": "91285da1-1ff7-40ee-89f4-c0c7a4397c62",
+      "_collection": "leadsTo",
+      "_from": "96e35544-2c56-4850-8069-c84f42fdea65",
+      "_to": "5235e793-9c9b-495c-816a-e65c22388222"
+    },
+    {
+      "_id": "69d680a8-7635-4d52-bcd8-e336d5c828b3",
+      "_collection": "leadsTo",
+      "_from": "5235e793-9c9b-495c-816a-e65c22388222",
+      "_to": "29b8b770-59be-4fcc-a5d5-343d54dd2ab9"
+    },
+    {
+      "_id": "cb80d23a-7b75-4178-aa31-e7f798c5eeaf",
+      "_collection": "isAnswerableBy",
+      "_from": "2vn764576f",
+      "_to": "e64024d9-f05b-4d46-ba7f-56bb8d062a01"
+    },
+    {
+      "_id": "9be516b0-d6cf-46bd-a8bb-890f14d910a5",
+      "_collection": "isAnswerableBy",
+      "_from": "2vn764576f",
+      "_to": "cd689814-153f-4342-899b-b5581ac06376"
+    },
+    {
+      "_id": "6595843f-33a8-4464-869b-6d7f3dec7833",
+      "_collection": "Default",
+      "_from": "3948v57c3902t85n",
+      "_to": "2vn764576f"
+    },
+    {
+      "_id": "8e85cd31-c5d8-41a4-8e29-3d1609e27ad0",
+      "_collection": "isAnswerableBy",
+      "_from": "96e35544-2c56-4850-8069-c84f42fdea65",
+      "_to": "866cf03d-6639-4896-8d35-d857f39fd0a5"
+    },
+    {
+      "_id": "6be0cddf-2277-464f-897a-94da1c618789",
+      "_collection": "isAnswerableBy",
+      "_from": "96e35544-2c56-4850-8069-c84f42fdea65",
+      "_to": "600f6aa8-4a39-4e69-a010-661098dc335c"
+    },
+    {
+      "_id": "548d57ef-e4e9-481d-907b-9400ab44862e",
+      "_collection": "isAnswerableBy",
+      "_from": "96e35544-2c56-4850-8069-c84f42fdea65",
+      "_to": "17dd7c37-e8cb-4223-a7b5-5f31b821e915"
+    },
+    {
+      "_id": "19c2e151-878f-4b7f-9bf3-389bbbbdc54d",
+      "_collection": "isAnswerableBy",
+      "_from": "5235e793-9c9b-495c-816a-e65c22388222",
+      "_to": "140d1273-2130-4808-a4c8-c34ac0df33a7"
+    },
+    {
+      "_id": "7cffada3-7b1f-4110-96c2-85ed873867d4",
+      "_collection": "isAnswerableBy",
+      "_from": "5235e793-9c9b-495c-816a-e65c22388222",
+      "_to": "4931e71d-032e-45d0-881e-49b4e0af99a6"
+    },
+    {
+      "_id": "b14fb664-3019-4fdd-a25d-c8611d4eca6a",
+      "_collection": "isAnswerableBy",
+      "_from": "29b8b770-59be-4fcc-a5d5-343d54dd2ab9",
+      "_to": "b4caadba-2750-4bef-8152-85e53b24c113"
+    },
+    {
+      "_id": "9bb74e31-07ea-4e2c-b55a-d5dadbc83c58",
+      "_collection": "isAnswerableBy",
+      "_from": "29b8b770-59be-4fcc-a5d5-343d54dd2ab9",
+      "_to": "dea14c9e-f9e1-470d-96cf-aa9c7fccada0"
+    },
+    {
+      "_id": "6559f55b-bf2c-491e-94f3-63246191988c",
+      "_collection": "isAnswerableBy",
+      "_from": "29b8b770-59be-4fcc-a5d5-343d54dd2ab9",
+      "_to": "1083e5a5-1c62-4bcc-b056-351d66281949"
+    },
+    {
+      "_id": "f730ab01-0e1c-4cb2-b9d3-82f005f10409",
+      "_collection": "leadsTo",
+      "_from": "cd689814-153f-4342-899b-b5581ac06376",
+      "_to": "7e9293b3-57e2-4b3e-8e6b-8d2a3e0bef01"
+    },
+    {
+      "_id": "e7579164-7395-4591-ad17-17a3b5097063",
+      "_collection": "isAnswerableBy",
+      "_from": "7e9293b3-57e2-4b3e-8e6b-8d2a3e0bef01",
+      "_to": "b3ab36c7-2ddd-42e7-b591-733449c08a8c"
+    },
+    {
+      "_id": "a8869682-bc24-4bfd-8083-0359767fef15",
+      "_collection": "leadsTo",
+      "_from": "600f6aa8-4a39-4e69-a010-661098dc335c",
+      "_to": "d223fe00-778b-4337-a135-8754090ee9f6"
+    },
+    {
+      "_id": "abb1be8f-1718-4a88-bb80-b5053ebcd581",
+      "_collection": "Default",
+      "_from": "7e9293b3-57e2-4b3e-8e6b-8d2a3e0bef01",
+      "_to": "d223fe00-778b-4337-a135-8754090ee9f6"
+    }
+  ]
+}

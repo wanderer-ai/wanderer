@@ -104,19 +104,57 @@ export default class WandererBuilder {
 
   }
 
-  static isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName = false){
+  // Check if an edge is allowed between two vertices
+  static isAllowedConnection (fromCollectionName, toCollectionName, throughCollectionName) {
+    let edgeCollections = WandererSingleton.getEdgeCollections()
+
+    // Without any restrictions the from and to collections will be accepted
+    var fromCollectionNameAllowed = true
+    var toCollectionNameAllowed = true
+
+    // Are there any from-restrictions?
+    if (edgeCollections[throughCollectionName].builder.restrictSourceVertices !== undefined) {
+      // Ok. We have to check if the fromCollection is allowed
+      fromCollectionNameAllowed = false
+      for (var i in edgeCollections[throughCollectionName].builder.restrictSourceVertices) {
+        if (edgeCollections[throughCollectionName].builder.restrictSourceVertices[i] == fromCollectionName) {
+          fromCollectionNameAllowed = true
+        }
+      }
+    }
+
+    // Are there any to-restrictions?
+    if (edgeCollections[throughCollectionName].builder.restrictTargetVertices !== undefined) {
+      // Ok. We have to check if the toCollection is allowed
+      toCollectionNameAllowed = false
+      for (var i in edgeCollections[throughCollectionName].builder.restrictTargetVertices) {
+        if (edgeCollections[throughCollectionName].builder.restrictTargetVertices[i] == toCollectionName) {
+          toCollectionNameAllowed = true
+        }
+      }
+    }
+
+    if (fromCollectionNameAllowed && toCollectionNameAllowed) {
+      return true
+    }
+
+    return false
+  }
+
+  // Check if a node can be connected to a given vertex collection throug an outgoing edge
+  static isAllowedOutgoingConnection (fromCollectionName, toCollectionName, throughCollectionName = false) {
     let vertexCollections = WandererSingleton.getVertexCollections()
 
     // If the from collection restricts the outgoing connections
-    if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections !== undefined){
+    if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections !== undefined) {
       // Search for the requested connection in the allowed connections of the collection
-      for(var i in vertexCollections[fromCollectionName].builder.restrictOutgoingConnections){
-        if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections[i].to == toCollectionName){
+      for(var i in vertexCollections[fromCollectionName].builder.restrictOutgoingConnections) {
+        if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections[i].to == toCollectionName) {
           // Check the edge too
           if(throughCollectionName){
-            if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections[i].through == throughCollectionName){
-              // Return true if the target collection and the edge are allowed
-              return true;
+            if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections[i].through == throughCollectionName) {
+              // Return true if the to collection and the edge are allowed
+              return true
             }
           // Drop the edge check
           }else{
@@ -132,17 +170,18 @@ export default class WandererBuilder {
     return true;
   }
 
-  static isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName = false){
+  // Check if a node can be connected to a given collection name throug an incomming edge
+  static isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName = false) {
     let vertexCollections = WandererSingleton.getVertexCollections()
 
     // If the to collection restricts the incomming connections
-    if(vertexCollections[toCollectionName].builder.restrictIncommingConnections !== undefined){
+    if(vertexCollections[toCollectionName].builder.restrictIncommingConnections !== undefined) {
       // Search for the requested connection in the allowed connections of the collection
-      for(var i in vertexCollections[toCollectionName].builder.restrictIncommingConnections){
-        if(vertexCollections[toCollectionName].builder.restrictIncommingConnections[i].from == fromCollectionName){
+      for(var i in vertexCollections[toCollectionName].builder.restrictIncommingConnections) {
+        if(vertexCollections[toCollectionName].builder.restrictIncommingConnections[i].from == fromCollectionName) {
           // Check the edge too
           if(throughCollectionName){
-            if(vertexCollections[toCollectionName].builder.restrictIncommingConnections[i].through == throughCollectionName){
+            if(vertexCollections[toCollectionName].builder.restrictIncommingConnections[i].through == throughCollectionName) {
               // Return true if the from collection and the edge are allowed
               return true;
             }
@@ -160,26 +199,28 @@ export default class WandererBuilder {
     return true;
   }
 
-  static getPossibleOutgoingCollections(fromCollectionName){
+  // This method collects all possible outgoing edge and vertex combinations for a given vertex collection type
+  // This is usefull for example to draw the circular menu in the editor
+  static getPossibleOutgoingCollections (fromCollectionName) {
     let vertexCollections = WandererSingleton.getVertexCollections()
     let edgeCollections = WandererSingleton.getEdgeCollections()
 
     var possibleOutgoingCollections = []
     // For each possible target node
-    for(var toCollectionName in vertexCollections){
+    for(var toCollectionName in vertexCollections) {
       if (vertexCollections.hasOwnProperty(toCollectionName)) {
-        if(vertexCollections[toCollectionName].builder.creatable){
+        if(vertexCollections[toCollectionName].builder.creatable) {
 
           var possibleOutgoingCollection = {
             to: toCollectionName,
             through: []
           }
 
-          for(var throughCollectionName in edgeCollections){
+          for(var throughCollectionName in edgeCollections) {
             if (edgeCollections.hasOwnProperty(throughCollectionName)) {
-              if(edgeCollections[throughCollectionName].builder.creatable){
+              if(edgeCollections[throughCollectionName].builder.creatable) {
                 if(
-                  this.isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName)&&
+                  this.isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName) &&
                   this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName)
                 ){
                   possibleOutgoingCollection.through.push(throughCollectionName)
@@ -188,7 +229,7 @@ export default class WandererBuilder {
             }
           }
 
-          // If this possible outgoing connection has possible hideEdgesOnViewport
+          // If this possible outgoing connection has possible edge
           if(possibleOutgoingCollection.through.length){
             possibleOutgoingCollections.push(possibleOutgoingCollection)
           }
@@ -198,13 +239,34 @@ export default class WandererBuilder {
     return possibleOutgoingCollections
   }
 
-  static connectById (fromEdgeId, toEdgeId) {
+  // This method will return all possible edges between two vertex collections
+  static getPossibleEdgeCollections (fromCollectionName, toCollectionName) {
+    let edgeCollections = WandererSingleton.getEdgeCollections()
+    var possibleEdgeCollections = []
+
+    for(var throughCollectionName in edgeCollections) {
+      if (edgeCollections.hasOwnProperty(throughCollectionName)) {
+        if(edgeCollections[throughCollectionName].builder.creatable) {
+          if(
+            this.isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName) &&
+            this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName) &&
+            this.isAllowedConnection(fromCollectionName, toCollectionName, throughCollectionName)
+          ){
+            possibleEdgeCollections.push(throughCollectionName)
+          }
+        }
+      }
+    }
+    return possibleEdgeCollections
+  }
+
+  static connectById (fromVertexId, toVertexId, edgeCollection) {
     // Create new edge
     WandererSingleton.addEdge({
       _id: WandererSingleton.generateId(),
-      _collection: 'Default',
-      _from: fromEdgeId,
-      _to: toEdgeId
+      _collection: edgeCollection,
+      _from: fromVertexId,
+      _to: toVertexId
     });
   }
 
@@ -402,8 +464,6 @@ export default class WandererBuilder {
 
     // On drop
     CytoscapeSingleton.cy.on('drop','node', function(evt){
-
-      console.log(StoreSingleton.store.state.wanderer.vertexDocumentData[this.id()])
 
       // Check if this is a origin vertex
       // We cannot disable drag for this vertex but we can set it back to 0

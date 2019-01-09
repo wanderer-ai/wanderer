@@ -35,6 +35,10 @@ export default {
       }
     })
 
+    WandererSingleton.on('clean', function() {
+      WandererStoreSingleton.store.commit('wanderer/plugin-question/clean')
+    })
+
     var traversalResult = {};
 
     // Register the question vertex
@@ -77,8 +81,6 @@ export default {
         }
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
-        console.log('cleaning suggestions')
-
         // Add the question only to result if it was not answered before
         if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredQuestions.indexOf(cytoscapeVertex.id())==-1){
 
@@ -121,6 +123,13 @@ export default {
         })
 
         return returnEdges
+      },
+      finisher: function () {
+        console.log('asking the question finisher')
+        if(traversalResult.lastFoundQuestionId === undefined){
+          return true
+        }
+        return false
       }
     })
 
@@ -167,7 +176,6 @@ export default {
         }
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
-        // console.log('add new suggestion')
         // traversalResult.lastFoundSuggestionIds.push(cytoscapeVertex.id())
       },
       expander: function (cytoscapeVertex, currentVertexData, outboundCyEdges) {
@@ -194,6 +202,12 @@ export default {
         cytoscapeClasses: 'isAnswerableBy',
         creatable: true,
         defaultFields: {},
+        restrictSourceVertices: [
+          'question'
+        ],
+        restrictTargetVertices: [
+          'suggestion'
+        ],
         cytoscapeStyle: {
           selector: '.isAnswerableBy',
           style: {
@@ -216,10 +230,7 @@ export default {
     // Listen for traversal event
     WandererSingleton.on('traversalFinished', function() {
 
-      console.log('finished traversal')
-      console.log(traversalResult)
-
-      if(traversalResult.lastFoundQuestionId != undefined){
+      if(traversalResult.lastFoundQuestionId !== undefined){
 
         WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
           id: traversalResult.lastFoundQuestionId,
@@ -227,16 +238,20 @@ export default {
           data: {
             vertexId: traversalResult.lastFoundQuestionId,
             suggestionVertexIds: traversalResult.lastFoundSuggestionIds
-          }
+          },
+          backgroundColor: '#007BFF',
+          delay: 1000
         })
 
-      }else{
+      }
+
+      // }else{
 
         // No question was found :-(
         // Trigger the end of the flow
-        WandererSingleton.trigger('flowFinished')
+        // WandererSingleton.trigger('flowFinished')
 
-      }
+      // }
 
       // Reset the result object
       traversalResult = {};

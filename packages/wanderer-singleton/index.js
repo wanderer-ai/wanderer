@@ -7,12 +7,15 @@ const uuidv4 = require('uuid/v4');
 // Daraus könnte ich auch ein Extra Pack machen. Dieses bracuht aber dann zumindest den Store und Cytoscape.
 // Damit ich die nicht injecten muss, könnte ich auch aus dem Store ein Singleton machen
 // Das gleiche gilt dann auch für den Wanderer Builder
-export default class Wanderer {
+export default (function () {
 
-  static vertexCollections = {}
-  static edgeCollections = {}
+  // This configurtaion of babel does not support static properties
+  // So I switched back to a self executing function class
 
-  static hooks = {}
+  var vertexCollections = {}
+  var edgeCollections = {}
+
+  var hooks = {}
 
   // static cytoscape = null;
   // static store = null;
@@ -22,42 +25,50 @@ export default class Wanderer {
   //   this.store = store
   // }
 
-  static on(hookName,method){
-    if(this.hooks[hookName] === undefined){
-      this.hooks[hookName] = []
+  // Try to load config file if exists
+  // console.log(__dirname)
+  // try {
+  //   // var configuration = require('wanderer.config.json');
+  // } catch (ex) {
+  //     throw ('No wanderer configuration file was found')
+  // }
+
+  function on(hookName,method){
+    if(hooks[hookName] === undefined){
+      hooks[hookName] = []
     }
-    this.hooks[hookName].push(method)
+    hooks[hookName].push(method)
   }
 
-  static trigger(hookName, payload){
-    if(this.hooks[hookName] !== undefined){
-      for(let i in this.hooks[hookName]){
-        this.hooks[hookName][i](payload)
+  function trigger(hookName, payload){
+    if(hooks[hookName] !== undefined){
+      for(let i in hooks[hookName]){
+        hooks[hookName][i](payload)
       }
     }
   }
 
-  static registerVertexCollection (name, configuration) {
-    this.vertexCollections[name] = configuration // Register the collection
+  function registerVertexCollection (name, configuration) {
+    vertexCollections[name] = configuration // Register the collection
   }
 
-  static registerEdgeCollection (name, configuration) {
-    this.edgeCollections[name] = configuration // Register the collection
+  function registerEdgeCollection (name, configuration) {
+    edgeCollections[name] = configuration // Register the collection
   }
 
-  static getVertexCollections () {
-    return this.vertexCollections
+  function getVertexCollections () {
+    return vertexCollections
   }
 
-  static getEdgeCollections () {
-    return this.edgeCollections
+  function getEdgeCollections () {
+    return edgeCollections
   }
 
-  static getVertexCollection(name){
-    if(this.vertexCollections[name] === undefined){
-      return this.vertexCollections['default']
+  function getVertexCollection(name){
+    if(vertexCollections[name] === undefined){
+      return vertexCollections['default']
     }
-    return this.vertexCollections[name]
+    return vertexCollections[name]
   }
 
   // static getVertexCollectionById(id){
@@ -68,11 +79,11 @@ export default class Wanderer {
   //   return false
   // }
 
-  static getEdgeCollection(name){
-    if(this.edgeCollections[name] === undefined){
-      return this.edgeCollections['default']
+  function getEdgeCollection(name){
+    if(edgeCollections[name] === undefined){
+      return edgeCollections['default']
     }
-    return this.edgeCollections[name]
+    return edgeCollections[name]
   }
 
   // Warum nicht direkt an den Store?
@@ -83,9 +94,9 @@ export default class Wanderer {
   //   return false
   // },
 
-  static addVertex (vertexData) {
+  function addVertex (vertexData) {
 
-    let collection = this.getVertexCollection(vertexData._collection)
+    let collection = getVertexCollection(vertexData._collection)
 
     var data = {
       id:vertexData._id, // Set required cytoscape id
@@ -111,17 +122,17 @@ export default class Wanderer {
     })
 
     // Convert data to Cytoscape if needed
-    this.toCytoscape(vertexData)
+    toCytoscape(vertexData)
 
     // Add data to store
     WandererStoreSingleton.store.commit('wanderer/addVertex', vertexData)
 
-    this.trigger('afterAddVertex');
+    trigger('afterAddVertex');
   }
 
-  static addEdge (edgeData) {
+  function addEdge (edgeData) {
 
-    let collection = this.getEdgeCollection(edgeData._collection)
+    let collection = getEdgeCollection(edgeData._collection)
 
     WandererCytoscapeSingleton.cy.add({
       data: {
@@ -135,10 +146,10 @@ export default class Wanderer {
     // Add data to store
     WandererStoreSingleton.store.commit('wanderer/addEdge', edgeData)
 
-    this.trigger('afterAddEdge');
+    trigger('afterAddEdge');
   }
 
-  static removeVertex (vertexId) {
+  function removeVertex (vertexId) {
     let vertex = WandererCytoscapeSingleton.cy.getElementById(vertexId)
 
     // Remove from cy
@@ -147,28 +158,47 @@ export default class Wanderer {
     // Remove from store
     WandererStoreSingleton.store.commit('wanderer/removeVertex', vertexId)
 
-    this.trigger('afterRemoveVertex');
+    trigger('afterRemoveVertex');
   }
 
-  static removeEdge (edgeId) {
+  function removeEdge (edgeId) {
     let edge = WandererCytoscapeSingleton.cy.getElementById(edgeId)
 
     // Remove from cy
     edge.remove();
 
     // Remove from store
-    WandererStoreSingleton.store.commit('brain/removeEdge', edgeId)
+    WandererStoreSingleton.store.commit('wanderer/removeEdge', edgeId)
 
-    this.trigger('afterRemoveEdge');
+    trigger('afterRemoveEdge');
   }
 
-  static getVertexValue(vertexId, key){
+  function load (data) {
+
+    // Clean cy
+    WandererCytoscapeSingleton.cy.remove( '*' )
+
+    // Clean store
+    WandererStoreSingleton.store.commit('wanderer/truncate')
+
+    // Load vertices
+    for (var key in data.vertices) {
+      this.addVertex(data.vertices[key])
+    }
+
+    // Load edges
+    for (var key in data.edges) {
+      this.addEdge(data.edges[key])
+    }
+  }
+
+  function getVertexValue (vertexId, key) {
     if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
       return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key]
     }
   }
 
-  static getTranslatableVertexValue(vertexId, key){
+  function getTranslatableVertexValue (vertexId, key) {
     if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
       if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key] !== undefined){
         return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][WandererStoreSingleton.store.state.wanderer.currentLanguage]
@@ -176,9 +206,9 @@ export default class Wanderer {
     }
   }
 
-  static toCytoscape (vertexData) {
+  function toCytoscape (vertexData) {
     let cytoscapeData = {}
-    let collection = this.getVertexCollection(vertexData._collection)
+    let collection = getVertexCollection(vertexData._collection)
     if(collection.toCytoscape !== undefined){
       cytoscapeData = collection.toCytoscape(vertexData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
     }
@@ -187,37 +217,28 @@ export default class Wanderer {
     vertex.data(cytoscapeData)
   }
 
-  static generateId () {
+  function generateId () {
     return uuidv4()
   }
 
-  static traverse (nodeId, visitorData) {
-
-    if(nodeId == undefined){
+  function traverse (nodeId, visitorData) {
+    if (nodeId == undefined) {
       var nodeId = WandererStoreSingleton.store.state.wanderer.vertexDocumentIds[0]
     }
 
     // Get node data
-    let currentCytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById( nodeId )
+    let currentCytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(nodeId)
     let currentVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[nodeId]
-    let currentVertexCollection = this.getVertexCollection(currentVertexData._collection)
+    let currentVertexCollection = getVertexCollection(currentVertexData._collection)
 
     var traversalFinished = true;
 
-    if(visitorData == undefined){
+    if (visitorData == undefined) {
       var visitorData = {
         _visitedEdges: [],
         _visitedVertices: []
       }
       traversalFinished = false;
-    }
-
-    // Remember this vertex as visited
-    visitorData._visitedVertices.push(currentCytoscapeVertex.id())
-
-    // Is there a visitor available for this kind of node?
-    if(currentVertexCollection.visitor){
-      currentVertexCollection.visitor(currentCytoscapeVertex, currentVertexData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
     }
 
     // Get edges
@@ -231,29 +252,110 @@ export default class Wanderer {
       }
     })
 
-    // Are there outbound edges?
-    if(cytoscapeOutboundEdges.length){
-      let expandEdges = cytoscapeOutboundEdges
-      // Is there a expander available for this kind of node which will alter the expand edges?
-      if(currentVertexCollection.expander){
-        expandEdges = currentVertexCollection.expander(currentCytoscapeVertex, currentVertexData, cytoscapeOutboundEdges)
+    // Get inbound edges
+    let cytoscapeInboundEdges = []
+    cytoscapeEdges.forEach(function(currentCytoscapeEdge){
+      if(currentCytoscapeVertex.id()==currentCytoscapeEdge.data('target')){
+        cytoscapeInboundEdges.push(currentCytoscapeEdge);
       }
-      // expand the edges
-      for(let i in expandEdges){
-        // Remember this vertex as visited
-        visitorData._visitedEdges.push(expandEdges[i].id())
-        // traverse the node
-        this.traverse(expandEdges[i].target().id(), visitorData)
+    })
+
+    // Check for every edge if there is a allowTargetTraversal function that would allow or restrict the traversal of the current vertex
+    var traversable = true
+    if (cytoscapeInboundEdges.length) {
+      for (let i in cytoscapeInboundEdges) {
+        let currentCytoscapeEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[cytoscapeInboundEdges[i].id()]
+        let currentCytoscapeEdgeCollection = getEdgeCollection(currentCytoscapeEdgeData._collection)
+        if(currentCytoscapeEdgeCollection.allowTargetTraversal !== undefined) {
+          traversable = currentCytoscapeEdgeCollection.allowTargetTraversal(
+            currentCytoscapeVertex,
+            currentVertexData,
+            cytoscapeInboundEdges[i],
+            currentCytoscapeEdgeData,
+            WandererStoreSingleton.store.state.wanderer.currentLanguage
+          )
+        }
+      }
+    }
+
+    if (traversable) {
+      // Remember this vertex as visited
+      visitorData._visitedVertices.push(currentCytoscapeVertex.id())
+
+      // Is there a visitor available for this kind of node?
+      if (currentVertexCollection.visitor) {
+        currentVertexCollection.visitor(currentCytoscapeVertex, currentVertexData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
+      }
+
+      // Are there outbound edges?
+      if (cytoscapeOutboundEdges.length) {
+        let expandEdges = cytoscapeOutboundEdges
+        // Is there a expander available for this kind of node which will alter the expand edges?
+        if (currentVertexCollection.expander) {
+          expandEdges = currentVertexCollection.expander(currentCytoscapeVertex, currentVertexData, cytoscapeOutboundEdges)
+        }
+        // expand the edges
+        for (let i in expandEdges) {
+          // Remember this vertex as visited
+          visitorData._visitedEdges.push(expandEdges[i].id())
+          // Get edge information
+          let EdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[expandEdges[i].id()]
+          let EdgeCollection = getEdgeCollection(EdgeData._collection)
+          // Call the visitor for this edge
+          if (EdgeCollection.visitor) {
+            EdgeCollection.visitor(expandEdges[i], EdgeData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
+          }
+          // traverse the node
+          traverse(expandEdges[i].target().id(), visitorData)
+        }
       }
     }
 
     // Is this the first function call in the recursive stack?
-    if(!traversalFinished){
-      this.trigger('traversalFinished')
-    }
+    if (!traversalFinished) {
+      // Check the flowFinished function for all vertices
+      // This function gets executed if all vertice collections decide not to repeat the traversal for the flow
+      // This means the program is over
+      var flowFinished = false
+      let vertexCollections = this.getVertexCollections()
+      for (var i in vertexCollections) {
+        if (vertexCollections[i].finisher !== undefined) {
+          if (!vertexCollections[i].finisher()) {
+            flowFinished = false
+            break
+          }
+          flowFinished = true
+        }
+      }
+      if (flowFinished) {
+        trigger('flowFinished')
+      }
 
+      // Finish the current traversal
+      trigger('traversalFinished')
+    }
 
   }
 
+  return {
+    on: on,
+    trigger: trigger,
+    registerVertexCollection: registerVertexCollection,
+    registerEdgeCollection: registerEdgeCollection,
+    getVertexCollections: getVertexCollections,
+    getEdgeCollections: getEdgeCollections,
+    getVertexCollection: getVertexCollection,
+    getEdgeCollection: getEdgeCollection,
+    addVertex: addVertex,
+    addEdge: addEdge,
+    load: load,
+    removeVertex: removeVertex,
+    removeEdge: removeEdge,
+    getVertexValue: getVertexValue,
+    getTranslatableVertexValue: getTranslatableVertexValue,
+    toCytoscape: toCytoscape,
+    generateId: generateId,
+    traverse: traverse
+  }
 
-}
+}())

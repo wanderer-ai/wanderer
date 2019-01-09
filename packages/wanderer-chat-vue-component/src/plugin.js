@@ -1,10 +1,13 @@
 import ChatComponent from './App'
 import WandererSingleton from 'wanderer-singleton'
 import WandererStoreSingleton from 'wanderer-store-singleton'
+import axios from 'axios'
 
 export default {
 
   install (Vue) {
+    // Add axios to Vue
+    Vue.prototype.$axios = axios
 
     // Register builder component
     Vue.component('wanderer-chat', ChatComponent)
@@ -14,14 +17,18 @@ export default {
       namespaced: true,
       state: {
         messages: [],
-        messageIds : []
+        messageIds: []
       },
       mutations: {
         addMessage (state, message) {
-          if(message.id==undefined){throw Error('Every message needs an unique id!')}
-          if(message.component==undefined){throw Error('Every message needs an component!')}
+          if (message.id === undefined) {
+            console.log(message)
+            throw Error('Every message needs an unique id!')
+          }
+          if (message.component === undefined) { throw Error('Every message needs an component!') }
+          if (message.delay === undefined) { message.delay = 0 }
           // Add the message to stack if it does not exist already
-          if(state.messageIds.indexOf(message.id)==-1){
+          if (state.messageIds.indexOf(message.id) === -1) {
             state.messageIds.push(message.id)
             state.messages.push(message)
           }
@@ -31,6 +38,10 @@ export default {
           state.messageIds = []
         }
       }
+    })
+
+    WandererSingleton.on('clean', function () {
+      WandererStoreSingleton.store.commit('wanderer/chat/cleanMessages')
     })
 
     // // Listen for traversal event
@@ -43,7 +54,5 @@ export default {
 
     // Add instance methods
     // Vue.prototype.$wandererBuilder = WandererBuilderSingleton
-
   }
-
 }

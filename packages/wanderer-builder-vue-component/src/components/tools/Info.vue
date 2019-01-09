@@ -10,7 +10,7 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <modal title="Wanderer.ai Builder" :show="showModal"  v-on:closeButton="showModal=false">
+      <modal title="Wanderer.ai Conversation Builder" :show="showModal"  v-on:closeButton="showModal=false">
 
         <p>
           Version {{version}}
@@ -45,15 +45,21 @@ import Modal from '../Modal.vue'
 import 'vue-awesome/icons/info'
 import Icon from 'vue-awesome/components/Icon'
 
+import {version} from '../../../package.json';
+
 export default {
   components: {
     Modal, Icon
   },
   data: function () {
     return {
-      version: '0.0.1',
-      license: 'Apache2.0',
+      license: 'Apache 2.0',
       showModal: false
+    }
+  },
+  computed: {
+    version () {
+      return version
     }
   }
 }
