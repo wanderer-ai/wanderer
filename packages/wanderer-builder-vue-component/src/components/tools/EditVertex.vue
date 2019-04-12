@@ -42,7 +42,6 @@ export default {
     editVertexCollection () {
       if (this.$store.state.wanderer.builder.editVertex !== 0) {
         var collection = this.$wanderer.getVertexCollection(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.builder.editVertex]._collection).builder
-        console.log(collection)
         if (collection) {
           return collection
         }
@@ -59,7 +58,10 @@ export default {
 
       // Rebuild cytoscape data
       for(let i in this.$store.state.wanderer.vertexDocumentIds){
-        WandererSingleton.toCytoscape(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
+        WandererSingleton.vertexToCytoscape(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
+      }
+      for(let i in this.$store.state.wanderer.edgeDocumentIds){
+        WandererSingleton.edgeToCytoscape(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
       }
     },
     openVertexEditorModal () {

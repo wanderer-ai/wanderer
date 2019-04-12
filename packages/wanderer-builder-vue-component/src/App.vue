@@ -1,6 +1,6 @@
 
 <template>
-  <div>
+  <div class="wanderer-builder">
 
     <toolbar />
     <cytoscape />

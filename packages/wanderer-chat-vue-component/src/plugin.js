@@ -2,6 +2,7 @@ import ChatComponent from './App'
 import WandererSingleton from 'wanderer-singleton'
 import WandererStoreSingleton from 'wanderer-store-singleton'
 import axios from 'axios'
+const uuidv4 = require('uuid/v4');
 
 export default {
 
@@ -22,16 +23,17 @@ export default {
       mutations: {
         addMessage (state, message) {
           if (message.id === undefined) {
-            console.log(message)
-            throw Error('Every message needs an unique id!')
+            // console.log(message)
+            // throw Error('Every message needs an unique id!')
+            message.id = uuidv4()
           }
           if (message.component === undefined) { throw Error('Every message needs an component!') }
           if (message.delay === undefined) { message.delay = 0 }
           // Add the message to stack if it does not exist already
-          if (state.messageIds.indexOf(message.id) === -1) {
+          // if (state.messageIds.indexOf(message.id) === -1) {
             state.messageIds.push(message.id)
             state.messages.push(message)
-          }
+          //}
         },
         cleanMessages (state) {
           state.messages = []

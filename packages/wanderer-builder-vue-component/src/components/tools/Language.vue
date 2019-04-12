@@ -207,7 +207,10 @@ export default {
       return this.$store.state.wanderer.currentLanguage;
     },
     enabledLanguages () {
-      return this.$store.state.wanderer.enabledLanguages;
+      if (this.$store.state.wanderer.originVertexId) {
+        return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.originVertexId].languages;
+      }
+      return [];
     }
   },
   methods: {
@@ -224,7 +227,10 @@ export default {
 
       // Rebuild cytoscape data
       for(let i in this.$store.state.wanderer.vertexDocumentIds){
-        WandererSingleton.toCytoscape(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
+        WandererSingleton.vertexToCytoscape(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
+      }
+      for(let i in this.$store.state.wanderer.edgeDocumentIds){
+        WandererSingleton.edgeToCytoscape(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
       }
 
       this.showModal = false

@@ -28,6 +28,9 @@ export default {
         answerSuggestion (state, vertexId) {
           state.answeredSuggestions.push(vertexId)
         },
+        withdrawSuggestion (state, vertexId) {
+          state.answeredSuggestions.splice(state.answeredSuggestions.indexOf(vertexId), 1)
+        },
         clean (state) {
           state.answeredQuestions = []
           state.answeredSuggestions = []
@@ -55,7 +58,7 @@ export default {
             de: 'Neue Frage'
           }
         },
-        cytoscapeStyle: {
+        cytoscapeStyles: [{
           selector: '.question',
           style: {
             'height': '100px',
@@ -64,7 +67,7 @@ export default {
             'background-color': '#007BFF',
             'label': 'data(label)'
           }
-        },
+        }],
         component: 'wanderer-question-editor'
       },
       chat: {
@@ -126,7 +129,10 @@ export default {
       },
       finisher: function () {
         console.log('asking the question finisher')
-        if(traversalResult.lastFoundQuestionId === undefined){
+        if(
+          traversalResult.lastFoundQuestionId === undefined || // If no question was found
+          traversalResult.lastFoundSuggestionIds.length == 0 // Or if the question has no suggestions
+        ){
           return true
         }
         return false
@@ -151,28 +157,40 @@ export default {
           'suggestion': {
             'de': 'Antwortvorschlag',
             'en': 'Suggestion'
-          }
+          },
+          'type': 'button',
+          'name': '',
+          'priority': 50
         },
-        cytoscapeStyle: {
+        cytoscapeStyles: [{
           selector: '.suggestion',
           style: {
-            'height': '50px',
-            'width': '50px',
+            'height': 'data(priority)',
+            'width': 'data(priority)',
             'font-size': '20px',
             'background-color': '#28A745',
             'label': 'data(label)'
           }
-        },
+        }],
         component: 'wanderer-suggestion-editor'
       },
       toCytoscape: function(data, language){
-        if(data.suggestion[language]){
-          return {
-            label: data.suggestion[language]
-          }
+        var varname = '';
+        if(data.name){
+          varname = ' ('+data.name+')';
         }
+        var label = 'Suggestion'
+        if(data.suggestion[language]){
+          label = data.suggestion[language]+varname
+        }
+        var priority = data['priority'];
+        if (priority < 10) {
+          priority = 10;
+        }
+        priority = priority + 'px'
         return {
-          label: 'Suggestion'
+          label: label,
+          priority: priority
         }
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
@@ -208,19 +226,19 @@ export default {
         restrictTargetVertices: [
           'suggestion'
         ],
-        cytoscapeStyle: {
+        cytoscapeStyles: [{
           selector: '.isAnswerableBy',
           style: {
             'line-color': '#28A745',
             'target-arrow-color': '#28A745',
             'source-arrow-color': '#28A745',
-            'label': 'data(label)'
+            //'label': 'data(label)'
           }
-        }
+        }]
       },
       toCytoscape: function(data){
         return {
-          label: 'isAnswerableBy'
+          //label: 'isAnswerableBy'
         }
       }
     })
@@ -230,17 +248,22 @@ export default {
     // Listen for traversal event
     WandererSingleton.on('traversalFinished', function() {
 
-      if(traversalResult.lastFoundQuestionId !== undefined){
+      if(
+        traversalResult.lastFoundQuestionId !== undefined //&& // We need a question
+        // Das ist an der Stelle nicht so gut, weil es dazu führt, dass hier nix mehr geht, wenn eine frage keine antwort hat.
+        // Das gehört eher in den traversal prozess, damit ein alternativfrage geholt werden kann
+        // traversalResult.lastFoundSuggestionIds.length>0 // Every question needs at least one suggestion
+      ) {
 
         WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-          id: traversalResult.lastFoundQuestionId,
+          // id: traversalResult.lastFoundQuestionId,
           component: 'wanderer-question-message',
           data: {
             vertexId: traversalResult.lastFoundQuestionId,
             suggestionVertexIds: traversalResult.lastFoundSuggestionIds
           },
           backgroundColor: '#007BFF',
-          delay: 1000
+          delay: 2000
         })
 
       }

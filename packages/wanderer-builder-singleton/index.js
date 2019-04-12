@@ -15,7 +15,6 @@ export default class WandererBuilder {
   // }
 
   static getVertexModel(key){
-    var builder = this
     return {
       get(){
         if(StoreSingleton.store.state.wanderer.builder.editVertex){
@@ -35,7 +34,6 @@ export default class WandererBuilder {
   }
 
   static getTranslatableVertexModel(key){
-    var builder = this
     return {
       get(){
         if(StoreSingleton.store.state.wanderer.builder.editVertex){
@@ -52,6 +50,25 @@ export default class WandererBuilder {
           key: key,
           value: data,
           language: StoreSingleton.store.state.wanderer.currentLanguage
+        })
+      }
+    }
+  }
+
+  static getEdgeModel(key){
+    return {
+      get(){
+        if(StoreSingleton.store.state.wanderer.builder.editEdge){
+          if(StoreSingleton.store.state.wanderer.edgeDocumentData[StoreSingleton.store.state.wanderer.builder.editEdge] !== undefined){
+            return StoreSingleton.store.state.wanderer.edgeDocumentData[StoreSingleton.store.state.wanderer.builder.editEdge][key]
+          }
+        }
+      },
+      set(data){
+        StoreSingleton.store.commit('wanderer/setEdgeDataValue', {
+          id: StoreSingleton.store.state.wanderer.builder.editEdge,
+          key: key,
+          value: data
         })
       }
     }
@@ -90,7 +107,7 @@ export default class WandererBuilder {
     // Add base data
     newVertexData._id = WandererSingleton.generateId()
     newVertexData._collection = vertexCollectionName
-    newVertexData._isOrigin = false
+    newVertexData._origin = false
     newVertexData._x = position.x + 100
     newVertexData._y = position.y + 100
 
@@ -261,13 +278,18 @@ export default class WandererBuilder {
   }
 
   static connectById (fromVertexId, toVertexId, edgeCollection) {
+
+    // Copy default data
+    let edgeCollections = WandererSingleton.getEdgeCollections()
+    let newEdgeData = JSON.parse(JSON.stringify(edgeCollections[edgeCollection].builder.defaultFields))
+
+    newEdgeData._id = WandererSingleton.generateId();
+    newEdgeData._collection = edgeCollection;
+    newEdgeData._from = fromVertexId;
+    newEdgeData._to = toVertexId;
+
     // Create new edge
-    WandererSingleton.addEdge({
-      _id: WandererSingleton.generateId(),
-      _collection: edgeCollection,
-      _from: fromVertexId,
-      _to: toVertexId
-    });
+    WandererSingleton.addEdge(newEdgeData);
   }
 
   static initCytoscape (config) {
@@ -283,13 +305,13 @@ export default class WandererBuilder {
     // Apply the collection styles
     let cytoscapeStylesheets = []
     for(var fromCollectionName in vertexCollections){
-      if(vertexCollections[fromCollectionName].builder.cytoscapeStyle !== undefined){
-        cytoscapeStylesheets.push(vertexCollections[fromCollectionName].builder.cytoscapeStyle)
+      if(vertexCollections[fromCollectionName].builder.cytoscapeStyles !== undefined){
+        cytoscapeStylesheets = cytoscapeStylesheets.concat(vertexCollections[fromCollectionName].builder.cytoscapeStyles)
       }
     }
     for(var fromCollectionName in edgeCollections){
-      if(edgeCollections[fromCollectionName].builder.cytoscapeStyle !== undefined){
-        cytoscapeStylesheets.push(edgeCollections[fromCollectionName].builder.cytoscapeStyle)
+      if(edgeCollections[fromCollectionName].builder.cytoscapeStyles !== undefined){
+        cytoscapeStylesheets = cytoscapeStylesheets.concat(edgeCollections[fromCollectionName].builder.cytoscapeStyles)
       }
     }
 

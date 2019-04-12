@@ -44,7 +44,7 @@
       },
       "_id": "96e35544-2c56-4850-8069-c84f42fdea65",
       "_collection": "question",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 464,
       "_y": 164
     },
@@ -55,7 +55,7 @@
       },
       "_id": "5235e793-9c9b-495c-816a-e65c22388222",
       "_collection": "question",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 943,
       "_y": 132
     },
@@ -66,7 +66,7 @@
       },
       "_id": "29b8b770-59be-4fcc-a5d5-343d54dd2ab9",
       "_collection": "question",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 1263,
       "_y": 341
     },
@@ -77,7 +77,7 @@
       },
       "_id": "e64024d9-f05b-4d46-ba7f-56bb8d062a01",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 19,
       "_y": 419
     },
@@ -88,7 +88,7 @@
       },
       "_id": "cd689814-153f-4342-899b-b5581ac06376",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 156,
       "_y": 471
     },
@@ -99,7 +99,7 @@
       },
       "_id": "866cf03d-6639-4896-8d35-d857f39fd0a5",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 411,
       "_y": 351
     },
@@ -110,7 +110,7 @@
       },
       "_id": "600f6aa8-4a39-4e69-a010-661098dc335c",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 539,
       "_y": 413
     },
@@ -121,7 +121,7 @@
       },
       "_id": "17dd7c37-e8cb-4223-a7b5-5f31b821e915",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 611,
       "_y": 289
     },
@@ -132,7 +132,7 @@
       },
       "_id": "140d1273-2130-4808-a4c8-c34ac0df33a7",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 831,
       "_y": 245
     },
@@ -143,7 +143,7 @@
       },
       "_id": "4931e71d-032e-45d0-881e-49b4e0af99a6",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 906,
       "_y": 319
     },
@@ -154,7 +154,7 @@
       },
       "_id": "b4caadba-2750-4bef-8152-85e53b24c113",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 1158,
       "_y": 412
     },
@@ -165,7 +165,7 @@
       },
       "_id": "dea14c9e-f9e1-470d-96cf-aa9c7fccada0",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 1230,
       "_y": 471
     },
@@ -176,7 +176,7 @@
       },
       "_id": "1083e5a5-1c62-4bcc-b056-351d66281949",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 1363,
       "_y": 441
     },
@@ -187,7 +187,7 @@
       },
       "_id": "7e9293b3-57e2-4b3e-8e6b-8d2a3e0bef01",
       "_collection": "question",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 360,
       "_y": 652
     },
@@ -198,7 +198,7 @@
       },
       "_id": "b3ab36c7-2ddd-42e7-b591-733449c08a8c",
       "_collection": "suggestion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 509,
       "_y": 725
     },
@@ -209,7 +209,7 @@
       },
       "_id": "d223fe00-778b-4337-a135-8754090ee9f6",
       "_collection": "conclusion",
-      "_isOrigin": false,
+      "_origin": false,
       "_x": 639,
       "_y": 513
     }

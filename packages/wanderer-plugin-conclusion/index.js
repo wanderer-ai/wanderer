@@ -27,7 +27,7 @@ export default {
             de: 'Neue Schlussfolgerung'
           }
         },
-        cytoscapeStyle: {
+        cytoscapeStyles: [{
           selector: '.conclusion',
           style: {
             'height': '50px',
@@ -36,7 +36,7 @@ export default {
             'background-color': '#FEC106',
             'label': 'data(label)'
           }
-        },
+        }],
         component: 'wanderer-conclusion-editor'
       },
       chat: {
@@ -63,21 +63,31 @@ export default {
       // }
     })
 
+    var displayedConclusions = []
+
     WandererSingleton.on('traversalFinished', function() {
 
       if(traversalResult.lastFoundConclusionIds != undefined){
 
         for(var i in traversalResult.lastFoundConclusionIds){
 
-          // Add the conclusion message
-          WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-            id: traversalResult.lastFoundConclusionIds[i],
-            component: 'wanderer-conclusion-message',
-            backgroundColor: '#FEC106',
-            data: {
-              vertexId: traversalResult.lastFoundConclusionIds[i]
-            }
-          })
+          // Was this conclusion already added?
+          if(displayedConclusions.indexOf(traversalResult.lastFoundConclusionIds[i])==-1){
+
+            displayedConclusions.push(traversalResult.lastFoundConclusionIds[i])
+
+            // Add the conclusion message
+            WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+              // id: traversalResult.lastFoundConclusionIds[i],
+              component: 'wanderer-conclusion-message',
+              backgroundColor: '#FEC106',
+              data: {
+                vertexId: traversalResult.lastFoundConclusionIds[i]
+              },
+              delay: 1000
+            })
+
+          }
 
         }
 
@@ -86,6 +96,10 @@ export default {
       // Reset the result object
       traversalResult = {};
 
+    })
+
+    WandererSingleton.on('clean', function() {
+      displayedConclusions = []
     })
 
   }

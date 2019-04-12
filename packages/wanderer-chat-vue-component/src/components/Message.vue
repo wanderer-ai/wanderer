@@ -3,6 +3,7 @@
   <div v-if="showMessage">
 
     <div
+      :id="'message-'+id"
       class="bubble"
       v-bind:class="{
         'bubble--local': from=='local',
@@ -37,6 +38,10 @@
 
 export default {
   props: {
+    id: {
+      default: '',
+      type: String
+    },
     from: {
       default: 'remote',
       type: String
@@ -59,6 +64,7 @@ export default {
     setTimeout(() => {
       this.showMessage = true
       // this.$store.commit('chat/setTyping',false)
+      this.$emit('messageArrived', this.id)
     }, this.delay)
   }
 }

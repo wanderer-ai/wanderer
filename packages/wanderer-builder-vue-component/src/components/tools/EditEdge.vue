@@ -11,7 +11,7 @@
 
     <portal to="modals" :order="1">
       <modal :title="editEdgeCollection.label" :show="showEdgeEditorModal" v-on:closeButton="closeEdgeEditorModal()">
-        {{editEdgeData}}
+        <component v-bind:is="editEdgeCollection.component"></component>
       </modal>
     </portal>
 
@@ -48,12 +48,6 @@ export default {
       }
       return false
     },
-    editEdgeData () {
-      if (this.$store.state.wanderer.builder.editEdge !== 0) {
-        this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.builder.editEdge]
-      }
-      return false
-    },
     selectedEdges () {
       return this.$store.state.wanderer.builder.selectedEdgeIds.length
     }
@@ -63,9 +57,9 @@ export default {
       this.$store.commit('wanderer/builder/setEditEdge', 0)
 
       // Rebuild cytoscape data
-      // for(let i in this.$store.state.wanderer.edgeDocumentIds){
-      //   WandererSingleton.toCytoscape(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
-      // }
+      for(let i in this.$store.state.wanderer.edgeDocumentIds){
+        WandererSingleton.edgeToCytoscape(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
+      }
     },
     openEdgeEditorModal () {
       let selectedEdgeIds = this.$wandererBuilder.getSelectedEdgeIds()

@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    AH! {{conclusion}}
+    {{conclusion}}
 
   </div>
 </template>

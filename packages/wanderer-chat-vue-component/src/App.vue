@@ -4,8 +4,15 @@
 
     <div class="chat-messages" id="chat">
 
-      <message v-for="message in messages" :key="message.id" :from="message.from" :delay="message.delay" :backgroundColor="message.backgroundColor">
-        <component v-bind:is="message.component" :data="message.data"></component>
+      <message
+        v-for="(message,key) of messages"
+        :key="message.id"
+        :id="message.id"
+        :from="message.from"
+        :delay="message.delay"
+        :backgroundColor="message.backgroundColor"
+        v-on:messageArrived="messageArrived">
+        <component v-bind:is="message.component" :data="message.data" :last="key == messages.length - 1"></component>
       </message>
 
     </div>
@@ -15,7 +22,7 @@
         Typing ...
       </div>
 
-      <button class="btn" v-on:click="restart">Restart</button>
+      <button class="btn btn-secondary" v-on:click="restart">Restart</button>
     </div>
   </div>
 </template>
@@ -51,15 +58,15 @@ export default {
     messages: function (newObj, oldObj) {
       // Set typing timeout
       this.showTyping = true
-      setTimeout(() => {
-        this.showTyping = false
-      }, newObj[newObj.length - 1].delay)
+      // setTimeout(() => {
+      //   this.showTyping = false
+      // }, newObj[newObj.length - 1].delay)
 
       // Set auto scroll activation timeout
-      setTimeout(() => {
-        // Scroll to bottom
-        this.scrollToBottom()
-      }, newObj[newObj.length - 1].delay + 100)
+      // setTimeout(() => {
+      //   // Scroll to bottom
+      //   this.scrollToBottom()
+      // }, newObj[newObj.length - 1].delay + 100)
     }
   },
   mounted: function () {
@@ -101,6 +108,20 @@ export default {
         elem.scrollBy(0, 2)
         setTimeout(this.scrollToBottom, 1)
       }
+    },
+    messageArrived (messageId) {
+      this.showTyping = false
+
+      window.scrollTo(0,document.body.scrollHeight);
+
+      // var element = document.getElementById('message-'+messageId);
+      // if(element){
+      //   console.log(scroll);
+      //   element.scrollIntoView();
+      // }
+
+      //window.location.href = "#message-"+id;
+
     }
   }
 }
@@ -109,15 +130,14 @@ export default {
 
 <style>
 .chat{
-  height:100%;
+  padding:20px;
 }
 .chat-messages{
   padding-bottom:100px;
 }
 .chat-controls{
   position:fixed;
-  left:0;
-  bottom:0;
-  min-height:50px;
+  left:1rem;
+  bottom:1rem;
 }
 </style>

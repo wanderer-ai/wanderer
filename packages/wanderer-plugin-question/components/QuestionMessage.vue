@@ -3,8 +3,37 @@
 
     {{question}}
 
-    <div v-if="!answered" v-for="suggestion in suggestions" :key="suggestion._id">
-      <button class="btn" v-on:click="answerSingle(suggestion._id)">{{suggestion.suggestion}}</button>
+    <span v-if="answered" class="button-again" v-on:click="askAgain()">↺</span>
+
+    <div v-if="!answered && last">
+
+      <div v-for="suggestion in suggestions" :key="suggestion._id">
+
+        <div class="form-check" v-if="suggestion.type=='checkbox'">
+          <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]" :id="suggestion._id">
+          <label class="form-check-label" :for="suggestion._id" v-if="suggestion.suggestion">
+            {{suggestion.suggestion}}
+          </label>
+        </div>
+
+        <div class="form-group" v-if="suggestion.type=='text'">
+          <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
+          <input type="text" class="form-control" :id="suggestion._id" v-model="values[suggestion._id]">
+        </div>
+
+        <div class="form-group" v-if="suggestion.type=='textarea'">
+          <label  v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
+          <textarea class="form-control" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
+        </div>
+
+      </div>
+
+      <div v-for="suggestion in suggestions" :key="suggestion._id+'_button'">
+        <button v-if="suggestion.type=='button'" class="btn" v-on:click="answerButton(suggestion._id)">{{suggestion.suggestion}}</button>
+      </div>
+
+      <button v-if="requireAnswerButton" class="btn" v-on:click="answer()">Answer</button>
+
     </div>
 
   </div>
@@ -19,57 +48,160 @@ export default {
   props: {
     data: {
       type: Object
+    },
+    last: {
+      type: Boolean
+    }
+  },
+  data: function() {
+    return {
+      values: {},
+      answered: false
     }
   },
   computed: {
+    // values: function () {
+    //   return WandererStoreSingleton.store.state.wanderer.collectedValues
+    // },
     question: function () {
       if(this.data.vertexId != undefined){
         return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'question')
       }
     },
     suggestions: function () {
+      // We have got a list of ids. Now we fill it with data
       if(this.data.suggestionVertexIds != undefined){
         let returnData = []
         for(let i in this.data.suggestionVertexIds){
           returnData.push({
             _id: this.data.suggestionVertexIds[i],
-            suggestion: WandererSingleton.getTranslatableVertexValue(this.data.suggestionVertexIds[i],'suggestion')
+            suggestion: WandererSingleton.getTranslatableVertexValue(this.data.suggestionVertexIds[i],'suggestion'),
+            type: WandererSingleton.getVertexValue(this.data.suggestionVertexIds[i],'type'),
+            priority: WandererSingleton.getVertexValue(this.data.suggestionVertexIds[i],'priority')
           })
         }
+        console.log(returnData)
+        returnData = returnData.sort((a, b) => (a.priority < b.priority) ? 1 : -1)
+
         return returnData
       }
     },
-    answered: function () {
-      if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredQuestions.indexOf(this.data.vertexId)===-1){
-        return false
+    // answered: function () {
+    //   if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredQuestions.indexOf(this.data.vertexId)===-1){
+    //     return false
+    //   }
+    //   return true
+    // },
+    requireAnswerButton: function () {
+      var require = false
+      for (var i in this.suggestions) {
+        if (this.suggestions[i].type !== 'button') {
+          require = true
+        }
       }
-      return true
+      return require
     }
   },
   methods: {
-    answerSingle(suggestionVertexId){
-      // Answer question
+    answerButton (suggestionVertexId) {
+      // Mark component as answered
+      this.answered = true
+      // Mark question as answered in store
       WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.data.vertexId)
-      // Answer suggestion
+      // Mark suggestion as answered in store
       WandererStoreSingleton.store.commit('wanderer/plugin-question/answerSuggestion', suggestionVertexId)
       // Add answer message
+      var answerObject = {}
+      answerObject[suggestionVertexId] = true;
       WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-        id: suggestionVertexId,
+        // id: this.data.vertexId+'_suggestion',
         component: 'wanderer-suggestion-message',
         from: 'local',
         backgroundColor: '#28A745',
         delay: 0,
         data: {
-          vertexId: suggestionVertexId
+          answers: answerObject
         }
       })
       // Start next traversal tick
       WandererSingleton.traverse()
+    },
+    answer () {
+
+      // Mark component as answered
+      this.answered = true
+
+      // Mark question answered in store
+      WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.data.vertexId)
+
+      var answerObject = {}
+
+      // Mark suggestion as answered in vuex and store its values
+      for (var suggestionId in this.values) {
+        if (this.values.hasOwnProperty(suggestionId)) {
+
+          // Check the value.
+          // There must be some value. Values like "" or false will not answere the suggestion
+          if (this.values[suggestionId]) {
+
+            // Answer the suggestion
+            WandererStoreSingleton.store.commit('wanderer/plugin-question/answerSuggestion', suggestionId)
+
+            // Store the value
+            WandererStoreSingleton.store.commit('wanderer/setValue', {
+              key: WandererSingleton.getVertexValue(suggestionId,'name'),
+              value: this.values[suggestionId]
+            })
+
+            // Add to answer object
+            answerObject[suggestionId] = this.values[suggestionId]
+
+          }
+
+        }
+      }
+
+      // Create suggestion message
+      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+        // id: this.data.vertexId+'_suggestion',
+        component: 'wanderer-suggestion-message',
+        from: 'local',
+        backgroundColor: '#28A745',
+        delay: 0,
+        data: {
+          answers: answerObject
+        }
+      })
+
+      // Start next traversal tick
+      WandererSingleton.traverse()
+
+    },
+    askAgain(){
+
+      // Remove all answered suggestions first
+      for(let i in this.data.suggestionVertexIds){
+        WandererStoreSingleton.store.commit('wanderer/plugin-question/withdrawSuggestion', this.data.suggestionVertexIds[i])
+      }
+
+      // Re ask question
+      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+        // id: traversalResult.lastFoundQuestionId,
+        component: 'wanderer-question-message',
+        data: {
+          vertexId: this.data.vertexId,
+          suggestionVertexIds: this.data.suggestionVertexIds
+        },
+        backgroundColor: '#007BFF',
+        delay: 2000
+      })
     }
   }
 }
 </script>
 
 <style>
-
+.button-again {
+  cursor:pointer;
+}
 </style>

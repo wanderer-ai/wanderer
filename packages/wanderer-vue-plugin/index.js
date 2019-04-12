@@ -19,14 +19,19 @@ export default {
     StoreSingleton.store.registerModule('wanderer', {
       namespaced: true,
       state: {
+        originVertexId : '',
         vertexDocumentIds: [],
         vertexDocumentData: {},
         edgeDocumentIds: [],
         edgeDocumentData: {},
-        enabledLanguages: ['en', 'de'],
-        currentLanguage: 'en'
+        // enabledLanguages: ['en', 'de'],
+        currentLanguage: 'en',
+        collectedValues: {}
       },
       mutations: {
+        setOriginVertex (state, vertexId) {
+          state.originVertexId = vertexId
+        },
         addVertex (state, documentData) {
           state.vertexDocumentIds.push(documentData._id)
           this._vm.$set(state.vertexDocumentData, documentData._id, documentData)
@@ -40,14 +45,7 @@ export default {
         addEdge (state, documentData) {
           // Push document id
           state.edgeDocumentIds.push(documentData._id)
-          // Push document data
-          let data = {
-            _id: documentData._id,
-            _collection: documentData._collection,
-            _from: documentData._from,
-            _to: documentData._to
-          }
-          this._vm.$set(state.edgeDocumentData, documentData._id, data)
+          this._vm.$set(state.edgeDocumentData, documentData._id, documentData)
         },
         removeEdge (state, edgeId) {
           // Remove id from stack
@@ -62,20 +60,37 @@ export default {
             this._vm.$set(state.vertexDocumentData[id], key, value)
           }
         },
+        setEdgeDataValue (state, {id, key, value, language}) {
+          if(language !== undefined){
+            this._vm.$set(state.edgeDocumentData[id][key], language, value)
+          }else{
+            this._vm.$set(state.edgeDocumentData[id], key, value)
+          }
+        },
         enableLanguage (state, language) {
-          state.enabledLanguages.push(language)
+          //state.enabledLanguages.push(language)
+          // Store the new language into the origin node
+          state.vertexDocumentData[state.originVertexId].languages.push(language);
         },
         disableLanguage (state, language) {
-          state.enabledLanguages.splice(state.enabledLanguages.indexOf(language), 1)
+          //state.enabledLanguages.splice(state.enabledLanguages.indexOf(language), 1)
+          state.vertexDocumentData[state.originVertexId].languages.splice(state.vertexDocumentData[state.originVertexId].languages.indexOf(language), 1);
         },
         setCurrentLanguage (state, language) {
           state.currentLanguage = language
         },
+        setValue (state, {key, value}) {
+          this._vm.$set(state.collectedValues, key, value)
+        },
         truncate (state) {
+          this._vm.$set(state, 'originVertexId', '')
           this._vm.$set(state, 'vertexDocumentIds', [])
           this._vm.$set(state, 'vertexDocumentData', {})
           this._vm.$set(state, 'edgeDocumentIds', [])
           this._vm.$set(state, 'edgeDocumentData', {})
+          // this._vm.$set(state, 'enabledLanguages', ['en', 'de'])
+          this._vm.$set(state, 'currentLanguage', 'en')
+          this._vm.$set(state, 'collectedValues', {})
         }
       }
     })

@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar .navbar-expand navbar-expand navbar-light bg-light">
 
     <a class="navbar-brand" href="#">Wanderer.ai <small>Conversation Builder</small></a>
 
@@ -29,9 +29,9 @@
 export default {
   computed: {
     name () {
-      if(this.$store.state.wanderer.vertexDocumentIds.length){
-        if(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[0]].topic){
-          return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[0]].topic[this.$store.state.wanderer.currentLanguage];
+      if (this.$store.state.wanderer.originVertexId) {
+        if(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.originVertexId].topic){
+          return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.originVertexId].topic[this.$store.state.wanderer.currentLanguage];
         }
       }
       return 'untitled'
@@ -43,6 +43,8 @@ export default {
 
 <style>
   .navbar{
+    position:fixed;
+    width:100%;
     z-index:20;
   }
 </style>

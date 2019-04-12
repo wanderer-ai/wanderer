@@ -1,14 +1,18 @@
 <template>
   <transition>
-    <div class="chat-panel" v-if="showPanel">
 
-      <!--<button class="btn btn-secondary modal-default-button" @click="$emit('closeButton')">
-        Close
-      </button>-->
+    <div>
 
-      <wanderer-chat />
+      <div class="chat-background" v-if="showPanel">
+
+      </div>
+
+      <div class="chat-panel" v-if="showPanel">
+        <wanderer-chat />
+      </div>
 
     </div>
+
   </transition>
 </template>
 
@@ -39,21 +43,18 @@ export default {
 
 <style>
 
+.chat-background {
+  height: 100vh;
+  width:500px;
+  position: fixed;
+  background-color:#efefefef;
+}
+
 .chat-panel {
-  position:absolute;
-  top:0px;
-  left:0px;
-  height:100vh;
-  width: 500px;
-  padding: 100px 0 0 0;
-  background-color: #fff;
-  border-radius: 2px;
-  -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  -webkit-transition: all .3s ease;
-  transition: all .3s ease;
+  padding-top:70px;
+  height: 100vh;
+  width:500px;
   font-family: Helvetica, Arial, sans-serif;
-  overflow-y: scroll;
 }
 
 </style>

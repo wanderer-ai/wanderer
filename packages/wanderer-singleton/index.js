@@ -107,11 +107,16 @@ export default (function () {
       y: vertexData._y
     }
 
-    if(vertexData._origin){
+    if (vertexData._origin) {
+
       var position = {
         x: 0,
         y: 0
       }
+
+      // Remember the origin node id
+      WandererStoreSingleton.store.commit('wanderer/setOriginVertex', vertexData._id)
+
     }
 
     // Add vertex to Cytoscape
@@ -122,7 +127,7 @@ export default (function () {
     })
 
     // Convert data to Cytoscape if needed
-    toCytoscape(vertexData)
+    vertexToCytoscape(vertexData)
 
     // Add data to store
     WandererStoreSingleton.store.commit('wanderer/addVertex', vertexData)
@@ -142,6 +147,9 @@ export default (function () {
       },
       classes: collection.builder.cytoscapeClasses
     });
+
+    // Convert data to Cytoscape if needed
+    edgeToCytoscape(edgeData)
 
     // Add data to store
     WandererStoreSingleton.store.commit('wanderer/addEdge', edgeData)
@@ -192,21 +200,30 @@ export default (function () {
     }
   }
 
+  function replaceCollectedValues(string) {
+    for (var i in WandererStoreSingleton.store.state.wanderer.collectedValues) {
+      if (WandererStoreSingleton.store.state.wanderer.collectedValues.hasOwnProperty(i)) {
+        string = string.replace('{'+i+'}', WandererStoreSingleton.store.state.wanderer.collectedValues[i]);
+      }
+    }
+    return string
+  }
+
   function getVertexValue (vertexId, key) {
     if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
-      return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key]
+      return replaceCollectedValues(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key])
     }
   }
 
   function getTranslatableVertexValue (vertexId, key) {
     if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
       if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key] !== undefined){
-        return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][WandererStoreSingleton.store.state.wanderer.currentLanguage]
+        return replaceCollectedValues(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][WandererStoreSingleton.store.state.wanderer.currentLanguage])
       }
     }
   }
 
-  function toCytoscape (vertexData) {
+  function vertexToCytoscape (vertexData) {
     let cytoscapeData = {}
     let collection = getVertexCollection(vertexData._collection)
     if(collection.toCytoscape !== undefined){
@@ -217,9 +234,39 @@ export default (function () {
     vertex.data(cytoscapeData)
   }
 
+  function edgeToCytoscape (edgeData) {
+    let cytoscapeData = {}
+    let collection = getEdgeCollection(edgeData._collection)
+    if(collection.toCytoscape !== undefined){
+      cytoscapeData = collection.toCytoscape(edgeData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
+    }
+    cytoscapeData.id = edgeData._id; // You cannot override the id
+    let edge = WandererCytoscapeSingleton.cy.getElementById(edgeData._id)
+    edge.data(cytoscapeData)
+  }
+
   function generateId () {
     return uuidv4()
   }
+
+  /*function getValueModel(key){
+    return {
+      get(){
+        if(StoreSingleton.store.state.wanderer.collectedValues){
+          if(StoreSingleton.store.state.wanderer.collectedValues[StoreSingleton.store.state.wanderer.builder.editVertex] !== undefined){
+            return StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex][key]
+          }
+        }
+      },
+      set(data){
+        StoreSingleton.store.commit('wanderer/setVertexDataValue', {
+          id: StoreSingleton.store.state.wanderer.builder.editVertex,
+          key: key,
+          value: data
+        })
+      }
+    }
+  }*/
 
   function traverse (nodeId, visitorData) {
     if (nodeId == undefined) {
@@ -260,6 +307,11 @@ export default (function () {
       }
     })
 
+    // if(currentVertexData._collection=='conclusion'){
+    //   console.log('found conclusion')
+    //   console.log(cytoscapeInboundEdges)
+    // }
+
     // Check for every edge if there is a allowTargetTraversal function that would allow or restrict the traversal of the current vertex
     var traversable = true
     if (cytoscapeInboundEdges.length) {
@@ -274,6 +326,10 @@ export default (function () {
             currentCytoscapeEdgeData,
             WandererStoreSingleton.store.state.wanderer.currentLanguage
           )
+          // If one of the inbound edges says NO...
+          if(!traversable) {
+            break; // Do not check the other edges
+          }
         }
       }
     }
@@ -294,6 +350,10 @@ export default (function () {
         if (currentVertexCollection.expander) {
           expandEdges = currentVertexCollection.expander(currentCytoscapeVertex, currentVertexData, cytoscapeOutboundEdges)
         }
+        // Sort the outbound edges
+        expandEdges = expandEdges.sort(function(a, b) {
+            return WandererStoreSingleton.store.state.wanderer.edgeDocumentData[a.id()]['priority']-WandererStoreSingleton.store.state.wanderer.edgeDocumentData[b.id()]['priority']
+        })
         // expand the edges
         for (let i in expandEdges) {
           // Remember this vertex as visited
@@ -327,12 +387,13 @@ export default (function () {
           flowFinished = true
         }
       }
-      if (flowFinished) {
-        trigger('flowFinished')
-      }
 
       // Finish the current traversal
       trigger('traversalFinished')
+
+      if (flowFinished) {
+        trigger('flowFinished')
+      }
     }
 
   }
@@ -353,7 +414,8 @@ export default (function () {
     removeEdge: removeEdge,
     getVertexValue: getVertexValue,
     getTranslatableVertexValue: getTranslatableVertexValue,
-    toCytoscape: toCytoscape,
+    vertexToCytoscape: vertexToCytoscape,
+    edgeToCytoscape: edgeToCytoscape,
     generateId: generateId,
     traverse: traverse
   }

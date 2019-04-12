@@ -60,6 +60,8 @@ import Icon from 'vue-awesome/components/Icon'
 
 import WandererSingleton from 'wanderer-singleton'
 
+import {version} from '../../../package.json';
+
 export default {
   components: {
     Modal, Icon
@@ -74,12 +76,15 @@ export default {
       return this.$store.state.wanderer.vertexDocumentIds.length;
     },
     fileName () {
-      if(this.$store.state.wanderer.vertexDocumentIds.length){
-        if(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[0]].topic){
-          return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[0]].topic[this.$store.state.wanderer.currentLanguage]+'.json';
+      if (this.$store.state.wanderer.originVertexId) {
+        if(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.originVertexId].topic){
+          return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.originVertexId].topic[this.$store.state.wanderer.currentLanguage]+'.json';
         }
       }
       return 'untitled.json'
+    },
+    version () {
+      return version
     }
   },
   methods: {
@@ -92,9 +97,10 @@ export default {
           {
             "_collection": "flow",
             "_id": "d3fab08d-e05e-4885-8eba-f1e86a374c98",
-            "_isOrigin": true,
+            "_origin": true,
             "_x": 0,
             "_y": 0,
+            "languages": ["en", "de"],
             "topic": {
               "en": "Cat consultant",
               "de": "Katzenberater"
@@ -162,7 +168,8 @@ export default {
     generateExportData () {
       let exportData = {
         // version: WandererConfig.version,
-        date: new Date(),
+        version: this.version,
+        time: new Date(),
         vertices: [],
         edges: []
       }

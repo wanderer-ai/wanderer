@@ -21,7 +21,7 @@ export default {
         defaultFields: {
 
         },
-        cytoscapeStyle: {
+        cytoscapeStyles: [{
           selector: '.request',
           style: {
             'height': '100px',
@@ -30,7 +30,7 @@ export default {
             'background-color': '#DC3545',
             'label': 'data(label)'
           }
-        }
+        }]
       },
       toCytoscape: function(data){
         return {
@@ -55,7 +55,7 @@ export default {
         defaultFields: {
 
         },
-        cytoscapeStyle: {
+        cytoscapeStyles: [{
           selector: '.response',
           style: {
             'height': '50px',
@@ -64,7 +64,7 @@ export default {
             'background-color': '#28A745',
             'label': 'data(label)'
           }
-        }
+        }]
       },
       toCytoscape: function(data){
         return {

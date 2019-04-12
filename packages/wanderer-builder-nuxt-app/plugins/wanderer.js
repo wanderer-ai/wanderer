@@ -41,7 +41,7 @@ export default ({ app, store }) => {
     WandererPluginConclusion,
 
     WandererPluginQuestion,
-    WandererPluginApi
+    // WandererPluginApi
   ]})
 
 }
