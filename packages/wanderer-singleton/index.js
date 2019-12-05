@@ -1,5 +1,7 @@
 import WandererStoreSingleton from 'wanderer-store-singleton'
 import WandererCytoscapeSingleton from 'wanderer-cytoscape-singleton'
+import Mustache from 'Mustache'
+
 const uuidv4 = require('uuid/v4');
 
 // Bei dieser Klasse geht es nur darum einen Singleton zu haben, den ich dann später in Vue injecten kann, aber auch an die Plugins weitergeben kann.
@@ -48,12 +50,12 @@ export default (function () {
     }
   }
 
-  function registerVertexCollection (name, configuration) {
-    vertexCollections[name] = configuration // Register the collection
+  function registerVertexCollection (configuration) {
+    vertexCollections[configuration.name] = configuration // Register the collection
   }
 
-  function registerEdgeCollection (name, configuration) {
-    edgeCollections[name] = configuration // Register the collection
+  function registerEdgeCollection (configuration) {
+    edgeCollections[configuration.name] = configuration // Register the collection
   }
 
   function getVertexCollections () {
@@ -64,23 +66,47 @@ export default (function () {
     return edgeCollections
   }
 
-  function getVertexCollection(name){
-    if(vertexCollections[name] === undefined){
+  function getVertexCollection(name) {
+    if(vertexCollections[name] === undefined) {
       return vertexCollections['default']
     }
     return vertexCollections[name]
   }
 
-  // static getVertexCollectionById(id){
-  //   let vertexData = getVertexDataById(id)
-  //   if(vertexData){
-  //     return getVertexCollection(vertexData._collection)
-  //   }
-  //   return false
-  // }
+  function getVertexCollectionById(id) {
+    let vertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[id]
+    if(vertexData) {
+      return getVertexCollection(vertexData._collection)
+    }
+    return false
+  }
 
-  function getEdgeCollection(name){
-    if(edgeCollections[name] === undefined){
+  function getVertexCollectionDefaultExposeField(name) {
+    var vertexCollection = getVertexCollection(name)
+    if (vertexCollection.lifecycleData != undefined) {
+      for(var dataName in vertexCollection.lifecycleData) {
+        if(vertexCollection.lifecycleData[dataName].exposeDefault) {
+          return dataName
+        }
+      }
+    }
+    return false
+  }
+
+  function getVertexCollectionDefaultEdgeCondition(name) {
+    var vertexCollection = getVertexCollection(name)
+    if (vertexCollection.edgeConditions != undefined) {
+      for(var conditionName in vertexCollection.edgeConditions) {
+        if(vertexCollection.edgeConditions[conditionName].default) {
+          return conditionName
+        }
+      }
+    }
+    return false
+  }
+
+  function getEdgeCollection(name) {
+    if(edgeCollections[name] === undefined) {
       return edgeCollections['default']
     }
     return edgeCollections[name]
@@ -129,8 +155,15 @@ export default (function () {
     // Convert data to Cytoscape if needed
     vertexToCytoscape(vertexData)
 
+    // Add the default lifecycledata to the vertex by deep cloning it
+    // let lifecycleData = {}
+    // if(collection.defaultLifecycleData!=undefined) {
+    //   lifecycleData = JSON.parse(JSON.stringify(collection.defaultLifecycleData))
+    // }
+
     // Add data to store
-    WandererStoreSingleton.store.commit('wanderer/addVertex', vertexData)
+    // WandererStoreSingleton.store.commit('wanderer/addVertex', {vertexData: vertexData, lifecycleData: lifecycleData})
+    WandererStoreSingleton.store.commit('wanderer/addVertex', {vertexData: vertexData})
 
     trigger('afterAddVertex');
   }
@@ -189,6 +222,9 @@ export default (function () {
     // Clean store
     WandererStoreSingleton.store.commit('wanderer/truncate')
 
+    // Emit the truncate event
+    trigger('truncate')
+
     // Load vertices
     for (var key in data.vertices) {
       this.addVertex(data.vertices[key])
@@ -200,25 +236,78 @@ export default (function () {
     }
   }
 
-  function replaceCollectedValues(string) {
-    for (var i in WandererStoreSingleton.store.state.wanderer.collectedValues) {
-      if (WandererStoreSingleton.store.state.wanderer.collectedValues.hasOwnProperty(i)) {
-        string = string.replace('{'+i+'}', WandererStoreSingleton.store.state.wanderer.collectedValues[i]);
+  function findNodeIdByName (name) {
+    for (var key in WandererStoreSingleton.store.state.wanderer.vertexDocumentData) {
+      if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData.hasOwnProperty(key)){
+        if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[key].name === name) {
+          return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[key]._id
+        }
       }
     }
-    return string
+    return false;
+  }
+
+  function replaceWithLifecycleData (value, contextVertexId) {
+
+    if(typeof value !== 'string') {
+      return value
+    }
+
+    // Get all incomming edges that was already traversed from the contextVertexId
+    let cytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(contextVertexId)
+
+    // Get all edges from this vertex
+    let cytoscapeEdges = cytoscapeVertex.connectedEdges()
+
+    // Collect the template data from the inbound edges and their source vertices
+    let templateData = {}
+    cytoscapeEdges.forEach(function(currentCytoscapeEdge) {
+      // Filter inbound edges
+      if(cytoscapeVertex.id()==currentCytoscapeEdge.data('target')) {
+        // Check if these edges had been traversed
+        if(WandererStoreSingleton.store.state.wanderer.traversedEdges.indexOf(currentCytoscapeEdge.id())!=-1) {
+          // Check if these edges have a name
+          if(WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()] != undefined) {
+            if(WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].name) {
+
+              // If this edge exposes data from the source vertex
+              if(WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].expose) {
+                // Get the data from the vertex
+                if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[currentCytoscapeEdge.data('source')] != undefined) {
+                  var data = WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[currentCytoscapeEdge.data('source')][WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].expose]
+                  templateData[WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].name] = data
+                }
+              } else {
+                // We have no exposed variable but we have a name
+                // So lets set this data to true
+                templateData[WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].name] = true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    try {
+      value = Mustache.render(value, templateData);
+    } catch {
+
+    }
+
+    return value;
+
   }
 
   function getVertexValue (vertexId, key) {
     if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
-      return replaceCollectedValues(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key])
+      return replaceWithLifecycleData(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key], vertexId)
     }
   }
 
   function getTranslatableVertexValue (vertexId, key) {
     if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
       if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key] !== undefined){
-        return replaceCollectedValues(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][WandererStoreSingleton.store.state.wanderer.currentLanguage])
+        return replaceWithLifecycleData(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][WandererStoreSingleton.store.state.wanderer.currentLanguage], vertexId)
       }
     }
   }
@@ -268,7 +357,7 @@ export default (function () {
     }
   }*/
 
-  function traverse (nodeId, visitorData) {
+  function traverse (nodeId, recursiveCall) {
     if (nodeId == undefined) {
       var nodeId = WandererStoreSingleton.store.state.wanderer.vertexDocumentIds[0]
     }
@@ -278,14 +367,14 @@ export default (function () {
     let currentVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[nodeId]
     let currentVertexCollection = getVertexCollection(currentVertexData._collection)
 
-    var traversalFinished = true;
+    if (recursiveCall == undefined) {
 
-    if (visitorData == undefined) {
-      var visitorData = {
-        _visitedEdges: [],
-        _visitedVertices: []
-      }
-      traversalFinished = false;
+      // This is the first call of the recursive stack
+
+      // Forget the traversed edges and vertices from the last traversal
+      WandererStoreSingleton.store.commit('wanderer/resetTraversal')
+
+
     }
 
     // Get edges
@@ -336,7 +425,8 @@ export default (function () {
 
     if (traversable) {
       // Remember this vertex as visited
-      visitorData._visitedVertices.push(currentCytoscapeVertex.id())
+      // visitorData._visitedVertices.push(currentCytoscapeVertex.id())
+      WandererStoreSingleton.store.commit('wanderer/rememberTraversedVertex', currentCytoscapeVertex.id())
 
       // Is there a visitor available for this kind of node?
       if (currentVertexCollection.visitor) {
@@ -352,30 +442,60 @@ export default (function () {
         }
         // Sort the outbound edges
         expandEdges = expandEdges.sort(function(a, b) {
-            return WandererStoreSingleton.store.state.wanderer.edgeDocumentData[a.id()]['priority']-WandererStoreSingleton.store.state.wanderer.edgeDocumentData[b.id()]['priority']
+            return WandererStoreSingleton.store.state.wanderer.edgeDocumentData[b.id()]['priority']-WandererStoreSingleton.store.state.wanderer.edgeDocumentData[a.id()]['priority']
         })
+
+        // console.log('expanding edges')
+        //
+        // for (let i in expandEdges) {
+        //   console.log(expandEdges[i].id());
+        // }
+
         // expand the edges
         for (let i in expandEdges) {
-          // Remember this vertex as visited
-          visitorData._visitedEdges.push(expandEdges[i].id())
-          // Get edge information
-          let EdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[expandEdges[i].id()]
-          let EdgeCollection = getEdgeCollection(EdgeData._collection)
-          // Call the visitor for this edge
-          if (EdgeCollection.visitor) {
-            EdgeCollection.visitor(expandEdges[i], EdgeData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
+          var traversable = true
+          let currentCytoscapeEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[expandEdges[i].id()]
+          let currentCytoscapeEdgeCollection = getEdgeCollection(currentCytoscapeEdgeData._collection)
+          if(currentCytoscapeEdgeCollection.allowTraversal !== undefined) {
+            traversable = currentCytoscapeEdgeCollection.allowTraversal(
+              currentCytoscapeVertex,
+              currentVertexData,
+              expandEdges[i],
+              currentCytoscapeEdgeData,
+              WandererStoreSingleton.store.state.wanderer.currentLanguage
+            )
           }
-          // traverse the node
-          traverse(expandEdges[i].target().id(), visitorData)
+
+          if(traversable){
+
+            // Remember this edge as visited
+            // visitorData._visitedEdges.push(expandEdges[i].id())
+            WandererStoreSingleton.store.commit('wanderer/rememberTraversedEdge', expandEdges[i].id())
+
+            // Get edge information
+            // let EdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[expandEdges[i].id()]
+            // let EdgeCollection = getEdgeCollection(EdgeData._collection)
+
+            // Call the visitor for this edge if present
+            if (currentCytoscapeEdgeCollection.visitor) {
+              currentCytoscapeEdgeCollection.visitor(expandEdges[i], currentCytoscapeEdgeData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
+            }
+
+            // traverse the node
+            traverse(expandEdges[i].target().id(), true)
+
+          }
+
         }
       }
     }
 
     // Is this the first function call in the recursive stack?
-    if (!traversalFinished) {
-      // Check the flowFinished function for all vertices
+    if (recursiveCall == undefined) {
+      // That means we have reached the end of the traversal
+      // Check the finisher function for all vertices
       // This function gets executed if all vertice collections decide not to repeat the traversal for the flow
-      // This means the program is over
+      // This means the program is finaly over
       var flowFinished = false
       let vertexCollections = this.getVertexCollections()
       for (var i in vertexCollections) {
@@ -388,7 +508,7 @@ export default (function () {
         }
       }
 
-      // Finish the current traversal
+      // Finish the current traversal by emittig the event
       trigger('traversalFinished')
 
       if (flowFinished) {
@@ -406,6 +526,9 @@ export default (function () {
     getVertexCollections: getVertexCollections,
     getEdgeCollections: getEdgeCollections,
     getVertexCollection: getVertexCollection,
+    getVertexCollectionDefaultEdgeCondition: getVertexCollectionDefaultEdgeCondition,
+    getVertexCollectionDefaultExposeField: getVertexCollectionDefaultExposeField,
+    getVertexCollectionById: getVertexCollectionById,
     getEdgeCollection: getEdgeCollection,
     addVertex: addVertex,
     addEdge: addEdge,

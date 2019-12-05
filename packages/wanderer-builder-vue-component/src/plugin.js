@@ -85,7 +85,7 @@ export default {
     // Add cytoscape to instance
     // Vue.prototype.$wandererCytoscape = class {
 
-    console.log(WandererSingleton)
+    // console.log(WandererSingleton)
 
     // Add wanderer builder events
     WandererSingleton.on('afterRemoveVertex',function(){

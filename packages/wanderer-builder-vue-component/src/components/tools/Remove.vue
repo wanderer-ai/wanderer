@@ -18,7 +18,7 @@
         </p>
 
         <p>
-          <button v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeVertices()" >
+          <button v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeVertices()">
             Remove {{selectedVertexIds.length}} selected vertices and all connected edges forever
           </button>
         </p>
@@ -51,6 +51,37 @@ export default {
     return {
       showModal: false
     }
+  },
+  mounted: function () {
+    var that = this
+
+    // Add event for delete key
+    document.addEventListener("keydown", event => {
+      if (event.isComposing || event.keyCode === 46) {
+
+        if(that.selectedVertexIds.length) {
+          that.showModal = true
+        }
+
+        return;
+      }
+    });
+
+    // Add enter key event
+    // Add event for delete key
+    document.addEventListener("keydown", event => {
+
+      if (event.isComposing || event.keyCode === 13) {
+
+        if(that.showModal) {
+          that.removeVertices()
+          that.showModal = false
+        }
+
+        return;
+      }
+    });
+
   },
   computed: {
     selectedVertexIds () {

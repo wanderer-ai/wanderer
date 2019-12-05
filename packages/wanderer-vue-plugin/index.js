@@ -26,15 +26,19 @@ export default {
         edgeDocumentData: {},
         // enabledLanguages: ['en', 'de'],
         currentLanguage: 'en',
-        collectedValues: {}
+        // collectedValues: {},
+        vertexLifecycleData: {},
+        traversedEdges: [],
+        traversedVertices: []
       },
       mutations: {
         setOriginVertex (state, vertexId) {
           state.originVertexId = vertexId
         },
-        addVertex (state, documentData) {
-          state.vertexDocumentIds.push(documentData._id)
-          this._vm.$set(state.vertexDocumentData, documentData._id, documentData)
+        addVertex (state, {vertexData}) {
+          state.vertexDocumentIds.push(vertexData._id)
+          this._vm.$set(state.vertexDocumentData, vertexData._id, vertexData)
+          // this._vm.$set(state.vertexLifecycleData, vertexData._id, lifecycleData)
         },
         removeVertex (state, vertexId) {
           // Remove id from stack
@@ -67,6 +71,23 @@ export default {
             this._vm.$set(state.edgeDocumentData[id], key, value)
           }
         },
+        setVertexLifecycleData (state, {id, key, value}) {
+
+          if(state.vertexLifecycleData[id] == undefined) {
+            this._vm.$set(state.vertexLifecycleData, id, {})
+          }
+
+          this._vm.$set(state.vertexLifecycleData[id], key, value)
+        },
+        cleanVertexLifecycleData (state) {
+
+          this._vm.$set(state, 'vertexLifecycleData', {})
+          // for(var id in state.vertexLifecycleData){
+          //   if(state.vertexLifecycleData.hasOwnProperty(id)){
+          //     this._vm.$set(state.vertexLifecycleData, id, {})
+          //   }
+          // }
+        },
         enableLanguage (state, language) {
           //state.enabledLanguages.push(language)
           // Store the new language into the origin node
@@ -79,9 +100,20 @@ export default {
         setCurrentLanguage (state, language) {
           state.currentLanguage = language
         },
-        setValue (state, {key, value}) {
-          this._vm.$set(state.collectedValues, key, value)
+        rememberTraversedEdge (state, edgeId) {
+          state.traversedEdges.push(edgeId)
         },
+        rememberTraversedVertex (state, vertexId) {
+          // Push document id
+          state.traversedVertices.push(vertexId)
+        },
+        resetTraversal (state) {
+          this._vm.$set(state, 'traversedEdges', [])
+          this._vm.$set(state, 'traversedVertices', [])
+        },
+        // setValue (state, {key, value}) {
+        //   this._vm.$set(state.collectedValues, key, value)
+        // },
         truncate (state) {
           this._vm.$set(state, 'originVertexId', '')
           this._vm.$set(state, 'vertexDocumentIds', [])
@@ -90,7 +122,10 @@ export default {
           this._vm.$set(state, 'edgeDocumentData', {})
           // this._vm.$set(state, 'enabledLanguages', ['en', 'de'])
           this._vm.$set(state, 'currentLanguage', 'en')
-          this._vm.$set(state, 'collectedValues', {})
+          // this._vm.$set(state, 'collectedValues', {})
+          this._vm.$set(state, 'vertexLifecycleData', {})
+          this._vm.$set(state, 'traversedEdges', [])
+          this._vm.$set(state, 'traversedVertices', [])
         }
       }
     })

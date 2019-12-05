@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    {{offboarding}}
+    {{ message }}
 
   </div>
 </template>
@@ -9,7 +9,6 @@
 <script>
 
 import WandererSingleton from 'wanderer-singleton'
-// import WandererStoreSingleton from 'wanderer-store-singleton'
 
 export default {
   props: {
@@ -18,9 +17,9 @@ export default {
     }
   },
   computed: {
-    offboarding: function () {
+    message: function () {
       if(this.data.vertexId != undefined){
-        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'offboarding')
+        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'message')
       }
     }
   }

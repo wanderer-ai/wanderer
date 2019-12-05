@@ -15,6 +15,7 @@ import WandererPluginBase from 'wanderer-plugin-base'
 import WandererPluginQuestion from 'wanderer-plugin-question'
 import WandererPluginConclusion from 'wanderer-plugin-conclusion'
 import WandererPluginApi from 'wanderer-plugin-api'
+import WandererPluginAction from 'wanderer-plugin-action'
 
 import StoreSingeton from 'wanderer-store-singleton'
 
@@ -41,6 +42,7 @@ export default ({ app, store }) => {
     WandererPluginConclusion,
 
     WandererPluginQuestion,
+    WandererPluginAction,
     // WandererPluginApi
   ]})
 

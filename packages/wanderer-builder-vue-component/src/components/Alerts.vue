@@ -39,7 +39,7 @@
 <style>
 
   .alerts{
-    position:absolute;
+    position:fixed;
     width:400px;
     top:90px;
     right:15px;

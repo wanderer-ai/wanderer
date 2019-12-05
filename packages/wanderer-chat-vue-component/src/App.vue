@@ -2,7 +2,7 @@
 <template>
   <div class="chat">
 
-    <div class="chat-messages" id="chat">
+    <div class="chat-messages" ref="messages">
 
       <message
         v-for="(message,key) of messages"
@@ -11,6 +11,7 @@
         :from="message.from"
         :delay="message.delay"
         :backgroundColor="message.backgroundColor"
+        :show="message.show"
         v-on:messageArrived="messageArrived">
         <component v-bind:is="message.component" :data="message.data" :last="key == messages.length - 1"></component>
       </message>
@@ -18,12 +19,15 @@
     </div>
     <div class="chat-controls">
 
-      <div v-if="showTyping">
+      <div v-if="waitingForMessage">
         Typing ...
       </div>
 
       <button class="btn btn-secondary" v-on:click="restart">Restart</button>
+      <!-- <button class="btn btn-secondary" v-on:click="toggleReport">Report</button> -->
+
     </div>
+
   </div>
 </template>
 
@@ -34,6 +38,7 @@ import WandererStoreSingleton from 'wanderer-store-singleton'
 import CytoscapeSingleton from 'wanderer-cytoscape-singleton'
 
 import Message from './components/Message.vue'
+// import Report from './components/Report.vue'
 
 export default {
   name: 'App',
@@ -42,10 +47,15 @@ export default {
   },
   data: function () {
     return {
-      showTyping: false
+      // showTyping: false,
+      waitingForMessage: false,
+      showReport: false
     }
   },
   computed: {
+    messageIds: function () {
+      return WandererStoreSingleton.store.state.wanderer.chat.messageIds
+    },
     messages: function () {
       return WandererStoreSingleton.store.state.wanderer.chat.messages
     },
@@ -54,10 +64,14 @@ export default {
     }
   },
   watch: {
-    // whenever question changes, this function will run
-    messages: function (newObj, oldObj) {
+    // Lets watch the message ids
+    // So we can detect if a new message will income at the stack
+    messageIds: function (newObj, oldObj) {
+
+      this.showNextMessage()
+
       // Set typing timeout
-      this.showTyping = true
+      // this.showTyping = true
       // setTimeout(() => {
       //   this.showTyping = false
       // }, newObj[newObj.length - 1].delay)
@@ -99,20 +113,50 @@ export default {
   },
   methods: {
     restart () {
-      WandererSingleton.trigger('clean')
+      WandererStoreSingleton.store.commit('wanderer/cleanVertexLifecycleData')
+      WandererSingleton.trigger('reset-chat')
       WandererSingleton.traverse()
     },
-    scrollToBottom () {
-      var elem = document.getElementById('chat')
-      if (elem.scrollTop !== (elem.scrollHeight - elem.offsetHeight)) {
-        elem.scrollBy(0, 2)
-        setTimeout(this.scrollToBottom, 1)
+    // scrollToBottom () {
+    //   var elem = document.getElementById('chat')
+    //   if (elem.scrollTop !== (elem.scrollHeight - elem.offsetHeight)) {
+    //     elem.scrollBy(0, 2)
+    //     setTimeout(this.scrollToBottom, 1)
+    //   }
+    // },
+    showNextMessage () {
+      // Check if there is currently a message in que
+      // Because we want only wait for one message at a time
+      if(!this.waitingForMessage){
+        if(this.messages) {
+          for (var key in this.messages) {
+            // Find the first message that has not been arrived
+            if (!this.messages[key].show) {
+              // Wait for this message
+              this.waitingForMessage = true
+              // Show this message
+              WandererStoreSingleton.store.commit('wanderer/chat/showMessage', key)
+              break;
+            }
+          }
+        }
       }
     },
-    messageArrived (messageId) {
-      this.showTyping = false
+    messageArrived () {
 
-      window.scrollTo(0,document.body.scrollHeight);
+      // A message delay has endet. So it has been arrived
+
+      // this.showTyping = false
+
+      this.$refs['messages'].scrollTo(0,this.$refs['messages'].scrollHeight)
+
+      // Scroll to bottom
+      //this.$refs['messages'].$el.scrollTo(0, this.$refs['messages'].$el.scrollHeight)
+
+      // Now we can show the next message
+      // Lets set waitingForMessage to false so this.showNextMessage will be able to show the next
+      this.waitingForMessage = false
+      this.showNextMessage();
 
       // var element = document.getElementById('message-'+messageId);
       // if(element){
@@ -120,7 +164,12 @@ export default {
       //   element.scrollIntoView();
       // }
 
-      //window.location.href = "#message-"+id;
+      // window.location.href = "#message-"+id;
+    },
+    toggleReport () {
+
+      this.showReport = !this.showReport
+      console.log(this.showReport)
 
     }
   }
@@ -130,14 +179,23 @@ export default {
 
 <style>
 .chat{
-  padding:20px;
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: stretch;
+  height:100%;
 }
-.chat-messages{
-  padding-bottom:100px;
+.chat-messages {
+  overflow-y: scroll;
+  flex:1 1;
+  padding:20px;
+  padding-bottom:100px; /* For some reason I cannot scroll to the final bottom. A few pixels always left. So I added a padding. So the message should always be visible */
 }
 .chat-controls{
-  position:fixed;
-  left:1rem;
-  bottom:1rem;
+  flex:0 0 100px;
+  padding:20px;
 }
 </style>

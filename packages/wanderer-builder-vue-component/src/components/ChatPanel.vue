@@ -1,16 +1,8 @@
 <template>
   <transition>
 
-    <div>
-
-      <div class="chat-background" v-if="showPanel">
-
-      </div>
-
-      <div class="chat-panel" v-if="showPanel">
-        <wanderer-chat />
-      </div>
-
+    <div class="chat-panel" v-if="showPanel">
+      <wanderer-chat />
     </div>
 
   </transition>
@@ -43,18 +35,16 @@ export default {
 
 <style>
 
-.chat-background {
-  height: 100vh;
-  width:500px;
-  position: fixed;
-  background-color:#efefefef;
-}
-
 .chat-panel {
-  padding-top:70px;
-  height: 100vh;
+  position:absolute;
+  top:0px;
+  left:0px;
+  height: 100%;
   width:500px;
   font-family: Helvetica, Arial, sans-serif;
+  z-index: 999999;
+
+  background-color: rgba(248, 249, 250, 0.5);
 }
 
 </style>

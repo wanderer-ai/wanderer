@@ -13,35 +13,29 @@
       <modal title="Save or restore project" :show="showModal"  v-on:closeButton="showModal=false">
 
         <div class="row">
-          <div class="col" v-if="vertexCount">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Save the current project</h5>
-                <p class="card-text">Save and download the current project as {{fileName}}</p>
-                <a href="#" class="btn btn-primary" v-on:click="exportJsonFile()">Save current</a>
-              </div>
-            </div>
+          <div class="col has-devider" v-if="vertexCount">
+
+            <h5 class="card-title">Save the current project</h5>
+            <p class="card-text">Save and download the current project as {{fileName}}</p>
+            <a href="#" class="btn btn-primary" v-on:click="exportJsonFile()">Save current</a>
+
           </div>
-          <div class="col">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Start a new project</h5>
-                <p class="card-text">Start a completly new project</p>
-                <a href="#" class="btn btn-primary" v-on:click="startEmptyProject()">Start new</a>
-              </div>
-            </div>
+          <div class="col has-devider">
+
+            <h5 class="card-title">Start a new project</h5>
+            <p class="card-text">Start a completly new project</p>
+            <a href="#" class="btn btn-primary" v-on:click="startEmptyProject()">Start new</a>
+
           </div>
-          <div class="col">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Restore an existing project</h5>
-                <p class="card-text">Restore an existing project from a project file.</p>
-                <div class="upload-btn-wrapper">
-                  <button class="btn btn-primary">Restore</button>
-                  <input class="btn" type="file" @change="loadFromFile">
-                </div>
-              </div>
+          <div class="col has-devider">
+
+            <h5 class="card-title">Restore an existing project</h5>
+            <p class="card-text">Restore an existing project from a project file.</p>
+            <div class="upload-btn-wrapper">
+              <button class="btn btn-primary">Restore</button>
+              <input class="btn" type="file" @change="loadFromFile">
             </div>
+
           </div>
         </div>
 
@@ -88,8 +82,7 @@ export default {
     }
   },
   methods: {
-    startEmptyProject(){
-      // Lets reset the IDs. So we have no conflicts with imported data in the future
+    startEmptyProject () {
       this.loadFromJson(this.resetIds({
         "version": "1.0.0",
         "languages": ["en","de"],
@@ -105,14 +98,6 @@ export default {
               "en": "Cat consultant",
               "de": "Katzenberater"
             },
-            "onboarding": {
-              "en": "Hey! I am your cat consultant!",
-              "de": "Hey! Ich bin dein Katzenberater!"
-            },
-            "offboarding": {
-              "en": "Thanks for participating. I have no further questions.",
-              "de": "Danke, dass du mitgemacht hast. Ich habe keine weiteren Fragen."
-            },
             "author": "Unknown",
             "license": "MIT"
           }
@@ -120,7 +105,8 @@ export default {
       }))
 
     },
-    loadFromJson(data){
+    loadFromJson (data) {
+
       WandererSingleton.load(data)
 
       // Center
@@ -131,7 +117,7 @@ export default {
       this.showModal = false
 
     },
-    loadFromFile(ev) {
+    loadFromFile (ev) {
       const file = ev.target.files[0]
       const reader = new FileReader()
 
@@ -146,7 +132,10 @@ export default {
 
       reader.readAsText(file)
     },
-    resetIds(data){
+    resetIds (data) {
+
+      // Lets reset the IDs. So we have no conflicts with imported data in the future
+
       let dataString = JSON.stringify(data);
 
       for(let i in data.vertices){
@@ -223,6 +212,14 @@ export default {
   left: 0;
   top: 0;
   opacity: 0;
+}
+
+.col.has-devider {
+  border-right:1px solid #eee;
+}
+
+.col.has-devider:last-of-type {
+  border-right:0;
 }
 
 </style>

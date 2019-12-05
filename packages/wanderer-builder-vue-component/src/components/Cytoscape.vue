@@ -1,10 +1,6 @@
 <template>
 
-  <div>
-
-    <div id="cy"></div>
-
-  </div>
+  <div id="cy"></div>
 
 </template>
 
@@ -56,11 +52,8 @@ export default {
 <style>
 
 #cy {
-  position:fixed;
-  width: 100vw;
-  height: 100vh;
-  top:0;
-  left:0;
+  width: 100%;
+  height: 100%;
 }
 
 </style>

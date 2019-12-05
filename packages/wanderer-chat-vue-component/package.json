@@ -13,7 +13,8 @@
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit test/e2e/specs",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "build-wc": "vue build --target wc --name wanderer-chat src/main.js"
   },
   "dependencies": {
     "axios": "^0.18.0",

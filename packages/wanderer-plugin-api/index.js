@@ -5,7 +5,8 @@ export default {
 
   install (Vue) {
 
-    WandererSingleton.registerVertexCollection('request',{
+    WandererSingleton.registerVertexCollection({
+      name: 'request',
       builder: {
         label: 'Request',
         color: '#DC3545',
@@ -39,7 +40,8 @@ export default {
       }
     })
 
-    WandererSingleton.registerVertexCollection('response',{
+    WandererSingleton.registerVertexCollection({
+      name: 'response',
       builder: {
         label: 'Response',
         color: '#28A745',

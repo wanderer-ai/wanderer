@@ -19,7 +19,8 @@
     "vue": "^2.5.2",
     "wanderer-singleton": "^1.0.0",
     "wanderer-store-singleton": "^1.0.0",
-    "wanderer-builder-singleton": "^1.0.0"
+    "wanderer-builder-singleton": "^1.0.0",
+    "wanderer-cytoscape-singleton": "^1.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

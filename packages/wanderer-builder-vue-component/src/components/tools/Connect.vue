@@ -69,9 +69,9 @@ export default {
         this.showModal = true
       }
     },
-    connect (edgeCollection) {
+    connect (edgeCollectionName) {
       this.showModal = false
-      WandererBuilderSingleton.connectById(this.selectedVertexIds[0], this.selectedVertexIds[1], edgeCollection)
+      WandererBuilderSingleton.addEdge (edgeCollectionName, this.selectedVertexIds[0], this.selectedVertexIds[1])
     }
   }
 }

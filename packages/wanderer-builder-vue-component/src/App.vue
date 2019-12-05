@@ -2,9 +2,22 @@
 <template>
   <div class="wanderer-builder">
 
-    <toolbar />
-    <cytoscape />
-    <chat-panel :show="showChatPanel" v-on:closeButton="showChatPanel=false" />
+    <div class="wanderer-builder-wrapper">
+
+      <div class="wanderer-builder-toolbar">
+        <toolbar />
+      </div>
+
+      <div class="wanderer-builder-cytoscape">
+
+        <chat-panel class="wanderer-builder-chat" :show="showChatPanel" v-on:closeButton="showChatPanel=false" />
+
+        <cytoscape />
+
+      </div>
+
+    </div>
+
     <alerts />
 
     <portal-target name="modals" multiple />
@@ -17,6 +30,7 @@
     <file-tool />
     <language-tool />
     <chat-tool v-on:toggle="toggleChatPanel()"/>
+    <add-vertex-tool />
 
   </div>
 </template>
@@ -36,6 +50,7 @@ import ConnectTool from './components/tools/Connect.vue'
 import FileTool from './components/tools/File.vue'
 import LanguageTool from './components/tools/Language.vue'
 import ChatTool from './components/tools/Chat.vue'
+import AddVertexTool from './components/tools/AddVertex.vue'
 
 export default {
   name: 'App',
@@ -51,7 +66,8 @@ export default {
     ConnectTool,
     FileTool,
     LanguageTool,
-    ChatTool
+    ChatTool,
+    AddVertexTool
   },
   data: function () {
     return {
@@ -71,5 +87,21 @@ export default {
 </script>
 
 <style>
+
+.wanderer-builder-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: stretch;
+  height:100vh;
+}
+
+.wanderer-builder-cytoscape {
+  flex:1 1;
+  position: relative;
+  overflow: hidden; /* Some elements will flow out of the cytocsape box. Hide them. */
+}
 
 </style>

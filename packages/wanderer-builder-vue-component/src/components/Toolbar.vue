@@ -42,9 +42,9 @@ export default {
 </script>
 
 <style>
-  .navbar{
+  /* .navbar{
     position:fixed;
     width:100%;
     z-index:20;
-  }
+  } */
 </style>
