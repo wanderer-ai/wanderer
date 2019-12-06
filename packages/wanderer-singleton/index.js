@@ -1,6 +1,7 @@
 import WandererStoreSingleton from 'wanderer-store-singleton'
 import WandererCytoscapeSingleton from 'wanderer-cytoscape-singleton'
 import Mustache from 'Mustache'
+import Axios from 'axios'
 
 const uuidv4 = require('uuid/v4');
 
@@ -216,24 +217,67 @@ export default (function () {
 
   function load (data) {
 
-    // Clean cy
-    WandererCytoscapeSingleton.cy.remove( '*' )
+    if(data.wanderer == undefined) {
+      throw('This data does not look like a wanderer flow :-(')
+    } else {
+      // Load the data
 
-    // Clean store
-    WandererStoreSingleton.store.commit('wanderer/truncate')
+      // Clean cy
+      WandererCytoscapeSingleton.cy.remove( '*' )
 
-    // Emit the truncate event
-    trigger('truncate')
+      // Clean store
+      WandererStoreSingleton.store.commit('wanderer/truncate')
 
-    // Load vertices
-    for (var key in data.vertices) {
-      this.addVertex(data.vertices[key])
+      // Emit the truncate event
+      trigger('truncate')
+
+      // Load vertices
+      for (var key in data.vertices) {
+        addVertex(data.vertices[key])
+      }
+
+      // Load edges
+      for (var key in data.edges) {
+        addEdge(data.edges[key])
+      }
+
+      // Center cytoscape to the flow vertex
+      // This should be the first vertex is list
+      WandererCytoscapeSingleton.cy.center(WandererCytoscapeSingleton.cy.$id(data.vertices[0]._id))
+      WandererCytoscapeSingleton.cy.zoom(1)
     }
 
-    // Load edges
-    for (var key in data.edges) {
-      this.addEdge(data.edges[key])
+  }
+
+  async function loadJsonRemote (url) {
+
+    const response = await Axios.get(url);
+    load(response.data)
+
+  }
+
+  async function loadJsonFile (file) {
+
+    const reader = new FileReader()
+
+    reader.onload = e => {
+
+      try {
+
+        var data = JSON.parse(e.target.result)
+
+        load(data)
+
+      } catch (e) {
+        // console.log('Schlimme Dinge')
+        throw('This file is not a wanderer .json file!')
+      }
+
+
     }
+
+    reader.readAsText(file)
+
   }
 
   function findNodeIdByName (name) {
@@ -518,6 +562,153 @@ export default (function () {
 
   }
 
+  function getLanguages() {
+    return {
+      aa: {name: 'Afar'},
+      ab: {name: 'Abkhazian'},
+      af: {name: 'Afrikaans'},
+      am: {name: 'Amharic'},
+      ar: {name: 'Arabic'},
+      as: {name: 'Assamese'},
+      ay: {name: 'Aymara'},
+      az: {name: 'Azerbaijani'},
+      ba: {name: 'Bashkir'},
+      be: {name: 'Byelorussian'},
+      bg: {name: 'Bulgarian'},
+      bh: {name: 'Bihari'},
+      bi: {name: 'Bislama'},
+      bn: {name: 'Bengali'},
+      bo: {name: 'Tibetan'},
+      br: {name: 'Breton'},
+      ca: {name: 'Catalan'},
+      co: {name: 'Corsican'},
+      cs: {name: 'Czech'},
+      cy: {name: 'Welch'},
+      da: {name: 'Danish'},
+      de: {name: 'German'},
+      dz: {name: 'Bhutani'},
+      el: {name: 'Greek'},
+      en: {name: 'English'},
+      eo: {name: 'Esperanto'},
+      es: {name: 'Spanish'},
+      et: {name: 'Estonian'},
+      eu: {name: 'Basque'},
+      fa: {name: 'Persian'},
+      fi: {name: 'Finnish'},
+      fj: {name: 'Fiji'},
+      fo: {name: 'Faeroese'},
+      fr: {name: 'French'},
+      fy: {name: 'Frisian'},
+      ga: {name: 'Irish'},
+      gd: {name: 'Scots Gaelic'},
+      gl: {name: 'Galician'},
+      gn: {name: 'Guarani'},
+      gu: {name: 'Gujarati'},
+      ha: {name: 'Hausa'},
+      hi: {name: 'Hindi'},
+      he: {name: 'Hebrew'},
+      hr: {name: 'Croatian'},
+      hu: {name: 'Hungarian'},
+      hy: {name: 'Armenian'},
+      ia: {name: 'Interlingua'},
+      id: {name: 'Indonesian'},
+      ie: {name: 'Interlingue'},
+      ik: {name: 'Inupiak'},
+      in: {name: 'former Indonesian'},
+      is: {name: 'Icelandic'},
+      it: {name: 'Italian'},
+      iu: {name: 'Inuktitut (Eskimo)'},
+      iw: {name: 'former Hebrew'},
+      ja: {name: 'Japanese'},
+      ji: {name: 'former Yiddish'},
+      jw: {name: 'Javanese'},
+      ka: {name: 'Georgian'},
+      kk: {name: 'Kazakh'},
+      kl: {name: 'Greenlandic'},
+      km: {name: 'Cambodian'},
+      kn: {name: 'Kannada'},
+      ko: {name: 'Korean'},
+      ks: {name: 'Kashmiri'},
+      ku: {name: 'Kurdish'},
+      ky: {name: 'Kirghiz'},
+      la: {name: 'Latin'},
+      ln: {name: 'Lingala'},
+      lo: {name: 'Laothian'},
+      lt: {name: 'Lithuanian'},
+      lv: {name: 'Latvian, Lettish'},
+      mg: {name: 'Malagasy'},
+      mi: {name: 'Maori'},
+      mk: {name: 'Macedonian'},
+      ml: {name: 'Malayalam'},
+      mn: {name: 'Mongolian'},
+      mo: {name: 'Moldavian'},
+      mr: {name: 'Marathi'},
+      ms: {name: 'Malay'},
+      mt: {name: 'Maltese'},
+      my: {name: 'Burmese'},
+      na: {name: 'Nauru'},
+      ne: {name: 'Nepali'},
+      nl: {name: 'Dutch'},
+      no: {name: 'Norwegian'},
+      oc: {name: 'Occitan'},
+      om: {name: '(Afan) Oromo'},
+      or: {name: 'Oriya'},
+      pa: {name: 'Punjabi'},
+      pl: {name: 'Polish'},
+      ps: {name: 'Pashto, Pushto'},
+      pt: {name: 'Portuguese'},
+      qu: {name: 'Quechua'},
+      rm: {name: 'Rhaeto-Romance'},
+      rn: {name: 'Kirundi'},
+      ro: {name: 'Romanian'},
+      ru: {name: 'Russian'},
+      rw: {name: 'Kinyarwanda'},
+      sa: {name: 'Sanskrit'},
+      sd: {name: 'Sindhi'},
+      sg: {name: 'Sangro'},
+      sh: {name: 'Serbo-Croatian'},
+      si: {name: 'Singhalese'},
+      sk: {name: 'Slovak'},
+      sl: {name: 'Slovenian'},
+      sm: {name: 'Samoan'},
+      sn: {name: 'Shona'},
+      so: {name: 'Somali'},
+      sq: {name: 'Albanian'},
+      sr: {name: 'Serbian'},
+      ss: {name: 'Siswati'},
+      st: {name: 'Sesotho'},
+      su: {name: 'Sudanese'},
+      sv: {name: 'Swedish'},
+      sw: {name: 'Swahili'},
+      ta: {name: 'Tamil'},
+      te: {name: 'Tegulu'},
+      tg: {name: 'Tajik'},
+      th: {name: 'Thai'},
+      ti: {name: 'Tigrinya'},
+      tk: {name: 'Turkmen'},
+      tl: {name: 'Tagalog'},
+      tn: {name: 'Setswana'},
+      to: {name: 'Tonga'},
+      tr: {name: 'Turkish'},
+      ts: {name: 'Tsonga'},
+      tt: {name: 'Tatar'},
+      tw: {name: 'Twi'},
+      ug: {name: 'Uigur'},
+      uk: {name: 'Ukrainian'},
+      ur: {name: 'Urdu'},
+      uz: {name: 'Uzbek'},
+      vi: {name: 'Vietnamese'},
+      vo: {name: 'Volapuk'},
+      wo: {name: 'Wolof'},
+      xh: {name: 'Xhosa'},
+      yi: {name: 'Yiddish'},
+      yo: {name: 'Yoruba'},
+      za: {name: 'Zhuang'},
+      zh: {name: 'Chinese'},
+      zu: {name: 'Zulu'},
+    }
+  }
+
   return {
     on: on,
     trigger: trigger,
@@ -533,6 +724,8 @@ export default (function () {
     addVertex: addVertex,
     addEdge: addEdge,
     load: load,
+    loadJsonRemote: loadJsonRemote,
+    loadJsonFile: loadJsonFile,
     removeVertex: removeVertex,
     removeEdge: removeEdge,
     getVertexValue: getVertexValue,
@@ -540,7 +733,8 @@ export default (function () {
     vertexToCytoscape: vertexToCytoscape,
     edgeToCytoscape: edgeToCytoscape,
     generateId: generateId,
-    traverse: traverse
+    traverse: traverse,
+    getLanguages: getLanguages
   }
 
 }())

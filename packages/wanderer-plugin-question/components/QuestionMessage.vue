@@ -28,11 +28,13 @@
 
       </div>
 
-      <div v-for="suggestion in suggestions" :key="suggestion._id+'_button'">
-        <button v-if="suggestion.type=='button'" class="btn" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
-      </div>
+      <div class="btn-group has-wrap">
 
-      <button v-if="requireAnswerButton" class="btn" v-on:click="answer()">Answer</button>
+        <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" class="btn" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
+
+        <button v-if="requireAnswerButton" class="btn" v-on:click="answer()">Answer</button>
+
+      </div>
 
     </div>
 
@@ -245,5 +247,9 @@ export default {
 <style>
 .button-again {
   cursor:pointer;
+}
+
+.btn-group.has-wrap {
+  flex-wrap: wrap;
 }
 </style>

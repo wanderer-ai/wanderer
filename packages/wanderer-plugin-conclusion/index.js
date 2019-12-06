@@ -18,64 +18,64 @@ export default {
     var transferedConclusions = [];
     var transferedReports = [];
 
-    // Register the question vertex
-    WandererSingleton.registerVertexCollection({
-      name: 'conclusion',
-      builder: {
-        label: 'Conclusion',
-        color: '#FEC106',
-        cytoscapeClasses: 'conclusion',
-        cytoscapeCxtMenuSelector: '.conclusion',
-        creatable: true,
-        defaultFields: {
-          conclusion: {
-            en: 'New conclusion',
-            de: 'Neue Schlussfolgerung'
-          }
-        },
-        cytoscapeStyles: [{
-          selector: '.conclusion',
-          style: {
-            'height': '50px',
-            'width': '50px',
-            'font-size': '20px',
-            'background-color': '#FEC106',
-            'label': 'data(label)'
-          }
-        }],
-        component: 'wanderer-conclusion-editor'
-      },
-      toCytoscape: function(data, language){
-        if(data.conclusion[language]){
-          return {
-            label: data.conclusion[language]
-          }
-        }
-        return {
-          label: 'Conclusion'
-        }
-      },
-      visitor: function (cytoscapeVertex, vertexData, language) {
-
-        if(transferedConclusions.indexOf(cytoscapeVertex.id())==-1){
-
-          transferedConclusions.push(cytoscapeVertex.id())
-
-          // Add the conclusion message
-          WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-            // id: traversalResult.lastFoundConclusionIds[i],
-            component: 'wanderer-conclusion-message',
-            backgroundColor: '#FEC106',
-            data: {
-              vertexId: cytoscapeVertex.id()
-            },
-            delay: 1000
-          })
-
-        }
-
-      }
-    })
+    // Register the conclusion vertex
+    // WandererSingleton.registerVertexCollection({
+    //   name: 'conclusion',
+    //   builder: {
+    //     label: 'Conclusion',
+    //     color: '#FEC106',
+    //     cytoscapeClasses: 'conclusion',
+    //     cytoscapeCxtMenuSelector: '.conclusion',
+    //     creatable: true,
+    //     defaultFields: {
+    //       conclusion: {
+    //         en: 'New conclusion',
+    //         de: 'Neue Schlussfolgerung'
+    //       }
+    //     },
+    //     cytoscapeStyles: [{
+    //       selector: '.conclusion',
+    //       style: {
+    //         'height': '50px',
+    //         'width': '50px',
+    //         'font-size': '20px',
+    //         'background-color': '#FEC106',
+    //         'label': 'data(label)'
+    //       }
+    //     }],
+    //     component: 'wanderer-conclusion-editor'
+    //   },
+    //   toCytoscape: function(data, language){
+    //     if(data.conclusion[language]){
+    //       return {
+    //         label: data.conclusion[language]
+    //       }
+    //     }
+    //     return {
+    //       label: 'Conclusion'
+    //     }
+    //   },
+    //   visitor: function (cytoscapeVertex, vertexData, language) {
+    //
+    //     if(transferedConclusions.indexOf(cytoscapeVertex.id())==-1){
+    //
+    //       transferedConclusions.push(cytoscapeVertex.id())
+    //
+    //       // Add the conclusion message
+    //       WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+    //         // id: traversalResult.lastFoundConclusionIds[i],
+    //         component: 'wanderer-conclusion-message',
+    //         backgroundColor: '#FEC106',
+    //         data: {
+    //           vertexId: cytoscapeVertex.id()
+    //         },
+    //         delay: 1000
+    //       })
+    //
+    //     }
+    //
+    //   }
+    // })
 
     WandererSingleton.registerVertexCollection({
       name: 'report',

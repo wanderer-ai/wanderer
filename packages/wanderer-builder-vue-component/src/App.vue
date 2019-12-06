@@ -27,10 +27,11 @@
     <edit-edge-tool />
     <remove-tool />
     <connect-tool />
-    <file-tool />
+    <file-tool :show="showFileTool" />
     <language-tool />
     <chat-tool v-on:toggle="toggleChatPanel()"/>
     <add-vertex-tool />
+    <welcome-tool v-on:openFileTool="openFileTool()" />
 
   </div>
 </template>
@@ -51,6 +52,7 @@ import FileTool from './components/tools/File.vue'
 import LanguageTool from './components/tools/Language.vue'
 import ChatTool from './components/tools/Chat.vue'
 import AddVertexTool from './components/tools/AddVertex.vue'
+import WelcomeTool from './components/tools/Welcome.vue'
 
 export default {
   name: 'App',
@@ -67,15 +69,20 @@ export default {
     FileTool,
     LanguageTool,
     ChatTool,
-    AddVertexTool
+    AddVertexTool,
+    WelcomeTool
   },
   data: function () {
     return {
-      showChatPanel: false
+      showChatPanel: false,
+      showFileTool: false
     }
   },
   methods: {
-    toggleChatPanel (){
+    openFileTool () {
+      this.showFileTool = true
+    },
+    toggleChatPanel () {
       if(this.showChatPanel){
         this.showChatPanel = false
       }else{

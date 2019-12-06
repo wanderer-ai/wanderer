@@ -89,6 +89,7 @@ export default {
         cytoscapeClasses: 'message',
         cytoscapeCxtMenuSelector: '.message',
         creatable: true,
+        showInCxtMenu: true,
         defaultFields: {
           message: {
             en: 'New message',

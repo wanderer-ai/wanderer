@@ -56,6 +56,7 @@ export default {
         color: '#007BFF',
         cytoscapeClasses: 'question',
         cytoscapeCxtMenuSelector: '.question',
+        showInCxtMenu: true,
         creatable: true,
         defaultFields: {
           question: {
@@ -171,6 +172,7 @@ export default {
         color: '#28A745',
         cytoscapeClasses: 'suggestion',
         cytoscapeCxtMenuSelector: '.suggestion',
+        showInCxtMenu: true,
         creatable: true,
         restrictIncommingConnections: [
           {

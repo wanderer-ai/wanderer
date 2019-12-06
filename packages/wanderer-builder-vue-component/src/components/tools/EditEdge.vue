@@ -12,6 +12,7 @@
     <portal to="modals" :order="1">
       <modal :title="editEdgeCollection.label" :show="showEdgeEditorModal" v-on:closeButton="closeEdgeEditorModal()">
         <component v-bind:is="editEdgeCollection.component"></component>
+        <!-- <language-switcher /> -->
       </modal>
     </portal>
 
@@ -25,8 +26,7 @@ import Modal from '../Modal.vue'
 import 'vue-awesome/icons/edit'
 import Icon from 'vue-awesome/components/Icon'
 import WandererSingleton from 'wanderer-singleton'
-
-// import Brain from 'wanderer-brain'
+// import LanguageSwitcher from '../LanguageSwitcher.vue'
 
 export default {
   components: {

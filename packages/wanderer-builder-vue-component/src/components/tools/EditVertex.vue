@@ -12,6 +12,7 @@
     <portal to="modals" :order="1">
       <modal :title="editVertexCollection.label" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
           <component v-bind:is="editVertexCollection.component"></component>
+          <language-switcher />
       </modal>
     </portal>
 
@@ -25,12 +26,11 @@ import Modal from '../Modal.vue'
 import 'vue-awesome/icons/edit'
 import Icon from 'vue-awesome/components/Icon'
 import WandererSingleton from 'wanderer-singleton'
-
-// import Brain from 'wanderer-brain'
+import LanguageSwitcher from '../LanguageSwitcher.vue'
 
 export default {
   components: {
-    Modal, Icon
+    Modal, Icon, LanguageSwitcher
   },
   computed: {
     showVertexEditorModal () {

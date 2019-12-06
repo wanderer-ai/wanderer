@@ -58,7 +58,10 @@ export default {
           this._vm.$delete(state.edgeDocumentData, edgeId)
         },
         setVertexDataValue (state, {id, key, value, language}) {
-          if(language !== undefined){
+          if(language !== undefined) {
+            if(state.vertexDocumentData[id][key] == undefined) {
+              this._vm.$set(state.vertexDocumentData[id], key, {})
+            }
             this._vm.$set(state.vertexDocumentData[id][key], language, value)
           }else{
             this._vm.$set(state.vertexDocumentData[id], key, value)

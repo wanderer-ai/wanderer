@@ -369,29 +369,34 @@ export default class WandererBuilder {
 
     // Init ctx menus for the different types of vertices
     // For each vertex collection
-    for(var fromCollectionName in vertexCollections){
+    for(var fromCollectionName in vertexCollections) {
       if (vertexCollections.hasOwnProperty(fromCollectionName)) {
 
         let cxtmenuCommands = []; // an array of commands to list in the menu or a function that returns the array
 
         let possibleOutgoingCollections = this.getPossibleOutgoingCollections(fromCollectionName)
-        for(let i in possibleOutgoingCollections){
+        for(let i in possibleOutgoingCollections) {
           (function(possibleOutgoingVertexCollection, possibleOutgoingEdgeCollection) {
 
-            cxtmenuCommands.push({
-              fillColor: possibleOutgoingVertexCollection.builder.color,
-              content: 'add '+possibleOutgoingVertexCollection.builder.label,
-              select: function(vertex){
-                vertex.trigger('append', {
-                  vertexCollectionName: possibleOutgoingVertexCollection.name,
-                  edgeCollectionName: possibleOutgoingEdgeCollection.name
-                })
-              }
-            });
+            if(possibleOutgoingVertexCollection.builder.showInCxtMenu) {
+
+              cxtmenuCommands.push({
+                fillColor: possibleOutgoingVertexCollection.builder.color,
+                content: 'add '+possibleOutgoingVertexCollection.builder.label,
+                select: function(vertex){
+                  vertex.trigger('append', {
+                    vertexCollectionName: possibleOutgoingVertexCollection.name,
+                    edgeCollectionName: possibleOutgoingEdgeCollection.name
+                  })
+                }
+              });
+
+            }
+
           })(possibleOutgoingCollections[i].to, possibleOutgoingCollections[i].through[0]);
         }
 
-        // Add general add more function
+        // Add general "add more" function
         // cxtmenuCommands.push({
         //   fillColor: '#6C757D',
         //   content: 'More',

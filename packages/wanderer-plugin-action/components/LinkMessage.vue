@@ -1,13 +1,7 @@
 <template>
   <div>
 
-    Link
-
-    <div v-if="type=='link'" >
-
-      <button class="btn" v-on:click="openLink()">{{message}}</button>
-
-    </div>
+    <span v-on:click="openLink()">{{label}}</span>
 
   </div>
 </template>
@@ -27,19 +21,14 @@ export default {
     this.openLink()
   },
   computed: {
-    message: function () {
+    label: function () {
       if(this.data.vertexId != undefined) {
-        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'message')
-      }
-    },
-    type: function () {
-      if(this.data.vertexId != undefined) {
-        return WandererSingleton.getVertexValue(this.data.vertexId,'type')
+        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'label')
       }
     },
     link: function () {
       if(this.data.vertexId != undefined) {
-        return WandererSingleton.getVertexValue(this.data.vertexId,'link')
+        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'link')
       }
     }
   },

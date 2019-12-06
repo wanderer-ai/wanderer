@@ -88,13 +88,13 @@ export default {
     // console.log(WandererSingleton)
 
     // Add wanderer builder events
-    WandererSingleton.on('afterRemoveVertex',function(){
+    WandererSingleton.on('afterRemoveVertex',function() {
       // Rebuild the selection
       let lastSelectedVerticesIds = WandererBuilderSingleton.getSelectedVertexIds()
       WandererStoreSingleton.store.commit('wanderer/builder/setSelectedVertexIds',lastSelectedVerticesIds);
     })
 
-    WandererSingleton.on('afterRemoveEdge',function(){
+    WandererSingleton.on('afterRemoveEdge',function() {
       // Rebuild the selection
       let lastSelectedEdgesIds = WandererBuilderSingleton.getSelectedEdgeIds()
       WandererStoreSingleton.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);

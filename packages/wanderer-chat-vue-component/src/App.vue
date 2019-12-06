@@ -16,6 +16,8 @@
         <component v-bind:is="message.component" :data="message.data" :last="key == messages.length - 1"></component>
       </message>
 
+      <div class="chat-messages-bottom-spacing"></div>
+
     </div>
     <div class="chat-controls">
 
@@ -192,9 +194,11 @@ export default {
   overflow-y: scroll;
   flex:1 1;
   padding:20px;
+}
+.chat-messages-bottom-spacing {
   padding-bottom:100px; /* For some reason I cannot scroll to the final bottom. A few pixels always left. So I added a padding. So the message should always be visible */
 }
-.chat-controls{
+.chat-controls {
   flex:0 0 100px;
   padding:20px;
 }

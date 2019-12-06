@@ -59,7 +59,10 @@ export default {
     document.addEventListener("keydown", event => {
       if (event.isComposing || event.keyCode === 46) {
 
-        if(that.selectedVertexIds.length) {
+        // Make sure no edit vertex was set
+        // So we can make sure we are not in an edit field
+        // Additionally this should only work if one ore more vertices are selected
+        if(!that.isEditVertexSet&&that.selectedVertexIds.length) {
           that.showModal = true
         }
 
@@ -89,7 +92,13 @@ export default {
     },
     selectedEdgeIds () {
       return this.$store.state.wanderer.builder.selectedEdgeIds
-    }
+    },
+    isEditVertexSet () {
+      if (this.$store.state.wanderer.builder.editVertex !== 0) {
+        return true
+      }
+      return false
+    },
   },
   methods: {
     removeVertices () {
