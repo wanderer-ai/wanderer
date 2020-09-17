@@ -66,9 +66,7 @@ export default {
     //         // id: traversalResult.lastFoundConclusionIds[i],
     //         component: 'wanderer-conclusion-message',
     //         backgroundColor: '#FEC106',
-    //         data: {
     //           vertexId: cytoscapeVertex.id()
-    //         },
     //         delay: 1000
     //       })
     //
@@ -128,9 +126,7 @@ export default {
             // id: traversalResult.lastFoundConclusionIds[i],
             component: 'wanderer-report-message',
             backgroundColor: '#FEC106',
-            data: {
-              vertexId: cytoscapeVertex.id()
-            },
+            vertexId: cytoscapeVertex.id(),
             delay: 1000
           })
 
@@ -139,7 +135,7 @@ export default {
       }
     })
 
-    WandererSingleton.on('reset-chat', function() {
+    WandererSingleton.on('truncate', function() {
       console.log('resetting conclusion messages')
       transferedConclusions = []
       transferedReports = []

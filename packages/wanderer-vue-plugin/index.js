@@ -24,6 +24,7 @@ export default {
         vertexDocumentData: {},
         edgeDocumentIds: [],
         edgeDocumentData: {},
+        vertexRelations: {},
         // enabledLanguages: ['en', 'de'],
         currentLanguage: 'en',
         // collectedValues: {},
@@ -32,6 +33,9 @@ export default {
         traversedVertices: []
       },
       mutations: {
+        setVertexRelations (state, {vertexId, vertexRelations}) {
+          this._vm.$set(state.vertexRelations, vertexId, vertexRelations)
+        },
         setOriginVertex (state, vertexId) {
           state.originVertexId = vertexId
         },
@@ -113,6 +117,7 @@ export default {
         resetTraversal (state) {
           this._vm.$set(state, 'traversedEdges', [])
           this._vm.$set(state, 'traversedVertices', [])
+          this._vm.$set(state, 'vertexRelations', {})
         },
         // setValue (state, {key, value}) {
         //   this._vm.$set(state.collectedValues, key, value)
@@ -124,11 +129,12 @@ export default {
           this._vm.$set(state, 'edgeDocumentIds', [])
           this._vm.$set(state, 'edgeDocumentData', {})
           // this._vm.$set(state, 'enabledLanguages', ['en', 'de'])
-          this._vm.$set(state, 'currentLanguage', 'en')
+          // this._vm.$set(state, 'currentLanguage', 'en')
           // this._vm.$set(state, 'collectedValues', {})
           this._vm.$set(state, 'vertexLifecycleData', {})
           this._vm.$set(state, 'traversedEdges', [])
           this._vm.$set(state, 'traversedVertices', [])
+          this._vm.$set(state, 'vertexRelations', {})
         }
       }
     })

@@ -337,7 +337,8 @@ export default class WandererBuilder {
         style: {
           'label': 'data(label)',
           'text-wrap': 'wrap',
-          'text-max-width': '200px'
+          'text-max-width': '200px',
+          'background-opacity': 1
         }
       },
       {
@@ -345,7 +346,8 @@ export default class WandererBuilder {
         style: {
           'curve-style': 'unbundled-bezier',
           'target-arrow-shape': 'triangle',
-          'source-arrow-shape': 'circle'
+          'source-arrow-shape': 'circle',
+          'opacity': 1
         }
       },
       {

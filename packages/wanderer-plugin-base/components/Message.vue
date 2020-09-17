@@ -12,14 +12,14 @@ import WandererSingleton from 'wanderer-singleton'
 
 export default {
   props: {
-    data: {
-      type: Object
+    vertexId: {
+      type: String
     }
   },
   computed: {
     message: function () {
-      if(this.data.vertexId != undefined){
-        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'message')
+      if(this.vertexId != undefined){
+        return WandererSingleton.getTranslatableVertexValue(this.vertexId,'message')
       }
     }
   }

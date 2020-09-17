@@ -1,14 +1,650 @@
-0 silly argv { _: [ 'bootstrap' ],
-0 silly argv   progress: true,
-0 silly argv   sort: true,
-0 silly argv   ci: false,
-0 silly argv   private: true,
-0 silly argv   loglevel: 'info',
-0 silly argv   lernaVersion: '3.0.0-rc.0',
-0 silly argv   '$0':
-0 silly argv    'C:\\Users\\Chris\\AppData\\Roaming\\npm\\node_modules\\lerna\\cli.js' }
-1 info version 3.0.0-rc.0
-2 verbose rootPath G:\SteamPixelProjekte\Wanderer.ai\Repositories\Wanderer
-3 error JSONError: Unexpected token } in JSON at position 776 while parsing near '...leton": "^1.0.0",  },  "devDependencie...' in ..\wanderer-chat-vue-component\package.json
-3 error     at module.exports (C:\Users\Chris\AppData\Roaming\npm\node_modules\lerna\node_modules\parse-json\index.js:26:19)
-3 error     at parse (C:\Users\Chris\AppData\Roaming\npm\node_modules\lerna\node_modules\load-json-file\index.js:8:29)
+0 silly argv {
+0 silly argv   _: [ 'bootstrap' ],
+0 silly argv   lernaVersion: '3.22.1',
+0 silly argv   '$0': 'node_modules/.bin/lerna'
+0 silly argv }
+1 notice cli v3.22.1
+2 verbose rootPath /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer
+3 silly npmConfig {
+3 silly npmConfig   registry: undefined,
+3 silly npmConfig   npmClient: 'npm',
+3 silly npmConfig   npmClientArgs: [],
+3 silly npmConfig   mutex: undefined
+3 silly npmConfig }
+4 info Bootstrapping 13 packages
+5 verbose lifecycle preinstall
+6 silly lifecycle No script for "preinstall" in "wanderer-cytoscape-singleton", continuing
+7 silly lifecycle No script for "preinstall" in "wanderer-store-singleton", continuing
+8 silly lifecycle No script for "preinstall" in "wanderer-singleton", continuing
+9 silly lifecycle No script for "preinstall" in "wanderer-builder-singleton", continuing
+10 silly lifecycle No script for "preinstall" in "wanderer-plugin-api", continuing
+11 silly lifecycle No script for "preinstall" in "wanderer-vue-plugin", continuing
+12 silly lifecycle No script for "preinstall" in "wanderer-builder-vue-component", continuing
+13 silly lifecycle No script for "preinstall" in "wanderer-plugin-action", continuing
+14 silly lifecycle No script for "preinstall" in "wanderer-plugin-base", continuing
+15 silly lifecycle No script for "preinstall" in "wanderer-plugin-conclusion", continuing
+16 silly lifecycle No script for "preinstall" in "wanderer-plugin-question", continuing
+17 silly lifecycle No script for "preinstall" in "wanderer-chat-vue-component", continuing
+18 silly lifecycle No script for "preinstall" in "wanderer-builder-nuxt-app", continuing
+19 silly hasDependencyInstalled wanderer-builder-nuxt-app nodemon
+20 silly hasDependencyInstalled wanderer-builder-nuxt-app cross-env
+21 silly hasDependencyInstalled wanderer-builder-nuxt-app nuxt
+22 silly hasDependencyInstalled wanderer-builder-nuxt-app bootstrap-vue
+23 silly hasDependencyInstalled wanderer-chat-vue-component bootstrap-vue
+24 silly hasDependencyInstalled wanderer-plugin-action bootstrap-vue
+25 silly hasDependencyInstalled wanderer-plugin-api bootstrap-vue
+26 silly hasDependencyInstalled wanderer-plugin-base bootstrap-vue
+27 silly hasDependencyInstalled wanderer-plugin-conclusion bootstrap-vue
+28 silly hasDependencyInstalled wanderer-plugin-question bootstrap-vue
+29 silly hasDependencyInstalled wanderer-builder-nuxt-app portal-vue
+30 silly hasDependencyInstalled wanderer-chat-vue-component portal-vue
+31 silly hasDependencyInstalled wanderer-builder-nuxt-app vuex
+32 silly hasDependencyInstalled wanderer-chat-vue-component vuex
+33 silly hasDependencyInstalled wanderer-builder-vue-component autoprefixer
+34 silly hasDependencyInstalled wanderer-chat-vue-component autoprefixer
+35 silly hasDependencyInstalled wanderer-plugin-action autoprefixer
+36 silly hasDependencyInstalled wanderer-plugin-api autoprefixer
+37 silly hasDependencyInstalled wanderer-plugin-base autoprefixer
+38 silly hasDependencyInstalled wanderer-plugin-conclusion autoprefixer
+39 silly hasDependencyInstalled wanderer-plugin-question autoprefixer
+40 silly hasDependencyInstalled wanderer-builder-vue-component babel-core
+41 silly hasDependencyInstalled wanderer-chat-vue-component babel-core
+42 silly hasDependencyInstalled wanderer-plugin-action babel-core
+43 silly hasDependencyInstalled wanderer-plugin-api babel-core
+44 silly hasDependencyInstalled wanderer-plugin-base babel-core
+45 silly hasDependencyInstalled wanderer-plugin-conclusion babel-core
+46 silly hasDependencyInstalled wanderer-plugin-question babel-core
+47 silly hasDependencyInstalled wanderer-builder-vue-component babel-eslint
+48 silly hasDependencyInstalled wanderer-chat-vue-component babel-eslint
+49 silly hasDependencyInstalled wanderer-plugin-action babel-eslint
+50 silly hasDependencyInstalled wanderer-plugin-api babel-eslint
+51 silly hasDependencyInstalled wanderer-plugin-base babel-eslint
+52 silly hasDependencyInstalled wanderer-plugin-conclusion babel-eslint
+53 silly hasDependencyInstalled wanderer-plugin-question babel-eslint
+54 silly hasDependencyInstalled wanderer-builder-vue-component babel-helper-vue-jsx-merge-props
+55 silly hasDependencyInstalled wanderer-chat-vue-component babel-helper-vue-jsx-merge-props
+56 silly hasDependencyInstalled wanderer-plugin-action babel-helper-vue-jsx-merge-props
+57 silly hasDependencyInstalled wanderer-plugin-api babel-helper-vue-jsx-merge-props
+58 silly hasDependencyInstalled wanderer-plugin-base babel-helper-vue-jsx-merge-props
+59 silly hasDependencyInstalled wanderer-plugin-conclusion babel-helper-vue-jsx-merge-props
+60 silly hasDependencyInstalled wanderer-plugin-question babel-helper-vue-jsx-merge-props
+61 silly hasDependencyInstalled wanderer-builder-vue-component babel-jest
+62 silly hasDependencyInstalled wanderer-chat-vue-component babel-jest
+63 silly hasDependencyInstalled wanderer-plugin-action babel-jest
+64 silly hasDependencyInstalled wanderer-plugin-api babel-jest
+65 silly hasDependencyInstalled wanderer-plugin-base babel-jest
+66 silly hasDependencyInstalled wanderer-plugin-conclusion babel-jest
+67 silly hasDependencyInstalled wanderer-plugin-question babel-jest
+68 silly hasDependencyInstalled wanderer-builder-vue-component babel-loader
+69 silly hasDependencyInstalled wanderer-chat-vue-component babel-loader
+70 silly hasDependencyInstalled wanderer-plugin-action babel-loader
+71 silly hasDependencyInstalled wanderer-plugin-api babel-loader
+72 silly hasDependencyInstalled wanderer-plugin-base babel-loader
+73 silly hasDependencyInstalled wanderer-plugin-conclusion babel-loader
+74 silly hasDependencyInstalled wanderer-plugin-question babel-loader
+75 silly hasDependencyInstalled wanderer-builder-vue-component babel-plugin-dynamic-import-node
+76 silly hasDependencyInstalled wanderer-chat-vue-component babel-plugin-dynamic-import-node
+77 silly hasDependencyInstalled wanderer-plugin-action babel-plugin-dynamic-import-node
+78 silly hasDependencyInstalled wanderer-plugin-api babel-plugin-dynamic-import-node
+79 silly hasDependencyInstalled wanderer-plugin-base babel-plugin-dynamic-import-node
+80 silly hasDependencyInstalled wanderer-plugin-conclusion babel-plugin-dynamic-import-node
+81 silly hasDependencyInstalled wanderer-plugin-question babel-plugin-dynamic-import-node
+82 silly hasDependencyInstalled wanderer-builder-vue-component babel-plugin-syntax-jsx
+83 silly hasDependencyInstalled wanderer-chat-vue-component babel-plugin-syntax-jsx
+84 silly hasDependencyInstalled wanderer-plugin-action babel-plugin-syntax-jsx
+85 silly hasDependencyInstalled wanderer-plugin-api babel-plugin-syntax-jsx
+86 silly hasDependencyInstalled wanderer-plugin-base babel-plugin-syntax-jsx
+87 silly hasDependencyInstalled wanderer-plugin-conclusion babel-plugin-syntax-jsx
+88 silly hasDependencyInstalled wanderer-plugin-question babel-plugin-syntax-jsx
+89 silly hasDependencyInstalled wanderer-builder-vue-component babel-plugin-transform-es2015-modules-commonjs
+90 silly hasDependencyInstalled wanderer-chat-vue-component babel-plugin-transform-es2015-modules-commonjs
+91 silly hasDependencyInstalled wanderer-plugin-action babel-plugin-transform-es2015-modules-commonjs
+92 silly hasDependencyInstalled wanderer-plugin-api babel-plugin-transform-es2015-modules-commonjs
+93 silly hasDependencyInstalled wanderer-plugin-base babel-plugin-transform-es2015-modules-commonjs
+94 silly hasDependencyInstalled wanderer-plugin-conclusion babel-plugin-transform-es2015-modules-commonjs
+95 silly hasDependencyInstalled wanderer-plugin-question babel-plugin-transform-es2015-modules-commonjs
+96 silly hasDependencyInstalled wanderer-builder-vue-component babel-plugin-transform-runtime
+97 silly hasDependencyInstalled wanderer-chat-vue-component babel-plugin-transform-runtime
+98 silly hasDependencyInstalled wanderer-plugin-action babel-plugin-transform-runtime
+99 silly hasDependencyInstalled wanderer-plugin-api babel-plugin-transform-runtime
+100 silly hasDependencyInstalled wanderer-plugin-base babel-plugin-transform-runtime
+101 silly hasDependencyInstalled wanderer-plugin-conclusion babel-plugin-transform-runtime
+102 silly hasDependencyInstalled wanderer-plugin-question babel-plugin-transform-runtime
+103 silly hasDependencyInstalled wanderer-builder-vue-component babel-plugin-transform-vue-jsx
+104 silly hasDependencyInstalled wanderer-chat-vue-component babel-plugin-transform-vue-jsx
+105 silly hasDependencyInstalled wanderer-plugin-action babel-plugin-transform-vue-jsx
+106 silly hasDependencyInstalled wanderer-plugin-api babel-plugin-transform-vue-jsx
+107 silly hasDependencyInstalled wanderer-plugin-base babel-plugin-transform-vue-jsx
+108 silly hasDependencyInstalled wanderer-plugin-conclusion babel-plugin-transform-vue-jsx
+109 silly hasDependencyInstalled wanderer-plugin-question babel-plugin-transform-vue-jsx
+110 silly hasDependencyInstalled wanderer-builder-vue-component babel-preset-env
+111 silly hasDependencyInstalled wanderer-chat-vue-component babel-preset-env
+112 silly hasDependencyInstalled wanderer-plugin-action babel-preset-env
+113 silly hasDependencyInstalled wanderer-plugin-api babel-preset-env
+114 silly hasDependencyInstalled wanderer-plugin-base babel-preset-env
+115 silly hasDependencyInstalled wanderer-plugin-conclusion babel-preset-env
+116 silly hasDependencyInstalled wanderer-plugin-question babel-preset-env
+117 silly hasDependencyInstalled wanderer-builder-vue-component babel-preset-stage-2
+118 silly hasDependencyInstalled wanderer-chat-vue-component babel-preset-stage-2
+119 silly hasDependencyInstalled wanderer-plugin-action babel-preset-stage-2
+120 silly hasDependencyInstalled wanderer-plugin-api babel-preset-stage-2
+121 silly hasDependencyInstalled wanderer-plugin-base babel-preset-stage-2
+122 silly hasDependencyInstalled wanderer-plugin-conclusion babel-preset-stage-2
+123 silly hasDependencyInstalled wanderer-plugin-question babel-preset-stage-2
+124 silly hasDependencyInstalled wanderer-builder-vue-component babel-register
+125 silly hasDependencyInstalled wanderer-chat-vue-component babel-register
+126 silly hasDependencyInstalled wanderer-plugin-action babel-register
+127 silly hasDependencyInstalled wanderer-plugin-api babel-register
+128 silly hasDependencyInstalled wanderer-plugin-base babel-register
+129 silly hasDependencyInstalled wanderer-plugin-conclusion babel-register
+130 silly hasDependencyInstalled wanderer-plugin-question babel-register
+131 silly hasDependencyInstalled wanderer-builder-vue-component chalk
+132 silly hasDependencyInstalled wanderer-chat-vue-component chalk
+133 silly hasDependencyInstalled wanderer-plugin-action chalk
+134 silly hasDependencyInstalled wanderer-plugin-api chalk
+135 silly hasDependencyInstalled wanderer-plugin-base chalk
+136 silly hasDependencyInstalled wanderer-plugin-conclusion chalk
+137 silly hasDependencyInstalled wanderer-plugin-question chalk
+138 silly hasDependencyInstalled wanderer-builder-vue-component chromedriver
+139 silly hasDependencyInstalled wanderer-chat-vue-component chromedriver
+140 silly hasDependencyInstalled wanderer-plugin-action chromedriver
+141 silly hasDependencyInstalled wanderer-plugin-api chromedriver
+142 silly hasDependencyInstalled wanderer-plugin-base chromedriver
+143 silly hasDependencyInstalled wanderer-plugin-conclusion chromedriver
+144 silly hasDependencyInstalled wanderer-plugin-question chromedriver
+145 silly hasDependencyInstalled wanderer-builder-vue-component copy-webpack-plugin
+146 silly hasDependencyInstalled wanderer-chat-vue-component copy-webpack-plugin
+147 silly hasDependencyInstalled wanderer-plugin-action copy-webpack-plugin
+148 silly hasDependencyInstalled wanderer-plugin-api copy-webpack-plugin
+149 silly hasDependencyInstalled wanderer-plugin-base copy-webpack-plugin
+150 silly hasDependencyInstalled wanderer-plugin-conclusion copy-webpack-plugin
+151 silly hasDependencyInstalled wanderer-plugin-question copy-webpack-plugin
+152 silly hasDependencyInstalled wanderer-builder-vue-component cross-spawn
+153 silly hasDependencyInstalled wanderer-chat-vue-component cross-spawn
+154 silly hasDependencyInstalled wanderer-plugin-action cross-spawn
+155 silly hasDependencyInstalled wanderer-plugin-api cross-spawn
+156 silly hasDependencyInstalled wanderer-plugin-base cross-spawn
+157 silly hasDependencyInstalled wanderer-plugin-conclusion cross-spawn
+158 silly hasDependencyInstalled wanderer-plugin-question cross-spawn
+159 silly hasDependencyInstalled wanderer-builder-vue-component css-loader
+160 silly hasDependencyInstalled wanderer-chat-vue-component css-loader
+161 silly hasDependencyInstalled wanderer-plugin-action css-loader
+162 silly hasDependencyInstalled wanderer-plugin-api css-loader
+163 silly hasDependencyInstalled wanderer-plugin-base css-loader
+164 silly hasDependencyInstalled wanderer-plugin-conclusion css-loader
+165 silly hasDependencyInstalled wanderer-plugin-question css-loader
+166 silly hasDependencyInstalled wanderer-builder-vue-component eslint
+167 silly hasDependencyInstalled wanderer-chat-vue-component eslint
+168 silly hasDependencyInstalled wanderer-plugin-action eslint
+169 silly hasDependencyInstalled wanderer-plugin-api eslint
+170 silly hasDependencyInstalled wanderer-plugin-base eslint
+171 silly hasDependencyInstalled wanderer-plugin-conclusion eslint
+172 silly hasDependencyInstalled wanderer-plugin-question eslint
+173 silly hasDependencyInstalled wanderer-builder-vue-component eslint-config-standard
+174 silly hasDependencyInstalled wanderer-chat-vue-component eslint-config-standard
+175 silly hasDependencyInstalled wanderer-plugin-action eslint-config-standard
+176 silly hasDependencyInstalled wanderer-plugin-api eslint-config-standard
+177 silly hasDependencyInstalled wanderer-plugin-base eslint-config-standard
+178 silly hasDependencyInstalled wanderer-plugin-conclusion eslint-config-standard
+179 silly hasDependencyInstalled wanderer-plugin-question eslint-config-standard
+180 silly hasDependencyInstalled wanderer-builder-vue-component eslint-friendly-formatter
+181 silly hasDependencyInstalled wanderer-chat-vue-component eslint-friendly-formatter
+182 silly hasDependencyInstalled wanderer-plugin-action eslint-friendly-formatter
+183 silly hasDependencyInstalled wanderer-plugin-api eslint-friendly-formatter
+184 silly hasDependencyInstalled wanderer-plugin-base eslint-friendly-formatter
+185 silly hasDependencyInstalled wanderer-plugin-conclusion eslint-friendly-formatter
+186 silly hasDependencyInstalled wanderer-plugin-question eslint-friendly-formatter
+187 silly hasDependencyInstalled wanderer-builder-vue-component eslint-loader
+188 silly hasDependencyInstalled wanderer-chat-vue-component eslint-loader
+189 silly hasDependencyInstalled wanderer-plugin-action eslint-loader
+190 silly hasDependencyInstalled wanderer-plugin-api eslint-loader
+191 silly hasDependencyInstalled wanderer-plugin-base eslint-loader
+192 silly hasDependencyInstalled wanderer-plugin-conclusion eslint-loader
+193 silly hasDependencyInstalled wanderer-plugin-question eslint-loader
+194 silly hasDependencyInstalled wanderer-builder-vue-component eslint-plugin-import
+195 silly hasDependencyInstalled wanderer-chat-vue-component eslint-plugin-import
+196 silly hasDependencyInstalled wanderer-plugin-action eslint-plugin-import
+197 silly hasDependencyInstalled wanderer-plugin-api eslint-plugin-import
+198 silly hasDependencyInstalled wanderer-plugin-base eslint-plugin-import
+199 silly hasDependencyInstalled wanderer-plugin-conclusion eslint-plugin-import
+200 silly hasDependencyInstalled wanderer-plugin-question eslint-plugin-import
+201 silly hasDependencyInstalled wanderer-builder-vue-component eslint-plugin-node
+202 silly hasDependencyInstalled wanderer-chat-vue-component eslint-plugin-node
+203 silly hasDependencyInstalled wanderer-plugin-action eslint-plugin-node
+204 silly hasDependencyInstalled wanderer-plugin-api eslint-plugin-node
+205 silly hasDependencyInstalled wanderer-plugin-base eslint-plugin-node
+206 silly hasDependencyInstalled wanderer-plugin-conclusion eslint-plugin-node
+207 silly hasDependencyInstalled wanderer-plugin-question eslint-plugin-node
+208 silly hasDependencyInstalled wanderer-builder-vue-component eslint-plugin-promise
+209 silly hasDependencyInstalled wanderer-chat-vue-component eslint-plugin-promise
+210 silly hasDependencyInstalled wanderer-plugin-action eslint-plugin-promise
+211 silly hasDependencyInstalled wanderer-plugin-api eslint-plugin-promise
+212 silly hasDependencyInstalled wanderer-plugin-base eslint-plugin-promise
+213 silly hasDependencyInstalled wanderer-plugin-conclusion eslint-plugin-promise
+214 silly hasDependencyInstalled wanderer-plugin-question eslint-plugin-promise
+215 silly hasDependencyInstalled wanderer-builder-vue-component eslint-plugin-standard
+216 silly hasDependencyInstalled wanderer-chat-vue-component eslint-plugin-standard
+217 silly hasDependencyInstalled wanderer-plugin-action eslint-plugin-standard
+218 silly hasDependencyInstalled wanderer-plugin-api eslint-plugin-standard
+219 silly hasDependencyInstalled wanderer-plugin-base eslint-plugin-standard
+220 silly hasDependencyInstalled wanderer-plugin-conclusion eslint-plugin-standard
+221 silly hasDependencyInstalled wanderer-plugin-question eslint-plugin-standard
+222 silly hasDependencyInstalled wanderer-builder-vue-component eslint-plugin-vue
+223 silly hasDependencyInstalled wanderer-chat-vue-component eslint-plugin-vue
+224 silly hasDependencyInstalled wanderer-plugin-action eslint-plugin-vue
+225 silly hasDependencyInstalled wanderer-plugin-api eslint-plugin-vue
+226 silly hasDependencyInstalled wanderer-plugin-base eslint-plugin-vue
+227 silly hasDependencyInstalled wanderer-plugin-conclusion eslint-plugin-vue
+228 silly hasDependencyInstalled wanderer-plugin-question eslint-plugin-vue
+229 silly hasDependencyInstalled wanderer-builder-vue-component extract-text-webpack-plugin
+230 silly hasDependencyInstalled wanderer-chat-vue-component extract-text-webpack-plugin
+231 silly hasDependencyInstalled wanderer-plugin-action extract-text-webpack-plugin
+232 silly hasDependencyInstalled wanderer-plugin-api extract-text-webpack-plugin
+233 silly hasDependencyInstalled wanderer-plugin-base extract-text-webpack-plugin
+234 silly hasDependencyInstalled wanderer-plugin-conclusion extract-text-webpack-plugin
+235 silly hasDependencyInstalled wanderer-plugin-question extract-text-webpack-plugin
+236 silly hasDependencyInstalled wanderer-builder-vue-component file-loader
+237 silly hasDependencyInstalled wanderer-chat-vue-component file-loader
+238 silly hasDependencyInstalled wanderer-plugin-action file-loader
+239 silly hasDependencyInstalled wanderer-plugin-api file-loader
+240 silly hasDependencyInstalled wanderer-plugin-base file-loader
+241 silly hasDependencyInstalled wanderer-plugin-conclusion file-loader
+242 silly hasDependencyInstalled wanderer-plugin-question file-loader
+243 silly hasDependencyInstalled wanderer-builder-vue-component friendly-errors-webpack-plugin
+244 silly hasDependencyInstalled wanderer-chat-vue-component friendly-errors-webpack-plugin
+245 silly hasDependencyInstalled wanderer-plugin-action friendly-errors-webpack-plugin
+246 silly hasDependencyInstalled wanderer-plugin-api friendly-errors-webpack-plugin
+247 silly hasDependencyInstalled wanderer-plugin-base friendly-errors-webpack-plugin
+248 silly hasDependencyInstalled wanderer-plugin-conclusion friendly-errors-webpack-plugin
+249 silly hasDependencyInstalled wanderer-plugin-question friendly-errors-webpack-plugin
+250 silly hasDependencyInstalled wanderer-builder-vue-component html-webpack-plugin
+251 silly hasDependencyInstalled wanderer-chat-vue-component html-webpack-plugin
+252 silly hasDependencyInstalled wanderer-plugin-action html-webpack-plugin
+253 silly hasDependencyInstalled wanderer-plugin-api html-webpack-plugin
+254 silly hasDependencyInstalled wanderer-plugin-base html-webpack-plugin
+255 silly hasDependencyInstalled wanderer-plugin-conclusion html-webpack-plugin
+256 silly hasDependencyInstalled wanderer-plugin-question html-webpack-plugin
+257 silly hasDependencyInstalled wanderer-builder-vue-component jest
+258 silly hasDependencyInstalled wanderer-chat-vue-component jest
+259 silly hasDependencyInstalled wanderer-plugin-action jest
+260 silly hasDependencyInstalled wanderer-plugin-api jest
+261 silly hasDependencyInstalled wanderer-plugin-base jest
+262 silly hasDependencyInstalled wanderer-plugin-conclusion jest
+263 silly hasDependencyInstalled wanderer-plugin-question jest
+264 silly hasDependencyInstalled wanderer-builder-vue-component jest-serializer-vue
+265 silly hasDependencyInstalled wanderer-chat-vue-component jest-serializer-vue
+266 silly hasDependencyInstalled wanderer-plugin-action jest-serializer-vue
+267 silly hasDependencyInstalled wanderer-plugin-api jest-serializer-vue
+268 silly hasDependencyInstalled wanderer-plugin-base jest-serializer-vue
+269 silly hasDependencyInstalled wanderer-plugin-conclusion jest-serializer-vue
+270 silly hasDependencyInstalled wanderer-plugin-question jest-serializer-vue
+271 silly hasDependencyInstalled wanderer-builder-vue-component nightwatch
+272 silly hasDependencyInstalled wanderer-chat-vue-component nightwatch
+273 silly hasDependencyInstalled wanderer-plugin-action nightwatch
+274 silly hasDependencyInstalled wanderer-plugin-api nightwatch
+275 silly hasDependencyInstalled wanderer-plugin-base nightwatch
+276 silly hasDependencyInstalled wanderer-plugin-conclusion nightwatch
+277 silly hasDependencyInstalled wanderer-plugin-question nightwatch
+278 silly hasDependencyInstalled wanderer-builder-vue-component node-notifier
+279 silly hasDependencyInstalled wanderer-chat-vue-component node-notifier
+280 silly hasDependencyInstalled wanderer-plugin-action node-notifier
+281 silly hasDependencyInstalled wanderer-plugin-api node-notifier
+282 silly hasDependencyInstalled wanderer-plugin-base node-notifier
+283 silly hasDependencyInstalled wanderer-plugin-conclusion node-notifier
+284 silly hasDependencyInstalled wanderer-plugin-question node-notifier
+285 silly hasDependencyInstalled wanderer-builder-vue-component optimize-css-assets-webpack-plugin
+286 silly hasDependencyInstalled wanderer-chat-vue-component optimize-css-assets-webpack-plugin
+287 silly hasDependencyInstalled wanderer-plugin-action optimize-css-assets-webpack-plugin
+288 silly hasDependencyInstalled wanderer-plugin-api optimize-css-assets-webpack-plugin
+289 silly hasDependencyInstalled wanderer-plugin-base optimize-css-assets-webpack-plugin
+290 silly hasDependencyInstalled wanderer-plugin-conclusion optimize-css-assets-webpack-plugin
+291 silly hasDependencyInstalled wanderer-plugin-question optimize-css-assets-webpack-plugin
+292 silly hasDependencyInstalled wanderer-builder-vue-component ora
+293 silly hasDependencyInstalled wanderer-chat-vue-component ora
+294 silly hasDependencyInstalled wanderer-plugin-action ora
+295 silly hasDependencyInstalled wanderer-plugin-api ora
+296 silly hasDependencyInstalled wanderer-plugin-base ora
+297 silly hasDependencyInstalled wanderer-plugin-conclusion ora
+298 silly hasDependencyInstalled wanderer-plugin-question ora
+299 silly hasDependencyInstalled wanderer-builder-vue-component portfinder
+300 silly hasDependencyInstalled wanderer-chat-vue-component portfinder
+301 silly hasDependencyInstalled wanderer-plugin-action portfinder
+302 silly hasDependencyInstalled wanderer-plugin-api portfinder
+303 silly hasDependencyInstalled wanderer-plugin-base portfinder
+304 silly hasDependencyInstalled wanderer-plugin-conclusion portfinder
+305 silly hasDependencyInstalled wanderer-plugin-question portfinder
+306 silly hasDependencyInstalled wanderer-builder-vue-component postcss-import
+307 silly hasDependencyInstalled wanderer-chat-vue-component postcss-import
+308 silly hasDependencyInstalled wanderer-plugin-action postcss-import
+309 silly hasDependencyInstalled wanderer-plugin-api postcss-import
+310 silly hasDependencyInstalled wanderer-plugin-base postcss-import
+311 silly hasDependencyInstalled wanderer-plugin-conclusion postcss-import
+312 silly hasDependencyInstalled wanderer-plugin-question postcss-import
+313 silly hasDependencyInstalled wanderer-builder-vue-component postcss-loader
+314 silly hasDependencyInstalled wanderer-chat-vue-component postcss-loader
+315 silly hasDependencyInstalled wanderer-plugin-action postcss-loader
+316 silly hasDependencyInstalled wanderer-plugin-api postcss-loader
+317 silly hasDependencyInstalled wanderer-plugin-base postcss-loader
+318 silly hasDependencyInstalled wanderer-plugin-conclusion postcss-loader
+319 silly hasDependencyInstalled wanderer-plugin-question postcss-loader
+320 silly hasDependencyInstalled wanderer-builder-vue-component postcss-url
+321 silly hasDependencyInstalled wanderer-chat-vue-component postcss-url
+322 silly hasDependencyInstalled wanderer-plugin-action postcss-url
+323 silly hasDependencyInstalled wanderer-plugin-api postcss-url
+324 silly hasDependencyInstalled wanderer-plugin-base postcss-url
+325 silly hasDependencyInstalled wanderer-plugin-conclusion postcss-url
+326 silly hasDependencyInstalled wanderer-plugin-question postcss-url
+327 silly hasDependencyInstalled wanderer-builder-vue-component rimraf
+328 silly hasDependencyInstalled wanderer-chat-vue-component rimraf
+329 silly hasDependencyInstalled wanderer-plugin-action rimraf
+330 silly hasDependencyInstalled wanderer-plugin-api rimraf
+331 silly hasDependencyInstalled wanderer-plugin-base rimraf
+332 silly hasDependencyInstalled wanderer-plugin-conclusion rimraf
+333 silly hasDependencyInstalled wanderer-plugin-question rimraf
+334 silly hasDependencyInstalled wanderer-builder-vue-component selenium-server
+335 silly hasDependencyInstalled wanderer-chat-vue-component selenium-server
+336 silly hasDependencyInstalled wanderer-plugin-action selenium-server
+337 silly hasDependencyInstalled wanderer-plugin-api selenium-server
+338 silly hasDependencyInstalled wanderer-plugin-base selenium-server
+339 silly hasDependencyInstalled wanderer-plugin-conclusion selenium-server
+340 silly hasDependencyInstalled wanderer-plugin-question selenium-server
+341 silly hasDependencyInstalled wanderer-builder-vue-component semver
+342 silly hasDependencyInstalled wanderer-chat-vue-component semver
+343 silly hasDependencyInstalled wanderer-plugin-action semver
+344 silly hasDependencyInstalled wanderer-plugin-api semver
+345 silly hasDependencyInstalled wanderer-plugin-base semver
+346 silly hasDependencyInstalled wanderer-plugin-conclusion semver
+347 silly hasDependencyInstalled wanderer-plugin-question semver
+348 silly hasDependencyInstalled wanderer-builder-vue-component shelljs
+349 silly hasDependencyInstalled wanderer-chat-vue-component shelljs
+350 silly hasDependencyInstalled wanderer-plugin-action shelljs
+351 silly hasDependencyInstalled wanderer-plugin-api shelljs
+352 silly hasDependencyInstalled wanderer-plugin-base shelljs
+353 silly hasDependencyInstalled wanderer-plugin-conclusion shelljs
+354 silly hasDependencyInstalled wanderer-plugin-question shelljs
+355 silly hasDependencyInstalled wanderer-builder-vue-component uglifyjs-webpack-plugin
+356 silly hasDependencyInstalled wanderer-chat-vue-component uglifyjs-webpack-plugin
+357 silly hasDependencyInstalled wanderer-plugin-action uglifyjs-webpack-plugin
+358 silly hasDependencyInstalled wanderer-plugin-api uglifyjs-webpack-plugin
+359 silly hasDependencyInstalled wanderer-plugin-base uglifyjs-webpack-plugin
+360 silly hasDependencyInstalled wanderer-plugin-conclusion uglifyjs-webpack-plugin
+361 silly hasDependencyInstalled wanderer-plugin-question uglifyjs-webpack-plugin
+362 silly hasDependencyInstalled wanderer-builder-vue-component url-loader
+363 silly hasDependencyInstalled wanderer-chat-vue-component url-loader
+364 silly hasDependencyInstalled wanderer-plugin-action url-loader
+365 silly hasDependencyInstalled wanderer-plugin-api url-loader
+366 silly hasDependencyInstalled wanderer-plugin-base url-loader
+367 silly hasDependencyInstalled wanderer-plugin-conclusion url-loader
+368 silly hasDependencyInstalled wanderer-plugin-question url-loader
+369 silly hasDependencyInstalled wanderer-builder-vue-component vue-jest
+370 silly hasDependencyInstalled wanderer-chat-vue-component vue-jest
+371 silly hasDependencyInstalled wanderer-plugin-action vue-jest
+372 silly hasDependencyInstalled wanderer-plugin-api vue-jest
+373 silly hasDependencyInstalled wanderer-plugin-base vue-jest
+374 silly hasDependencyInstalled wanderer-plugin-conclusion vue-jest
+375 silly hasDependencyInstalled wanderer-plugin-question vue-jest
+376 silly hasDependencyInstalled wanderer-builder-vue-component vue-loader
+377 silly hasDependencyInstalled wanderer-chat-vue-component vue-loader
+378 silly hasDependencyInstalled wanderer-plugin-action vue-loader
+379 silly hasDependencyInstalled wanderer-plugin-api vue-loader
+380 silly hasDependencyInstalled wanderer-plugin-base vue-loader
+381 silly hasDependencyInstalled wanderer-plugin-conclusion vue-loader
+382 silly hasDependencyInstalled wanderer-plugin-question vue-loader
+383 silly hasDependencyInstalled wanderer-builder-vue-component vue-style-loader
+384 silly hasDependencyInstalled wanderer-chat-vue-component vue-style-loader
+385 silly hasDependencyInstalled wanderer-plugin-action vue-style-loader
+386 silly hasDependencyInstalled wanderer-plugin-api vue-style-loader
+387 silly hasDependencyInstalled wanderer-plugin-base vue-style-loader
+388 silly hasDependencyInstalled wanderer-plugin-conclusion vue-style-loader
+389 silly hasDependencyInstalled wanderer-plugin-question vue-style-loader
+390 silly hasDependencyInstalled wanderer-builder-vue-component vue-template-compiler
+391 silly hasDependencyInstalled wanderer-chat-vue-component vue-template-compiler
+392 silly hasDependencyInstalled wanderer-plugin-action vue-template-compiler
+393 silly hasDependencyInstalled wanderer-plugin-api vue-template-compiler
+394 silly hasDependencyInstalled wanderer-plugin-base vue-template-compiler
+395 silly hasDependencyInstalled wanderer-plugin-conclusion vue-template-compiler
+396 silly hasDependencyInstalled wanderer-plugin-question vue-template-compiler
+397 silly hasDependencyInstalled wanderer-builder-vue-component webpack
+398 silly hasDependencyInstalled wanderer-chat-vue-component webpack
+399 silly hasDependencyInstalled wanderer-plugin-action webpack
+400 silly hasDependencyInstalled wanderer-plugin-api webpack
+401 silly hasDependencyInstalled wanderer-plugin-base webpack
+402 silly hasDependencyInstalled wanderer-plugin-conclusion webpack
+403 silly hasDependencyInstalled wanderer-plugin-question webpack
+404 silly hasDependencyInstalled wanderer-builder-vue-component webpack-bundle-analyzer
+405 silly hasDependencyInstalled wanderer-chat-vue-component webpack-bundle-analyzer
+406 silly hasDependencyInstalled wanderer-plugin-action webpack-bundle-analyzer
+407 silly hasDependencyInstalled wanderer-plugin-api webpack-bundle-analyzer
+408 silly hasDependencyInstalled wanderer-plugin-base webpack-bundle-analyzer
+409 silly hasDependencyInstalled wanderer-plugin-conclusion webpack-bundle-analyzer
+410 silly hasDependencyInstalled wanderer-plugin-question webpack-bundle-analyzer
+411 silly hasDependencyInstalled wanderer-builder-vue-component webpack-dev-server
+412 silly hasDependencyInstalled wanderer-chat-vue-component webpack-dev-server
+413 silly hasDependencyInstalled wanderer-plugin-action webpack-dev-server
+414 silly hasDependencyInstalled wanderer-plugin-api webpack-dev-server
+415 silly hasDependencyInstalled wanderer-plugin-base webpack-dev-server
+416 silly hasDependencyInstalled wanderer-plugin-conclusion webpack-dev-server
+417 silly hasDependencyInstalled wanderer-plugin-question webpack-dev-server
+418 silly hasDependencyInstalled wanderer-builder-vue-component webpack-merge
+419 silly hasDependencyInstalled wanderer-chat-vue-component webpack-merge
+420 silly hasDependencyInstalled wanderer-plugin-action webpack-merge
+421 silly hasDependencyInstalled wanderer-plugin-api webpack-merge
+422 silly hasDependencyInstalled wanderer-plugin-base webpack-merge
+423 silly hasDependencyInstalled wanderer-plugin-conclusion webpack-merge
+424 silly hasDependencyInstalled wanderer-plugin-question webpack-merge
+425 silly hasDependencyInstalled wanderer-builder-vue-component vue
+426 silly hasDependencyInstalled wanderer-chat-vue-component vue
+427 silly hasDependencyInstalled wanderer-plugin-action vue
+428 silly hasDependencyInstalled wanderer-plugin-api vue
+429 silly hasDependencyInstalled wanderer-plugin-base vue
+430 silly hasDependencyInstalled wanderer-plugin-conclusion vue
+431 silly hasDependencyInstalled wanderer-plugin-question vue
+432 silly hasDependencyInstalled wanderer-builder-vue-component vue-awesome
+433 silly hasDependencyInstalled wanderer-chat-vue-component axios
+434 silly hasDependencyInstalled wanderer-singleton axios
+435 silly hasDependencyInstalled wanderer-cytoscape-singleton cytoscape
+436 silly hasDependencyInstalled wanderer-cytoscape-singleton cytoscape-cxtmenu
+437 silly hasDependencyInstalled wanderer-singleton mustache
+438 silly hasDependencyInstalled wanderer-singleton uuid
+439 silly root dependencies {}
+440 silly leaf dependencies {}
+441 info Installing external dependencies
+442 verbose actions 1 actions, concurrency 8
+443 silly npmInstallDependencies wanderer-cytoscape-singleton [ 'cytoscape@^3.16.0', 'cytoscape-cxtmenu@^3.1.2' ]
+444 silly npmInstallDependencies backup /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-cytoscape-singleton/package.json
+445 silly npmInstallDependencies writing tempJson {
+445 silly npmInstallDependencies   name: 'wanderer-cytoscape-singleton',
+445 silly npmInstallDependencies   version: '1.0.0',
+445 silly npmInstallDependencies   description: '',
+445 silly npmInstallDependencies   main: 'index.js',
+445 silly npmInstallDependencies   author: '',
+445 silly npmInstallDependencies   license: 'ISC',
+445 silly npmInstallDependencies   dependencies: { cytoscape: '^3.16.0', 'cytoscape-cxtmenu': '^3.1.2' }
+445 silly npmInstallDependencies }
+446 silly getExecOpts /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-cytoscape-singleton undefined
+447 silly npmInstall [ 'npm', [ 'install' ] ]
+448 silly npmInstallDependencies cleanup /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-cytoscape-singleton/package.json
+449 verbose installed leaf wanderer-cytoscape-singleton
+450 info Symlinking packages and binaries
+451 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-builder-vue-component
+452 verbose resolveSymlink [
+452 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-builder-vue-component',
+452 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-vue-component'
+452 verbose resolveSymlink ]
+453 silly createSymlink [
+453 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-vue-component',
+453 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-builder-vue-component',
+453 silly createSymlink   'junction'
+453 silly createSymlink ]
+454 silly createSymbolicLink [
+454 silly createSymbolicLink   '../../wanderer-builder-vue-component',
+454 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-builder-vue-component',
+454 silly createSymbolicLink   'junction'
+454 silly createSymbolicLink ]
+455 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-chat-vue-component
+456 verbose resolveSymlink [
+456 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-chat-vue-component',
+456 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-vue-component'
+456 verbose resolveSymlink ]
+457 silly createSymlink [
+457 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-vue-component',
+457 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-chat-vue-component',
+457 silly createSymlink   'junction'
+457 silly createSymlink ]
+458 silly createSymbolicLink [
+458 silly createSymbolicLink   '../../wanderer-chat-vue-component',
+458 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-chat-vue-component',
+458 silly createSymbolicLink   'junction'
+458 silly createSymbolicLink ]
+459 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-vue-plugin
+460 verbose resolveSymlink [
+460 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-vue-plugin',
+460 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-vue-plugin'
+460 verbose resolveSymlink ]
+461 silly createSymlink [
+461 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-vue-plugin',
+461 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-vue-plugin',
+461 silly createSymlink   'junction'
+461 silly createSymlink ]
+462 silly createSymbolicLink [
+462 silly createSymbolicLink   '../../wanderer-vue-plugin',
+462 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-vue-plugin',
+462 silly createSymbolicLink   'junction'
+462 silly createSymbolicLink ]
+463 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-store-singleton
+464 verbose resolveSymlink [
+464 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-store-singleton',
+464 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-store-singleton'
+464 verbose resolveSymlink ]
+465 silly createSymlink [
+465 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-store-singleton',
+465 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-store-singleton',
+465 silly createSymlink   'junction'
+465 silly createSymlink ]
+466 silly createSymbolicLink [
+466 silly createSymbolicLink   '../../wanderer-store-singleton',
+466 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-store-singleton',
+466 silly createSymbolicLink   'junction'
+466 silly createSymbolicLink ]
+467 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-base
+468 verbose resolveSymlink [
+468 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-base',
+468 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-base'
+468 verbose resolveSymlink ]
+469 silly createSymlink [
+469 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-base',
+469 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-base',
+469 silly createSymlink   'junction'
+469 silly createSymlink ]
+470 silly createSymbolicLink [
+470 silly createSymbolicLink   '../../wanderer-plugin-base',
+470 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-base',
+470 silly createSymbolicLink   'junction'
+470 silly createSymbolicLink ]
+471 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-question
+472 verbose resolveSymlink [
+472 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-question',
+472 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-question'
+472 verbose resolveSymlink ]
+473 silly createSymlink [
+473 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-question',
+473 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-question',
+473 silly createSymlink   'junction'
+473 silly createSymlink ]
+474 silly createSymbolicLink [
+474 silly createSymbolicLink   '../../wanderer-plugin-question',
+474 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-question',
+474 silly createSymbolicLink   'junction'
+474 silly createSymbolicLink ]
+475 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-conclusion
+476 verbose resolveSymlink [
+476 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-conclusion',
+476 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-conclusion'
+476 verbose resolveSymlink ]
+477 silly createSymlink [
+477 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-conclusion',
+477 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-conclusion',
+477 silly createSymlink   'junction'
+477 silly createSymlink ]
+478 silly createSymbolicLink [
+478 silly createSymbolicLink   '../../wanderer-plugin-conclusion',
+478 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-conclusion',
+478 silly createSymbolicLink   'junction'
+478 silly createSymbolicLink ]
+479 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-api
+480 verbose resolveSymlink [
+480 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-api',
+480 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-api'
+480 verbose resolveSymlink ]
+481 silly createSymlink [
+481 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-api',
+481 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-api',
+481 silly createSymlink   'junction'
+481 silly createSymlink ]
+482 silly createSymbolicLink [
+482 silly createSymbolicLink   '../../wanderer-plugin-api',
+482 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-api',
+482 silly createSymbolicLink   'junction'
+482 silly createSymbolicLink ]
+483 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-action
+484 verbose resolveSymlink [
+484 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-action',
+484 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-action'
+484 verbose resolveSymlink ]
+485 silly createSymlink [
+485 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-action',
+485 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-action',
+485 silly createSymlink   'junction'
+485 silly createSymlink ]
+486 silly createSymbolicLink [
+486 silly createSymbolicLink   '../../wanderer-plugin-action',
+486 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt-app/node_modules/wanderer-plugin-action',
+486 silly createSymbolicLink   'junction'
+486 silly createSymbolicLink ]
+487 silly actions finished wanderer-builder-nuxt-app
+488 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-singleton
+489 verbose resolveSymlink [
+489 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-singleton',
+489 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-singleton'
+489 verbose resolveSymlink ]
+490 silly createSymlink [
+490 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-singleton',
+490 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-singleton',
+490 silly createSymlink   'junction'
+490 silly createSymlink ]
+491 silly createSymbolicLink [
+491 silly createSymbolicLink   '../../wanderer-singleton',
+491 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-singleton',
+491 silly createSymbolicLink   'junction'
+491 silly createSymbolicLink ]
+492 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-store-singleton
+493 verbose resolveSymlink [
+493 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-store-singleton',
+493 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-store-singleton'
+493 verbose resolveSymlink ]
+494 silly createSymlink [
+494 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-store-singleton',
+494 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-store-singleton',
+494 silly createSymlink   'junction'
+494 silly createSymlink ]
+495 silly createSymbolicLink [
+495 silly createSymbolicLink   '../../wanderer-store-singleton',
+495 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-store-singleton',
+495 silly createSymbolicLink   'junction'
+495 silly createSymbolicLink ]
+496 silly resolveSymlink /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-cytoscape-singleton
+497 verbose resolveSymlink [
+497 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-cytoscape-singleton',
+497 verbose resolveSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-cytoscape-singleton'
+497 verbose resolveSymlink ]
+498 silly createSymlink [
+498 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-cytoscape-singleton',
+498 silly createSymlink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-cytoscape-singleton',
+498 silly createSymlink   'junction'
+498 silly createSymlink ]
+499 silly createSymbolicLink [
+499 silly createSymbolicLink   '../../wanderer-cytoscape-singleton',
+499 silly createSymbolicLink   '/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-singleton/node_modules/wanderer-cytoscape-singleton',
+499 silly createSymbolicLink   'junction'
+499 silly createSymbolicLink ]
+500 error

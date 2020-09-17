@@ -58,10 +58,6 @@ export default {
       }
     })
 
-    WandererSingleton.on('reset-chat', function () {
-      WandererStoreSingleton.store.commit('wanderer/chat/cleanMessages')
-    })
-
     // This event will be fired on loading new data
     WandererSingleton.on('truncate', function () {
       WandererStoreSingleton.store.commit('wanderer/chat/cleanMessages')

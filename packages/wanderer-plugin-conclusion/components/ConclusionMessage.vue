@@ -15,14 +15,14 @@ import WandererStoreSingleton from 'wanderer-store-singleton'
 
 export default {
   props: {
-    data: {
-      type: Object
+    vertexId: {
+      type: String
     }
   },
   computed: {
     conclusion: function () {
-      if(this.data.vertexId != undefined){
-        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'conclusion')
+      if(this.vertexId != undefined){
+        return WandererSingleton.getTranslatableVertexValue(this.vertexId,'conclusion')
       }
     }
   },
@@ -33,9 +33,6 @@ export default {
     //     // id: traversalResult.lastFoundConclusionIds[i],
     //     component: 'wanderer-report-message',
     //     backgroundColor: '#FEC106',
-    //     data: {
-    //
-    //     },
     //     delay: 1000
     //   })
     // }

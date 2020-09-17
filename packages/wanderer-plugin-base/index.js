@@ -45,12 +45,12 @@ export default {
         }],
         component: 'wanderer-flow-editor'
       },
-      lifecycleData: {
-        flowFinished: {
-          label: 'Flow finished',
-          exposeDefault: false
-        }
-      },
+      // lifecycleData: {
+      //   flowFinished: {
+      //     label: 'Flow finished',
+      //     exposeDefault: false
+      //   }
+      // },
       toCytoscape: function(data, language){
         if(data.topic[language]){
           return {
@@ -64,19 +64,19 @@ export default {
       visitor: function (cytoscapeVertex, vertexData, language) {
         flowVertexId = cytoscapeVertex.id()
       },
-      edgeConditions: {
-        finished: {
-          label: 'finished',
-          condition: function (vertexLifecycleData) {
-            if(vertexLifecycleData != undefined){
-              if(vertexLifecycleData.flowFinished){
-                return true;
-              }
-            }
-            return false;
-          }
-        }
-      }
+      // edgeConditions: {
+      //   finished: {
+      //     label: 'finished',
+      //     condition: function (vertexLifecycleData) {
+      //       if(vertexLifecycleData != undefined){
+      //         if(vertexLifecycleData.flowFinished){
+      //           return true;
+      //         }
+      //       }
+      //       return false;
+      //     }
+      //   }
+      // }
     })
 
     // var foundMessages = 0;
@@ -133,9 +133,7 @@ export default {
             // id: traversalResult.lastFoundConclusionIds[i],
             component: 'wanderer-message',
             backgroundColor: '#6C757D',
-            data: {
-              vertexId: cytoscapeVertex.id()
-            },
+            vertexId: cytoscapeVertex.id(),
             delay: 1000
           })
 
@@ -149,11 +147,11 @@ export default {
     // var displayedMessages = []
 
     // var onboardingWasDisplayed = false;
-    WandererSingleton.on('traversalFinished', function() {
-
-      // foundMessages = 0;
-
-    })
+    // WandererSingleton.on('traversalFinished', function() {
+    //
+    //   // foundMessages = 0;
+    //
+    // })
 
     WandererSingleton.registerEdgeCollection({
       name: 'leadsTo',
@@ -226,7 +224,7 @@ export default {
         // Find default data
         var defaultCondition = WandererSingleton.getVertexCollectionDefaultEdgeCondition(sourceNodeCollection.name)
 
-        var priority = data['priority'] / 2.5
+        var priority = data['priority'] / 5
         if (priority < 1) {
           priority = 1
         }
@@ -268,14 +266,18 @@ export default {
           priority: priority
         }
       },
-      visitor: function (cytoscapeEdge, edgeData, language) {
+      testVisitor: function (cytoscapeEdge, edgeData, language) {
         // Just remember this edges
         if (edgeData.type == 'and') {
           edgeTraversalResult.lastTraversedRequiredEdgeIds.push(cytoscapeEdge.id())
         }
+        // Use the testVisitor to get a List of all the NOT edges
         if (edgeData.type == 'not') {
           edgeTraversalResult.lastTraversedForbiddenEdgeIds.push(cytoscapeEdge.id())
         }
+      },
+      visitor: function (cytoscapeEdge, edgeData, language) {
+
       },
       allowTraversal: function (cytoscapeVertex, vertexData, cytoscapeEdge, edgeData, language) {
         // Is there a compareVariable available in this data?
@@ -372,56 +374,55 @@ export default {
       lastTraversedForbiddenEdgeIds: []
     }
 
-    WandererSingleton.on('traversalFinished', function() {
-      // Reset the result object
-      edgeTraversalResult = {
-        lastTraversedRequiredEdgeIds: [],
-        lastTraversedForbiddenEdgeIds: []
-      }
-    })
+    // WandererSingleton.on('traversalFinished', function() {
+    //   // Reset the result object
+    //   edgeTraversalResult = {
+    //     lastTraversedRequiredEdgeIds: [],
+    //     lastTraversedForbiddenEdgeIds: []
+    //   }
+    // })
 
-    var flowFinished = false;
+    //var flowFinished = false;
 
-    // var offboardingWasDisplayed = false;
-    WandererSingleton.on('flowFinished', function() {
+    // // var offboardingWasDisplayed = false;
+    // WandererSingleton.on('flowFinished', function() {
+    //
+    //   // We have to check if the flow was already finished
+    //   // Because the flow can trigger a traversal for the last time if it was finished
+    //   // This clause will work only one and will then deny all other traversal attempts
+    //   if(!flowFinished){
+    //     flowFinished = true;
+    //
+    //     // Send the finished statement to the root node
+    //     WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+    //       id: flowVertexId,
+    //       key: 'flowFinished',
+    //       value: true
+    //     })
+    //
+    //     // Start the traversal again
+    //     // WandererSingleton.traverse()
+    //
+    //   }
+    //
+    //   // if(!offboardingWasDisplayed){
+    //     // offboardingWasDisplayed = true
+    //     // WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+    //     //   // id: flowVertexId+'_offboarding',
+    //     //   component: 'wanderer-offboarding-message',
+    //     //   vertexId: flowVertexId
+    //     //
+    //     //   delay: 1000
+    //     // })
+    //   // }
+    // })
 
-      // We have to check if the flow was already finished
-      // Because the flow can trigger a traversal for the last time if it was finished
-      // This clause will work only one and will then deny all other traversal attempts
-      if(!flowFinished){
-        flowFinished = true;
-
-        // Send the finished statement to the root node
-        WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-          id: flowVertexId,
-          key: 'flowFinished',
-          value: true
-        })
-
-        // Start the traversal again
-        WandererSingleton.traverse()
-
-      }
-
-      // if(!offboardingWasDisplayed){
-        // offboardingWasDisplayed = true
-        // WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-        //   // id: flowVertexId+'_offboarding',
-        //   component: 'wanderer-offboarding-message',
-        //   data: {
-        //     vertexId: flowVertexId
-        //   },
-        //   delay: 1000
-        // })
-      // }
-    })
-
-    WandererSingleton.on('reset-chat', function() {
+    WandererSingleton.on('truncate', function() {
       // displayedMessages = []
       transferedMessages = []
       // offboardingWasDisplayed = false
       // onboardingWasDisplayed = false
-      flowFinished = false
+      // flowFinished = false
 
     })
 

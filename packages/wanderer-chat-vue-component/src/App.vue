@@ -13,7 +13,9 @@
         :backgroundColor="message.backgroundColor"
         :show="message.show"
         v-on:messageArrived="messageArrived">
-        <component v-bind:is="message.component" :data="message.data" :last="key == messages.length - 1"></component>
+
+        <component v-bind:is="message.component" :vertexId="message.vertexId" :lastOfType="lastOfType[message.component] == message.id" :last="key == messages.length - 1"></component>
+
       </message>
 
       <div class="chat-messages-bottom-spacing"></div>
@@ -61,6 +63,13 @@ export default {
     messages: function () {
       return WandererStoreSingleton.store.state.wanderer.chat.messages
     },
+    lastOfType: function () {
+      var result = {};
+      for (var key in this.messages) {
+        result[this.messages[key]['component']] = this.messages[key]['id'];
+      }
+      return result
+    },
     vertexCount () {
       return WandererStoreSingleton.store.state.wanderer.vertexDocumentIds.length
     }
@@ -94,30 +103,42 @@ export default {
       })
     }
 
-    this.$nextTick(function () {
-      if (!this.vertexCount) {
-        console.log('No data! Loading!')
+    WandererSingleton.init()
 
-        this.$axios.get('/static/startflow.json')
-          .then((response) => {
-            console.log(response.data)
-            WandererSingleton.load(response.data)
-            WandererSingleton.traverse()
-          }, (error) => {
-            console.log('error loading initial chat data')
-            console.log(error)
-          })
-      } else {
-        // Start the traversal
-        WandererSingleton.traverse()
-      }
+    var component = this;
+
+    WandererSingleton.on('truncate', function() {
+      component.waitingForMessage = false
+    })
+
+    this.$nextTick(function () {
+
+      // if (!this.vertexCount) {
+      //   console.log('No data! Loading!')
+      //
+      //   this.$axios.get('/static/startflow.json')
+      //     .then((response) => {
+      //       console.log(response.data)
+      //       WandererSingleton.load(response.data)
+      //       // WandererSingleton.traverse()
+      //     }, (error) => {
+      //       console.log('error loading initial chat data')
+      //       console.log(error)
+      //     })
+      // } else {
+      //   // Start the traversal
+      //   // WandererSingleton.traverse()
+      // }
+
+
+
     })
   },
   methods: {
     restart () {
       WandererStoreSingleton.store.commit('wanderer/cleanVertexLifecycleData')
-      WandererSingleton.trigger('reset-chat')
-      WandererSingleton.traverse()
+      WandererSingleton.trigger('truncate')
+      // WandererSingleton.traverse()
     },
     // scrollToBottom () {
     //   var elem = document.getElementById('chat')

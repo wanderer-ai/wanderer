@@ -28,15 +28,7 @@
     methods: {
       localize(language){
 
-        this.$store.commit('wanderer/setCurrentLanguage',language)
-
-        // Rebuild cytoscape data
-        for(let i in this.$store.state.wanderer.vertexDocumentIds){
-          WandererSingleton.vertexToCytoscape(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
-        }
-        for(let i in this.$store.state.wanderer.edgeDocumentIds){
-          WandererSingleton.edgeToCytoscape(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
-        }
+        WandererSingleton.setLanguage(language);
 
         this.$emit('localized')
 

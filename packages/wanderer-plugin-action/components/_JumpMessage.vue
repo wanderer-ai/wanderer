@@ -24,13 +24,13 @@ export default {
   },
   computed: {
     url: function () {
-      if(this.data.vertexId != undefined) {
-        return WandererSingleton.getVertexValue(this.data.vertexId,'url')
+      if(this.vertexId != undefined) {
+        return WandererSingleton.getVertexValue(this.vertexId,'url')
       }
     },
     label: function () {
-      if(this.data.vertexId != undefined) {
-        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'label')
+      if(this.vertexId != undefined) {
+        return WandererSingleton.getTranslatableVertexValue(this.vertexId,'label')
       }
     }
   },

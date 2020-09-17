@@ -1,3 +1,4 @@
+import SectionEditor from './components/SectionEditor.vue'
 import QuestionEditor from './components/QuestionEditor.vue'
 import SuggestionEditor from './components/SuggestionEditor.vue'
 import QuestionMessage from './components/QuestionMessage.vue'
@@ -10,6 +11,7 @@ export default {
 
   install (Vue) {
 
+    Vue.component('wanderer-section-editor', SectionEditor)
     Vue.component('wanderer-question-editor', QuestionEditor)
     Vue.component('wanderer-suggestion-editor', SuggestionEditor)
     Vue.component('wanderer-question-message', QuestionMessage)
@@ -42,11 +44,88 @@ export default {
     //   }
     // })
 
-    // WandererSingleton.on('reset-chat', function() {
+    // WandererSingleton.on('truncate', function() {
     //   WandererStoreSingleton.store.commit('wanderer/plugin-question/clean')
     // })
 
-    var traversalResult = {};
+    var traversalResult = {}
+    var questionsInSections = {}
+
+    // Register the section vertex
+    WandererSingleton.registerVertexCollection({
+      name: 'section',
+      builder: {
+        label: 'Section',
+        color: '#6C757D',
+        cytoscapeClasses: 'section',
+        cytoscapeCxtMenuSelector: '.section',
+        showInCxtMenu: false,
+        creatable: true,
+        defaultFields: {
+          title: {
+            en: 'New section',
+            de: 'Neue Section'
+          }
+        },
+        cytoscapeStyles: [{
+          selector: '.section',
+          style: {
+            'height': '100px',
+            'width': '100px',
+            'font-size': '20px',
+            'background-color': '#6C757D',
+            'label': 'data(label)'
+          }
+        }],
+        component: 'wanderer-section-editor'
+      },
+      lifecycleData: {
+        finished: {
+          label: 'Section finished',
+          exposeDefault: false
+        }
+      },
+      toCytoscape: function(data, language){
+        if(data.title[language]){
+          return {
+            label: data.title[language]+(debug? ' ('+data._id+')':'')
+          }
+        }
+        return {
+          label: 'Section'
+        }
+      },
+      edgeConditions: {
+        finished: {
+          label: 'finished',
+          condition: function (vertexLifecycleData) {
+            if(vertexLifecycleData != undefined){
+              if(vertexLifecycleData.finished){
+                return true;
+              }
+            }
+            return false;
+          }
+        }
+      },
+      visitor: function (cytoscapeVertex, vertexData, language) {
+        // Add this section to the found sections
+        if(questionsInSections[cytoscapeVertex.id()] === undefined) {
+          questionsInSections[cytoscapeVertex.id()] = [];
+        }
+      },
+      finisher: function (cytoscapeVertex, vertexData) {
+        // If we do not have any unanswered questions in this section...
+        if(questionsInSections[cytoscapeVertex.id()].length===0) {
+          // Send the finished statement to the root node
+          WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+            id: cytoscapeVertex.id(),
+            key: 'finished',
+            value: true
+          })
+        }
+      }
+    })
 
     // Register the question vertex
     WandererSingleton.registerVertexCollection({
@@ -107,21 +186,28 @@ export default {
           // Add only the first found question
           // Other occurances of questions in the traversal should be skipped
           // We want only ask one question
-          if(traversalResult.firstFoundQuestionId === undefined){
+          if(traversalResult.firstFoundQuestionId === undefined) {
 
             traversalResult.firstFoundQuestionId = cytoscapeVertex.id()
-            traversalResult.firstFoundSuggestionIds = []
+            // traversalResult.firstFoundSuggestionIds = []
             // Find and add suggestions to result
-            let cytoscapeEdges = cytoscapeVertex.connectedEdges()
-            cytoscapeEdges.forEach(function(cytoscapeEdge){
-              let currentEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[cytoscapeEdge.id()]
-              if(
-                cytoscapeVertex.id()==cytoscapeEdge.data('source') && // If this is an outbound edge
-                currentEdgeData._collection=='isAnswerableBy' // If this edge is of the type isAnswerableBy
-              ){
-                traversalResult.firstFoundSuggestionIds.push(cytoscapeEdge.target().id()) // Add the target vertex (suggestion)
-              }
-            })
+            // let cytoscapeEdges = cytoscapeVertex.connectedEdges()
+            // cytoscapeEdges.forEach(function(cytoscapeEdge){
+            //   let currentEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[cytoscapeEdge.id()]
+            //   if(
+            //     cytoscapeVertex.id()==cytoscapeEdge.data('source') && // If this is an outbound edge
+            //     currentEdgeData._collection=='isAnswerableBy' // If this edge is of the type isAnswerableBy
+            //   ){
+            //     traversalResult.firstFoundSuggestionIds.push(cytoscapeEdge.target().id()) // Add the target vertex (suggestion)
+            //   }
+            // })
+          }
+
+          // Also add this unanswered question to every entered section
+          for (var key in questionsInSections) {
+            if(questionsInSections.hasOwnProperty(key)){
+              questionsInSections[key].push(cytoscapeVertex.id());
+            }
           }
 
         }
@@ -153,14 +239,14 @@ export default {
         return returnEdges
       },
       finisher: function () {
-        // console.log('asking the question finisher')
-        if(
-          traversalResult.firstFoundQuestionId === undefined || // If no question was found
-          traversalResult.firstFoundSuggestionIds.length == 0 // Or if the question has no suggestions
-        ){
-          return true
-        }
-        return false
+        // // console.log('asking the question finisher')
+        // if(
+        //   traversalResult.firstFoundQuestionId === undefined // If no question was found
+        //   // || traversalResult.firstFoundSuggestionIds.length == 0 // Or if the question has no suggestions
+        // ){
+        //   return true
+        // }
+        // return false
       }
     })
 
@@ -242,7 +328,7 @@ export default {
         }
         var priority = data['priority'];
         if (priority < 10) {
-          priority = 10;
+          priority = 10
         }
         priority = priority + 'px'
         return {
@@ -279,7 +365,7 @@ export default {
         creatable: true,
         defaultFields: function (fromVertexCollection, toVertexCollection) {
           return {
-            priority: 10
+            priority: 25
           }
         },
         restrictSourceVertices: [
@@ -302,9 +388,9 @@ export default {
       },
       toCytoscape: function(data){
 
-        var priority = data['priority'] / 2.5;
+        var priority = data['priority'] / 5;
         if (priority < 1) {
-          priority = 1;
+          priority = 1
         }
 
         return {
@@ -314,6 +400,8 @@ export default {
       },
     })
 
+    var lastAddedQuestion = false;
+
     // Listen for traversal event
     WandererSingleton.on('traversalFinished', function() {
 
@@ -321,21 +409,33 @@ export default {
         traversalResult.firstFoundQuestionId !== undefined //&& // We need a question
       ) {
 
-        WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-          // id: traversalResult.firstFoundQuestionId,
-          component: 'wanderer-question-message',
-          data: {
+        // Add question only to message stack if it was not added already directly before
+        if(lastAddedQuestion != traversalResult.firstFoundQuestionId) {
+          lastAddedQuestion = traversalResult.firstFoundQuestionId
+
+          WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+            // id: traversalResult.firstFoundQuestionId,
+            component: 'wanderer-question-message',
             vertexId: traversalResult.firstFoundQuestionId,
-            suggestionVertexIds: traversalResult.firstFoundSuggestionIds
-          },
-          backgroundColor: '#007BFF',
-          delay: 2000
-        })
+            backgroundColor: '#007BFF',
+            delay: 1000
+          })
+        }
 
       }
 
       // Reset the result object
-      traversalResult = {};
+      traversalResult = {}
+
+      // Reset the questions in sections
+      questionsInSections = {}
+
+    })
+
+    WandererSingleton.on('truncate', function() {
+      traversalResult = {}
+      questionsInSections = {}
+      lastAddedQuestion = false
 
     })
 

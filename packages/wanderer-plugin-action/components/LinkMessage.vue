@@ -13,8 +13,8 @@ import WandererStoreSingleton from 'wanderer-store-singleton'
 
 export default {
   props: {
-    data: {
-      type: Object
+    vertexId: {
+      type: String
     }
   },
   mounted () {
@@ -22,13 +22,13 @@ export default {
   },
   computed: {
     label: function () {
-      if(this.data.vertexId != undefined) {
-        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'label')
+      if(this.vertexId != undefined) {
+        return WandererSingleton.getTranslatableVertexValue(this.vertexId,'label')
       }
     },
     link: function () {
-      if(this.data.vertexId != undefined) {
-        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'link')
+      if(this.vertexId != undefined) {
+        return WandererSingleton.getTranslatableVertexValue(this.vertexId,'link')
       }
     }
   },
@@ -49,7 +49,7 @@ export default {
         })
 
         // Start next traversal tick
-        WandererSingleton.traverse()
+        // WandererSingleton.traverse()
 
         // Remove the listener
         window.removeEventListener('focus', returnToPage);

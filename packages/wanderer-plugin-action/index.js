@@ -2,7 +2,9 @@ import LinkEditor from './components/LinkEditor.vue'
 import LinkMessage from './components/LinkMessage.vue'
 
 import JumpEditor from './components/JumpEditor.vue'
-import JumpMessage from './components/JumpMessage.vue'
+// import JumpMessage from './components/JumpMessage.vue'
+
+import LanguageEditor from './components/LanguageEditor.vue'
 
 import WandererSingleton from 'wanderer-singleton'
 import WandererStoreSingleton from 'wanderer-store-singleton'
@@ -14,8 +16,12 @@ export default {
     Vue.component('wanderer-link-message', LinkMessage)
     Vue.component('wanderer-link-editor', LinkEditor)
 
-    Vue.component('wanderer-jump-message', JumpMessage)
+    // Vue.component('wanderer-jump-message', JumpMessage)
     Vue.component('wanderer-jump-editor', JumpEditor)
+
+    Vue.component('wanderer-language-editor', LanguageEditor)
+
+    var debug = false
 
     // Extend vuex with new namespace and create store instance for the questions and its answers
     // WandererStoreSingleton.store.registerModule(['wanderer', 'plugin-action'], {
@@ -103,9 +109,7 @@ export default {
               // id: traversalResult.lastFoundConclusionIds[i],
               component: 'wanderer-link-message',
               backgroundColor: '#DC3545',
-              data: {
-                vertexId: cytoscapeVertex.id()
-              },
+              vertexId: cytoscapeVertex.id(),
               delay: 1000
             })
 
@@ -190,24 +194,9 @@ export default {
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
 
-        if(doneActions.indexOf(cytoscapeVertex.id())==-1) {
+        if(vertexData.url){
 
-          doneActions.push(cytoscapeVertex.id())
-
-          if(vertexData.url){
-
-            // Add the action message
-            WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-              // id: traversalResult.lastFoundConclusionIds[i],
-              component: 'wanderer-jump-message',
-              backgroundColor: '#DC3545',
-              data: {
-                vertexId: cytoscapeVertex.id()
-              },
-              delay: 1000
-            })
-
-          }
+          WandererSingleton.loadJsonRemote(vertexData.url)
 
         }
 
@@ -215,12 +204,60 @@ export default {
       expander: function (cytoscapeVertex, vertexData, outboundCyEdges) {
         return outboundCyEdges
       },
-      finisher: function () {
-        return true
-      }
+      // finisher: function () {
+      //   return true
+      // }
     })
 
-    WandererSingleton.on('reset-chat', function() {
+    // Language switcher node
+    // Register the vertex
+    WandererSingleton.registerVertexCollection({
+      name: 'language',
+      builder: {
+        label: 'Language',
+        color: '#DC3545',
+        cytoscapeClasses: 'language',
+        cytoscapeCxtMenuSelector: '.language',
+        creatable: true,
+        defaultFields: {
+          switchToLanguage: 'en'
+        },
+        cytoscapeStyles: [{
+          selector: '.language',
+          style: {
+            'height': '100px',
+            'width': '100px',
+            'font-size': '20px',
+            'background-color': '#DC3545',
+            'label': 'data(label)'
+          }
+        }],
+        component: 'wanderer-language-editor'
+      },
+      toCytoscape: function(data, language){
+
+        var label = 'Switch language ('+data.switchToLanguage+')';
+
+        return {
+          label: label+(debug? ' ('+data._id+')':''),
+        }
+
+      },
+      visitor: function (cytoscapeVertex, vertexData, language) {
+
+        // Switch the language
+        WandererSingleton.setLanguage(vertexData.switchToLanguage);
+
+      },
+      expander: function (cytoscapeVertex, vertexData, outboundCyEdges) {
+        return outboundCyEdges
+      },
+      // finisher: function () {
+      //   return true
+      // }
+    })
+
+    WandererSingleton.on('truncate', function() {
       doneActions = []
 
       // WandererStoreSingleton.store.commit('wanderer/plugin-action/clean')

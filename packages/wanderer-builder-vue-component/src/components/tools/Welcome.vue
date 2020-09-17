@@ -18,7 +18,7 @@
 
             <h5 class="card-title">Start a tutorial</h5>
             <p class="card-text">Are you new to Wanderer? Start with a series of tutorials.</p>
-            <span class="btn btn-primary" v-on:click="loadJsonRemote('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/001_simple_bot.json')">Start tutorial</span>
+            <span class="btn btn-primary" v-on:click="startTutorial()">Start tutorial</span>
 
           </div>
 
@@ -75,10 +75,10 @@ export default {
       this.showModal=false;
       this.$emit('openFileTool')
     },
-    loadJsonRemote (url) {
+    startTutorial (url) {
       try {
-        WandererSingleton.loadJsonRemote(url)
         this.showModal = false
+        this.$emit('startTutorial')
       } catch (e) {
         StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e.message, type: 'danger'})
         this.showModal = false

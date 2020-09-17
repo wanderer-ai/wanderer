@@ -5,7 +5,7 @@
 
     <span v-if="answered" class="button-again" v-on:click="askAgain()">↺</span>
 
-    <div v-if="!answered && last">
+    <div v-if="!answered && lastOfType">
 
       <div v-for="suggestion in suggestions" :key="suggestion._id">
 
@@ -30,9 +30,9 @@
 
       <div class="btn-group has-wrap">
 
-        <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" class="btn" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
+        <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" class="btn btn-light" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
 
-        <button v-if="requireAnswerButton" class="btn" v-on:click="answer()">Answer</button>
+        <button v-if="requireAnswerButton" class="btn btn-light" v-on:click="answer()">Answer</button>
 
       </div>
 
@@ -48,10 +48,13 @@ import WandererStoreSingleton from 'wanderer-store-singleton'
 
 export default {
   props: {
-    data: {
-      type: Object
+    vertexId: {
+      type: String
     },
     last: {
+      type: Boolean
+    },
+    lastOfType: {
       type: Boolean
     }
   },
@@ -66,30 +69,53 @@ export default {
     //   return WandererStoreSingleton.store.state.wanderer.collectedValues
     // },
     question: function () {
-      if(this.data.vertexId != undefined){
-        return WandererSingleton.getTranslatableVertexValue(this.data.vertexId,'question')
+      if(this.vertexId != undefined){
+        return WandererSingleton.getTranslatableVertexValue(this.vertexId,'question')
       }
     },
     suggestions: function () {
-      // We have got a list of ids. Now we fill it with data
-      if(this.data.suggestionVertexIds != undefined){
-        let returnData = []
-        for(let i in this.data.suggestionVertexIds){
-          returnData.push({
-            _id: this.data.suggestionVertexIds[i],
-            suggestion: WandererSingleton.getTranslatableVertexValue(this.data.suggestionVertexIds[i],'suggestion'),
-            type: WandererSingleton.getVertexValue(this.data.suggestionVertexIds[i],'type'),
-            priority: WandererSingleton.getVertexValue(this.data.suggestionVertexIds[i],'priority')
-          })
-        }
-        // console.log(returnData)
-        returnData = returnData.sort((a, b) => (a.priority < b.priority) ? 1 : -1)
 
-        return returnData
+      let returnData = []
+      if(this.vertexId != undefined) {
+
+        if(WandererStoreSingleton.store.state.wanderer.vertexRelations[this.vertexId] != undefined) {
+          var outgoingVertices = WandererStoreSingleton.store.state.wanderer.vertexRelations[this.vertexId]
+
+          for(let outgoingVerticesId in outgoingVertices) {
+            let collectionName = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[outgoingVertices[outgoingVerticesId]]._collection
+            if(collectionName=='suggestion') {
+              returnData.push({
+                _id: outgoingVertices[outgoingVerticesId],
+                suggestion: WandererSingleton.getTranslatableVertexValue(outgoingVertices[outgoingVerticesId],'suggestion'),
+                type: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'type'),
+                priority: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'priority')
+              })
+            }
+          }
+        }
       }
+      return returnData
     },
+    // suggestions: function () {
+    //   // We have got a list of ids. Now we fill it with data
+    //   if(this.data.suggestionVertexIds != undefined){
+    //     let returnData = []
+    //     for(let i in this.data.suggestionVertexIds){
+    //       returnData.push({
+    //         _id: this.data.suggestionVertexIds[i],
+    //         suggestion: WandererSingleton.getTranslatableVertexValue(this.data.suggestionVertexIds[i],'suggestion'),
+    //         type: WandererSingleton.getVertexValue(this.data.suggestionVertexIds[i],'type'),
+    //         priority: WandererSingleton.getVertexValue(this.data.suggestionVertexIds[i],'priority')
+    //       })
+    //     }
+    //     // console.log(returnData)
+    //     returnData = returnData.sort((a, b) => (a.priority < b.priority) ? 1 : -1)
+    //
+    //     return returnData
+    //   }
+    // },
     // answered: function () {
-    //   if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredQuestions.indexOf(this.data.vertexId)===-1){
+    //   if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredQuestions.indexOf(this.vertexId)===-1){
     //     return false
     //   }
     //   return true
@@ -109,14 +135,14 @@ export default {
     //   // Mark component as answered
     //   this.answered = true
     //   // Mark question as answered in store
-    //   WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.data.vertexId)
+    //   WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.vertexId)
     //   // Mark suggestion as answered in store
     //   WandererStoreSingleton.store.commit('wanderer/plugin-question/answerSuggestion', suggestionVertexId)
     //   // Add answer message
     //   var answerObject = {}
     //   answerObject[suggestionVertexId] = true;
     //   WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-    //     // id: this.data.vertexId+'_suggestion',
+    //     // id: this.vertexId+'_suggestion',
     //     component: 'wanderer-suggestion-message',
     //     from: 'local',
     //     backgroundColor: '#28A745',
@@ -134,15 +160,15 @@ export default {
       this.answered = true
 
       // Mark question as answered in store
-      // WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.data.vertexId)
+      // WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.vertexId)
       WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-        id: this.data.vertexId,
+        id: this.vertexId,
         key: 'answered',
         value: true
       })
 
       // Store the answered suggestions inside this object
-      var answerObject = {}
+      // var answerObject = {}
 
       // For each suggestion
       for(var s in this.suggestions) {
@@ -159,7 +185,7 @@ export default {
               key: 'answered',
               value: true
             })
-            answerObject[suggestionVertexId] = true;
+            // answerObject[suggestionVertexId] = true;
 
           } else {
 
@@ -186,7 +212,7 @@ export default {
               })
 
               // Add to answer object
-              answerObject[this.suggestions[s]._id] = this.values[this.suggestions[s]._id]
+              // answerObject[this.suggestions[s]._id] = this.values[this.suggestions[s]._id]
 
             } else {
 
@@ -207,38 +233,56 @@ export default {
 
       // Create suggestion message
       WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-        // id: this.data.vertexId+'_suggestion',
+        // id: this.vertexId+'_suggestion',
         component: 'wanderer-suggestion-message',
         from: 'local',
         backgroundColor: '#28A745',
         delay: 0,
-        data: {
-          answers: answerObject
-        }
+        vertexId: this.vertexId,
+        // data: {
+        //   answers: answerObject
+        // }
       })
 
       // Start next traversal tick
-      WandererSingleton.traverse()
+      // WandererSingleton.traverse()
 
     },
     askAgain () {
 
-      // Remove all answered suggestions first
-      // for(let i in this.data.suggestionVertexIds){
-      //   WandererStoreSingleton.store.commit('wanderer/plugin-question/withdrawSuggestion', this.data.suggestionVertexIds[i])
-      // }
+      // this.answered = false;
 
-      // Ask the question again
-      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-        // id: traversalResult.lastFoundQuestionId,
-        component: 'wanderer-question-message',
-        data: {
-          vertexId: this.data.vertexId,
-          suggestionVertexIds: this.data.suggestionVertexIds
-        },
-        backgroundColor: '#007BFF',
-        delay: 2000
+      // Mark this question as not answered
+      WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+        id: this.vertexId,
+        key: 'answered',
+        value: false
       })
+
+      for(var s in this.suggestions) {
+        if (this.suggestions.hasOwnProperty(s)) {
+          WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+            id: this.suggestions[s]._id,
+            key: 'answered',
+            value: false
+          })
+        }
+      }
+
+      // Wenn die Frage die letzte im Message-Stack ist...
+      if(this.lastOfType) {
+
+        // Ask the question again
+        WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+          // id: traversalResult.lastFoundQuestionId,
+          component: 'wanderer-question-message',
+          vertexId: this.vertexId,
+          backgroundColor: '#007BFF',
+          delay: 2000
+        })
+
+      }
+
     }
   }
 }

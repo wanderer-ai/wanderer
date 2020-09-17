@@ -31,7 +31,7 @@
     <language-tool />
     <chat-tool v-on:toggle="toggleChatPanel()"/>
     <add-vertex-tool />
-    <welcome-tool v-on:openFileTool="openFileTool()" />
+    <welcome-tool v-on:startTutorial="startTutorial()" v-on:openFileTool="openFileTool()" />
 
   </div>
 </template>
@@ -53,6 +53,8 @@ import LanguageTool from './components/tools/Language.vue'
 import ChatTool from './components/tools/Chat.vue'
 import AddVertexTool from './components/tools/AddVertex.vue'
 import WelcomeTool from './components/tools/Welcome.vue'
+
+import WandererSingleton from 'wanderer-singleton'
 
 export default {
   name: 'App',
@@ -88,6 +90,11 @@ export default {
       }else{
         this.showChatPanel = true
       }
+    },
+    async startTutorial () {
+      this.showChatPanel = true
+      await WandererSingleton.loadJsonRemote('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json')
+      // WandererSingleton.traverse()
     }
   }
 }
