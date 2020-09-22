@@ -5,38 +5,42 @@
 
     <span v-if="answered" class="button-again" v-on:click="askAgain()">↺</span>
 
-    <div v-if="!answered && lastOfType">
+    <portal to="chat-controls" :order="1">
 
-      <div v-for="suggestion in suggestions" :key="suggestion._id">
+      <div v-if="!answered && lastOfType">
 
-        <div class="form-check" v-if="suggestion.type=='checkbox'">
-          <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]" :id="suggestion._id">
-          <label class="form-check-label" :for="suggestion._id" v-if="suggestion.suggestion">
-            {{suggestion.suggestion}}
-          </label>
+        <div v-for="suggestion in suggestions" :key="suggestion._id">
+
+          <div class="form-check" v-if="suggestion.type=='checkbox'">
+            <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]" :id="suggestion._id">
+            <label class="form-check-label" :for="suggestion._id" v-if="suggestion.suggestion">
+              {{suggestion.suggestion}}
+            </label>
+          </div>
+
+          <div class="form-group" v-if="suggestion.type=='text'">
+            <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
+            <input type="text" class="form-control" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
+          </div>
+
+          <div class="form-group" v-if="suggestion.type=='textarea'">
+            <label  v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
+            <textarea class="form-control" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
+          </div>
+
         </div>
 
-        <div class="form-group" v-if="suggestion.type=='text'">
-          <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
-          <input type="text" class="form-control" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
-        </div>
+        <div class="btn-group has-wrap">
 
-        <div class="form-group" v-if="suggestion.type=='textarea'">
-          <label  v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
-          <textarea class="form-control" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
+          <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" class="btn btn-secondary" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
+
+          <button v-if="requireAnswerButton" class="btn btn-secondary" v-on:click="answer()">Answer</button>
+
         </div>
 
       </div>
 
-      <div class="btn-group has-wrap">
-
-        <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" class="btn btn-light" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
-
-        <button v-if="requireAnswerButton" class="btn btn-light" v-on:click="answer()">Answer</button>
-
-      </div>
-
-    </div>
+    </portal>
 
   </div>
 </template>
@@ -189,7 +193,7 @@ export default {
 
           } else {
 
-            console.log(this.suggestions[s]._id)
+            // console.log(this.suggestions[s]._id)
 
             // Answer the other suggestions
             // Check the values

@@ -29,23 +29,25 @@
           </div>
           <div class="col has-devider">
 
-            <h5 class="card-title">Restore an existing project</h5>
+            <h5 class="card-title">Restore from file</h5>
             <p class="card-text">Restore an existing project from a project file.</p>
             <div class="upload-btn-wrapper">
-              <button class="btn btn-primary">Restore</button>
+              <button class="btn btn-primary">Restore from file</button>
               <input class="btn" type="file" @change="loadJsonFile">
             </div>
 
           </div>
-          <!-- <div class="col has-devider">
 
-            <h5 class="card-title">Load a project template</h5>
-            <p class="card-text">Quick start your bot with a template</p>
-            <div class="upload-btn-wrapper">
-              <span v-on:click="loadJsonRemote('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/001_simple_bot.json')">Tutorial</span>
-            </div>
+          <div class="col has-devider">
 
-          </div> -->
+            <h5 class="card-title">Load from URL</h5>
+            <p class="card-text">Load a project by URL</p>
+            <input type="text" class="form-control" v-model="url">
+            <a href="#" class="btn btn-primary" v-on:click="loadJsonRemote(url)">Load</a>
+
+          </div>
+
+
         </div>
 
       </modal>
@@ -78,7 +80,8 @@ export default {
   },
   data: function () {
     return {
-      showModal: this.show
+      showModal: this.show,
+      url: ''
     }
   },
   watch: {
@@ -129,25 +132,25 @@ export default {
       this.showModal = false
 
     },
-    loadJsonRemote (url) {
+    async loadJsonRemote (url) {
       try {
-        WandererSingleton.loadJsonRemote(url)
+        await WandererSingleton.loadJsonRemote(url)
         this.showModal = false
       } catch (e) {
-        StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e.message, type: 'danger'})
-        this.showModal = false
+        StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e, type: 'danger'})
       }
 
     },
-    loadJsonFile (ev) {
+    async loadJsonFile (ev) {
 
       const file = ev.target.files[0]
+
       try {
-        WandererSingleton.loadJsonFile(file)
+        await WandererSingleton.loadJsonFile(file)
         this.showModal = false
+
       } catch (e) {
-        StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e.message, type: 'danger'})
-        this.showModal = false
+        StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e, type: 'danger'})
       }
 
     },

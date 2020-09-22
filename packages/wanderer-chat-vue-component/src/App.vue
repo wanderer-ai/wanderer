@@ -27,6 +27,8 @@
         Typing ...
       </div>
 
+      <portal-target name="chat-controls" multiple />
+
       <button class="btn btn-secondary" v-on:click="restart">Restart</button>
       <!-- <button class="btn btn-secondary" v-on:click="toggleReport">Report</button> -->
 

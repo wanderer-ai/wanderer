@@ -42,7 +42,7 @@ export default {
   height: 100%;
   width:500px;
   font-family: Helvetica, Arial, sans-serif;
-  z-index: 999999;
+  z-index: 9997;
 
   background-color: rgba(248, 249, 250, 0.5);
 }

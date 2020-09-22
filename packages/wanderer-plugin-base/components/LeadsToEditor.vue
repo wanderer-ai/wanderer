@@ -44,8 +44,8 @@
       <select id="condition" class="form-control" v-model="condition">
         <option :value="false">none</option>
         <option
-          v-for="edegeCondition, name in edgeConditions"
-          :value="name">{{edegeCondition.label}}{{(edegeCondition.default? ' (default)':'')}}</option>
+          v-for="edgeCondition, name in edgeConditions"
+          :value="name">{{edgeCondition.label}}{{(edgeCondition.default? ' (default)':'')}}</option>
         <option value="custom">custom</option>
       </select>
     </div>
@@ -84,6 +84,16 @@
       </div>
     </div>
 
+    <div class="form-group">
+      <label for="edgeMethod">Method</label>
+      <select id="edgeMethod" class="form-control" v-model="method">
+        <option :value="false">none</option>
+        <option
+          v-for="edgeMethod, name in edgeMethods"
+          :value="name">{{edgeMethod.label}}</option>
+      </select>
+    </div>
+
   </div>
 </template>
 
@@ -98,6 +108,7 @@ export default {
     type: WandererBuilder.getEdgeModel('type'),
     name: WandererBuilder.getEdgeModel('name'),
     expose: WandererBuilder.getEdgeModel('expose'),
+    method: WandererBuilder.getEdgeModel('method'),
     priority: WandererBuilder.getEdgeModel('priority'),
     condition: WandererBuilder.getEdgeModel('condition'),
     compareVariable: WandererBuilder.getEdgeModel('compareVariable'),
@@ -116,7 +127,6 @@ export default {
       }
     },
     edgeConditions () {
-      let predefinedConditions = []
       if (this.$store.state.wanderer.builder.editEdge !== 0) {
         let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(this.$store.state.wanderer.builder.editEdge)
         let cytoscapeSourceNode = cytoscapeEdge.source()
@@ -125,6 +135,18 @@ export default {
         let sourceNodeCollection = WandererSingleton.getVertexCollection(cytoscapeSourceNodeData._collection)
         if(sourceNodeCollection.edgeConditions != undefined) {
           return sourceNodeCollection.edgeConditions
+        }
+      }
+    },
+    edgeMethods () {
+      if (this.$store.state.wanderer.builder.editEdge !== 0) {
+        let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(this.$store.state.wanderer.builder.editEdge)
+        let cytoscapeTargetNode = cytoscapeEdge.target()
+        let cytoscapeTargetNodeId = cytoscapeTargetNode.id()
+        let cytoscapeTargetNodeData = this.$store.state.wanderer.vertexDocumentData[cytoscapeTargetNodeId]
+        let targetNodeCollection = WandererSingleton.getVertexCollection(cytoscapeTargetNodeData._collection)
+        if(targetNodeCollection.edgeMethods != undefined) {
+          return targetNodeCollection.edgeMethods
         }
       }
     }

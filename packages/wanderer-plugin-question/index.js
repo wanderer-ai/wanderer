@@ -56,7 +56,7 @@ export default {
       name: 'section',
       builder: {
         label: 'Section',
-        color: '#6C757D',
+        color: '#cccccc',
         cytoscapeClasses: 'section',
         cytoscapeCxtMenuSelector: '.section',
         showInCxtMenu: false,
@@ -73,7 +73,7 @@ export default {
             'height': '100px',
             'width': '100px',
             'font-size': '20px',
-            'background-color': '#6C757D',
+            'background-color': '#cccccc',
             'label': 'data(label)'
           }
         }],
@@ -99,8 +99,8 @@ export default {
         finished: {
           label: 'finished',
           condition: function (vertexLifecycleData) {
-            if(vertexLifecycleData != undefined){
-              if(vertexLifecycleData.finished){
+            if(vertexLifecycleData != undefined) {
+              if(vertexLifecycleData.finished) {
                 return true;
               }
             }
@@ -174,6 +174,36 @@ export default {
               return true;
             }
             return false;
+          }
+        }
+      },
+      edgeMethods: {
+        reset: {
+          label: 'reset question',
+          method: function (cytoscapeVertex, vertexData) {
+
+            // Remove the answered mark from store
+            WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+              id: cytoscapeVertex.id(),
+              key: 'answered',
+              value: false
+            })
+
+            // Reset all suggestions
+            var childrens = cytoscapeVertex.outgoers('.suggestion');
+            childrens.forEach(function(child) {
+              WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+                id: child.id(),
+                key: 'answered',
+                value: false
+              })
+            })
+
+            // Remove from the local traversal scope if it was the last question
+            if(lastAddedQuestion==cytoscapeVertex.id()) {
+              lastAddedQuestion = false;
+            }
+
           }
         }
       },
@@ -411,6 +441,7 @@ export default {
 
         // Add question only to message stack if it was not added already directly before
         if(lastAddedQuestion != traversalResult.firstFoundQuestionId) {
+
           lastAddedQuestion = traversalResult.firstFoundQuestionId
 
           WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {

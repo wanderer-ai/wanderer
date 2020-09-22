@@ -14,16 +14,16 @@
 
         <div v-if="selectedVertexIds.length==0">
 
-          <button class="btn" v-for="(collection, name) in possibleVertexCollections" v-bind:key="name" :style="'background-color:'+collection.builder.color+';'" v-on:click="add(name)">
-            {{collection.builder.label}}
-          </button>
+            <button class="btn btn-secondary mr-4 mb-4" v-for="(collection, name) in possibleVertexCollections" v-bind:key="name" :style="'background-color:'+collection.builder.color+';border-color:'+collection.builder.color+';'" v-on:click="add(name)">
+              <icon name="plus"></icon> {{collection.builder.label}}
+            </button>
 
         </div>
 
         <div v-if="selectedVertexIds.length==1">
 
-          <button class="btn" v-for="(possibleOutgoing) in possibleOutgoingCollections" v-bind:key="possibleOutgoing.to.name" :style="'background-color:'+possibleOutgoing.to.builder.color+';'" v-on:click="append(possibleOutgoing.to.name, possibleOutgoing.through[0].name)">
-            {{possibleOutgoing.to.builder.label}}
+          <button class="btn btn-secondary mr-4 mb-4" v-for="(possibleOutgoing) in possibleOutgoingCollections" v-bind:key="possibleOutgoing.to.name" :style="'background-color:'+possibleOutgoing.to.builder.color+';border-color:'+possibleOutgoing.to.builder.color+';'" v-on:click="append(possibleOutgoing.to.name, possibleOutgoing.through[0].name)">
+            <icon name="plus"></icon> {{possibleOutgoing.to.builder.label}}
           </button>
 
         </div>

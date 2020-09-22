@@ -63,20 +63,8 @@ export default {
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
         flowVertexId = cytoscapeVertex.id()
-      },
-      // edgeConditions: {
-      //   finished: {
-      //     label: 'finished',
-      //     condition: function (vertexLifecycleData) {
-      //       if(vertexLifecycleData != undefined){
-      //         if(vertexLifecycleData.flowFinished){
-      //           return true;
-      //         }
-      //       }
-      //       return false;
-      //     }
-      //   }
-      // }
+      }
+
     })
 
     // var foundMessages = 0;
@@ -119,10 +107,6 @@ export default {
         }
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
-        // if(traversalResult.lastFoundMessageIds == undefined){
-        //   traversalResult.lastFoundMessageIds = []
-        // }
-        // traversalResult.lastFoundMessageIds.push(cytoscapeVertex.id())
 
         // Hand over the message to the chat if it was not transfered before
         if(transferedMessages.indexOf(cytoscapeVertex.id())==-1){
@@ -144,15 +128,6 @@ export default {
       },
     })
 
-    // var displayedMessages = []
-
-    // var onboardingWasDisplayed = false;
-    // WandererSingleton.on('traversalFinished', function() {
-    //
-    //   // foundMessages = 0;
-    //
-    // })
-
     WandererSingleton.registerEdgeCollection({
       name: 'leadsTo',
       builder: {
@@ -166,6 +141,7 @@ export default {
             priority: 10,
             name: '',
             expose: '',
+            method: false,
             condition: false,
             compareVariable: false,
             compareCondition: '==',
@@ -219,7 +195,9 @@ export default {
 
         // Get the source vertex collection
         var cytoscapeSourceNode = WandererCsytoscapeSingleton.cy.getElementById(data._from)
+        var cytoscapeTargetNode = WandererCsytoscapeSingleton.cy.getElementById(data._to)
         var sourceNodeCollection = WandererSingleton.getVertexCollectionById(cytoscapeSourceNode.id())
+        var targetNodeCollection = WandererSingleton.getVertexCollectionById(cytoscapeTargetNode.id())
 
         // Find default data
         var defaultCondition = WandererSingleton.getVertexCollectionDefaultEdgeCondition(sourceNodeCollection.name)
@@ -233,29 +211,32 @@ export default {
         var label = ''
 
         if (data.name) {
-          label = label+data.name
+          label = label+'{'+data.name+'}'
         }
 
         if (data.condition) {
           if(data.condition=='custom') {
             if(data.compareVariable) {
-              label = label+'('+data.compareVariable + data.compareCondition + data.compareValue+')'
+              label = label+' ['+data.compareVariable + data.compareCondition + data.compareValue+']'
               line = 'dashed'
             }
           } else {
 
-              // console.log(data);
-              // let collection = WandererSingleton.getVertexCollection(data._collection)
-              // label = collection.edgeConditions[data.condition].label
-              // Print the corrent label from the outgoing vertex condition
-
               // Only draw condition if not default
               if(defaultCondition!=data.condition) {
-                label = label+'('+sourceNodeCollection.edgeConditions[data.condition].label+')'
+                if(sourceNodeCollection.edgeConditions!=undefined) {
+                  label = label+' ['+sourceNodeCollection.edgeConditions[data.condition].label+']'
+                }
               }
 
               line = 'dashed'
 
+          }
+        }
+
+        if (data.method) {
+          if(targetNodeCollection.edgeMethods!=undefined) {
+            label = label+' ('+targetNodeCollection.edgeMethods[data.method].label+')'
           }
         }
 

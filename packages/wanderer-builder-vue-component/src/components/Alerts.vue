@@ -43,6 +43,7 @@
     width:400px;
     top:90px;
     right:15px;
+    z-index: 9999;
   }
 
 </style>

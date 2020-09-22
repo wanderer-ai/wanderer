@@ -20,22 +20,6 @@ export default (function () {
 
   var hooks = {}
 
-  // static cytoscape = null;
-  // static store = null;
-
-  // static init (cytoscape, store) {
-  //   this.cytoscape = cytoscape
-  //   this.store = store
-  // }
-
-  // Try to load config file if exists
-  // console.log(__dirname)
-  // try {
-  //   // var configuration = require('wanderer.config.json');
-  // } catch (ex) {
-  //     throw ('No wanderer configuration file was found')
-  // }
-
   function on(hookName,method){
     if(hooks[hookName] === undefined){
       hooks[hookName] = []
@@ -113,14 +97,6 @@ export default (function () {
     return edgeCollections[name]
   }
 
-  // Warum nicht direkt an den Store?
-  // getVertexData(id){
-  //   if(this.store.state.wanderer.vertexDocumentData[id] !== undefined){
-  //     return this.store.state.wanderer.vertexDocumentData[id]
-  //   }
-  //   return false
-  // },
-
   function addVertex (vertexData) {
 
     let collection = getVertexCollection(vertexData._collection)
@@ -155,12 +131,6 @@ export default (function () {
 
     // Convert data to Cytoscape if needed
     vertexToCytoscape(vertexData)
-
-    // Add the default lifecycledata to the vertex by deep cloning it
-    // let lifecycleData = {}
-    // if(collection.defaultLifecycleData!=undefined) {
-    //   lifecycleData = JSON.parse(JSON.stringify(collection.defaultLifecycleData))
-    // }
 
     // Add data to store
     // WandererStoreSingleton.store.commit('wanderer/addVertex', {vertexData: vertexData, lifecycleData: lifecycleData})
@@ -257,32 +227,46 @@ export default (function () {
 
   async function loadJsonRemote (url) {
 
-    const response = await Axios.get(url);
-    load(response.data)
+    return new Promise((resolve, reject) => {
+
+      Axios.get(url).catch((e) => {
+        reject('Diese Datei wurde nicht gefunden oder es liegt ein Netzwrkproblem vor: '+e.message);
+      }).then((response) => {
+
+        try {
+          load(response.data)
+          resolve()
+        } catch (e) {
+          reject(e);
+        }
+
+      })
+
+    })
 
   }
 
   async function loadJsonFile (file) {
 
-    const reader = new FileReader()
+    return new Promise((resolve, reject) => {
 
-    reader.onload = e => {
+      const reader = new FileReader()
 
-      try {
+      reader.onload = e => {
 
-        var data = JSON.parse(e.target.result)
+        try {
+          var data = JSON.parse(e.target.result)
+          load(data)
 
-        load(data)
+        } catch (e) {
+          reject('This file is not a wanderer .json file!')
+        }
 
-      } catch (e) {
-        // console.log('Schlimme Dinge')
-        throw('This file is not a wanderer .json file!')
       }
 
+      reader.readAsText(file)
 
-    }
-
-    reader.readAsText(file)
+    })
 
   }
 
@@ -371,6 +355,19 @@ export default (function () {
     cytoscapeData.id = vertexData._id; // You cannot override the id
     let vertex = WandererCytoscapeSingleton.cy.getElementById(vertexData._id)
     vertex.data(cytoscapeData)
+
+    // Add compound nodes
+    if(vertexData._parent != undefined && vertexData._parent) {
+      vertex = vertex.move({
+        parent: vertexData._parent
+      });
+    } else {
+      // Remove from compound node
+      vertex = vertex.move({
+        parent: null
+      });
+    }
+
   }
 
   function edgeToCytoscape (edgeData) {
@@ -387,25 +384,6 @@ export default (function () {
   function generateId () {
     return uuidv4()
   }
-
-  /*function getValueModel(key){
-    return {
-      get(){
-        if(StoreSingleton.store.state.wanderer.collectedValues){
-          if(StoreSingleton.store.state.wanderer.collectedValues[StoreSingleton.store.state.wanderer.builder.editVertex] !== undefined){
-            return StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex][key]
-          }
-        }
-      },
-      set(data){
-        StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-          id: StoreSingleton.store.state.wanderer.builder.editVertex,
-          key: key,
-          value: data
-        })
-      }
-    }
-  }*/
 
   var traversedEdges;
   var traversedVertices;
@@ -470,19 +448,14 @@ export default (function () {
         }
       })
 
-      // if(currentVertexData._collection=='conclusion'){
-      //   console.log('found conclusion')
-      //   console.log(cytoscapeInboundEdges)
-      // }
-
       // Check for every edge if there is a allowTargetTraversal function that would allow or restrict the traversal of the current vertex
-      var traversable = true
+      var vertexTraversable = true
       if (cytoscapeInboundEdges.length) {
         for (let i in cytoscapeInboundEdges) {
           let currentCytoscapeEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[cytoscapeInboundEdges[i].id()]
           let currentCytoscapeEdgeCollection = getEdgeCollection(currentCytoscapeEdgeData._collection)
           if(currentCytoscapeEdgeCollection.allowTargetTraversal !== undefined) {
-            traversable = currentCytoscapeEdgeCollection.allowTargetTraversal(
+            vertexTraversable = currentCytoscapeEdgeCollection.allowTargetTraversal(
               currentCytoscapeVertex,
               currentVertexData,
               cytoscapeInboundEdges[i],
@@ -490,16 +463,15 @@ export default (function () {
               WandererStoreSingleton.store.state.wanderer.currentLanguage
             )
             // If one of the inbound edges says NO...
-            if(!traversable) {
+            if(!vertexTraversable) {
               break; // Do not check the other edges
             }
           }
         }
       }
 
-      if (traversable) {
+      if (vertexTraversable) {
         // Remember this vertex as visited
-        // visitorData._visitedVertices.push(currentCytoscapeVertex.id())
         WandererStoreSingleton.store.commit('wanderer/rememberTraversedVertex', currentCytoscapeVertex.id())
 
         traversedVertices = traversedVertices.union(currentCytoscapeVertex);
@@ -524,21 +496,15 @@ export default (function () {
               return WandererStoreSingleton.store.state.wanderer.edgeDocumentData[b.id()]['priority']-WandererStoreSingleton.store.state.wanderer.edgeDocumentData[a.id()]['priority']
           })
 
-          // console.log('expanding edges')
-          //
-          // for (let i in expandEdges) {
-          //   console.log(expandEdges[i].id());
-          // }
-
           var relatedVertexIds = [];
 
           // expand the edges
           for (let i in expandEdges) {
-            var traversable = true
+            var edgeTraversable = true
             let currentCytoscapeEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[expandEdges[i].id()]
             let currentCytoscapeEdgeCollection = getEdgeCollection(currentCytoscapeEdgeData._collection)
             if(currentCytoscapeEdgeCollection.allowTraversal !== undefined) {
-              traversable = currentCytoscapeEdgeCollection.allowTraversal(
+              edgeTraversable = currentCytoscapeEdgeCollection.allowTraversal(
                 currentCytoscapeVertex,
                 currentVertexData,
                 expandEdges[i],
@@ -547,17 +513,12 @@ export default (function () {
               )
             }
 
-            if(traversable) {
+            if(edgeTraversable) {
 
               // Remember this edge as visited
-              // visitorData._visitedEdges.push(expandEdges[i].id())
               WandererStoreSingleton.store.commit('wanderer/rememberTraversedEdge', expandEdges[i].id())
 
               traversedEdges = traversedEdges.union(expandEdges[i]);
-
-              // Get edge information
-              // let EdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[expandEdges[i].id()]
-              // let EdgeCollection = getEdgeCollection(EdgeData._collection)
 
               // Call the visitor for this edge if present
               // But only if we are not in test mode
@@ -571,7 +532,22 @@ export default (function () {
                 }
               }
 
-              // traverse the connected node
+              // Call the selected target node edge method
+              if(test) {
+                if(currentCytoscapeEdgeData.method != undefined) {
+                  let targetVertexId = expandEdges[i].target().id()
+                  let targetCytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(targetVertexId)
+                  let targetVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[targetVertexId]
+                  let targetVertexCollection = getVertexCollection(targetVertexData._collection)
+                  if(targetVertexCollection.edgeMethods != undefined) {
+                    if(targetVertexCollection.edgeMethods[currentCytoscapeEdgeData.method] != undefined) {
+                      targetVertexCollection.edgeMethods[currentCytoscapeEdgeData.method].method(targetCytoscapeVertex, targetVertexData)
+                    }
+                  }
+                }
+              }
+
+              // Traverse the connected node
               // But only visit this node if it was not visited already before in traversal!
               // We dont want to build a unlimited recursion!
               if(WandererStoreSingleton.store.state.wanderer.traversedVertices.indexOf(expandEdges[i].target().id())==-1) {
@@ -617,28 +593,8 @@ export default (function () {
         traverse(nodeId, false, false)
       } else {
 
-        // That means we have reached the end of the traversal
-        // Check the finisher function for all vertices
-        // This function gets executed if all vertice collections decide not to repeat the traversal for the flow
-        // This means the program is finaly over
-        // var flowFinished = false
-        // let vertexCollections = getVertexCollections()
-        // for (var i in vertexCollections) {
-        //   if (vertexCollections[i].finisher !== undefined) {
-        //     if (!vertexCollections[i].finisher()) {
-        //       flowFinished = false
-        //       break
-        //     }
-        //     flowFinished = true
-        //   }
-        // }
-
         // Finish the current traversal by emittig the event
         trigger('traversalFinished')
-
-        // if (flowFinished) {
-        //   trigger('flowFinished')
-        // }
 
         // Start a pulsing animation for the traversed path (Fade out)
         if(!animating) {
@@ -683,8 +639,6 @@ export default (function () {
         }, 1000)
 
       }
-
-
 
     }
 

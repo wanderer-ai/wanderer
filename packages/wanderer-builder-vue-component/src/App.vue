@@ -18,9 +18,9 @@
 
     </div>
 
-    <alerts />
-
     <portal-target name="modals" multiple />
+
+    <alerts />
 
     <info-tool />
     <edit-vertex-tool />

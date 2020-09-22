@@ -13,6 +13,17 @@
       <modal :title="editVertexCollection.label" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
           <component v-bind:is="editVertexCollection.component"></component>
           <language-switcher />
+
+          <div class="form-group" v-if="showSections">
+            <label for="parent">Section</label>
+            <select id="parent" class="form-control" v-model="_parent">
+              <option :value="false">none</option>
+              <option
+                v-for="section in sections"
+                :value="section._id">{{section.title[currentLanguage]}}</option>
+            </select>
+          </div>
+
       </modal>
     </portal>
 
@@ -27,6 +38,7 @@ import 'vue-awesome/icons/edit'
 import Icon from 'vue-awesome/components/Icon'
 import WandererSingleton from 'wanderer-singleton'
 import LanguageSwitcher from '../LanguageSwitcher.vue'
+import WandererBuilder from 'wanderer-builder-singleton'
 
 export default {
   components: {
@@ -50,6 +62,29 @@ export default {
     },
     selectedVertices () {
       return this.$store.state.wanderer.builder.selectedVertexIds.length
+    },
+    _parent: WandererBuilder.getVertexModel('_parent'),
+    sections () {
+      let returnSections = [];
+      for(let i in this.$store.state.wanderer.vertexDocumentData) {
+        if(this.$store.state.wanderer.vertexDocumentData[i]._collection == 'section') {
+          returnSections.push(this.$store.state.wanderer.vertexDocumentData[i]);
+        }
+      }
+      return returnSections
+    },
+    showSections () {
+      if (this.$store.state.wanderer.builder.editVertex !== 0) {
+        let collectionName = this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.builder.editVertex]._collection
+        if(collectionName == 'section' || collectionName == 'flow') {
+          return false
+        } else {
+          return true
+        }
+      }
+    },
+    currentLanguage () {
+      return this.$store.state.wanderer.currentLanguage;
     }
   },
   methods: {

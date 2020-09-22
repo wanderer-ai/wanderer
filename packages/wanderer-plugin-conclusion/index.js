@@ -136,7 +136,7 @@ export default {
     })
 
     WandererSingleton.on('truncate', function() {
-      console.log('resetting conclusion messages')
+      // console.log('resetting conclusion messages')
       transferedConclusions = []
       transferedReports = []
     })
