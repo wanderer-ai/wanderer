@@ -12,17 +12,18 @@
     <portal to="modals" :order="1">
       <modal :title="editVertexCollection.label" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
           <component v-bind:is="editVertexCollection.component"></component>
-          <language-switcher />
 
-          <div class="form-group" v-if="showSections">
-            <label for="parent">Section</label>
+          <div class="form-group" v-if="showParents">
+            <label for="parent">Parent</label>
             <select id="parent" class="form-control" v-model="_parent">
               <option :value="false">none</option>
               <option
-                v-for="section in sections"
-                :value="section._id">{{section.title[currentLanguage]}}</option>
+                v-for="(parentLabel, parentId) in availableParents"
+                :value="parentId">{{parentLabel}}</option>
             </select>
           </div>
+
+          <language-switcher />
 
       </modal>
     </portal>
@@ -64,22 +65,23 @@ export default {
       return this.$store.state.wanderer.builder.selectedVertexIds.length
     },
     _parent: WandererBuilder.getVertexModel('_parent'),
-    sections () {
-      let returnSections = [];
+    availableParents () {
+      let returnParents = {};
       for(let i in this.$store.state.wanderer.vertexDocumentData) {
-        if(this.$store.state.wanderer.vertexDocumentData[i]._collection == 'section') {
-          returnSections.push(this.$store.state.wanderer.vertexDocumentData[i]);
+        var collection = this.$wanderer.getVertexCollection(this.$store.state.wanderer.vertexDocumentData[i]._collection)
+        if(collection.builder.canBeParent != undefined && collection.builder.canBeParent) {
+          returnParents[this.$store.state.wanderer.vertexDocumentData[i]._id] = collection.builder.parentLabel(this.$store.state.wanderer.vertexDocumentData[i], this.currentLanguage);
         }
       }
-      return returnSections
+      return returnParents
     },
-    showSections () {
+    showParents () {
       if (this.$store.state.wanderer.builder.editVertex !== 0) {
-        let collectionName = this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.builder.editVertex]._collection
-        if(collectionName == 'section' || collectionName == 'flow') {
-          return false
-        } else {
+        var collection = this.$wanderer.getVertexCollection(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.builder.editVertex]._collection)
+        if(collection.builder.canBeChild != undefined && collection.builder.canBeChild) {
           return true
+        } else {
+          return false
         }
       }
     },

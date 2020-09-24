@@ -5,11 +5,6 @@ import Axios from 'axios'
 
 const uuidv4 = require('uuid/v4');
 
-// Bei dieser Klasse geht es nur darum einen Singleton zu haben, den ich dann später in Vue injecten kann, aber auch an die Plugins weitergeben kann.
-// Es geht darum von vielen Orten auf diese Methoden zugreifen zu können
-// Daraus könnte ich auch ein Extra Pack machen. Dieses bracuht aber dann zumindest den Store und Cytoscape.
-// Damit ich die nicht injecten muss, könnte ich auch aus dem Store ein Singleton machen
-// Das gleiche gilt dann auch für den Wanderer Builder
 export default (function () {
 
   // This configurtaion of babel does not support static properties
@@ -80,10 +75,12 @@ export default (function () {
 
   function getVertexCollectionDefaultEdgeCondition(name) {
     var vertexCollection = getVertexCollection(name)
-    if (vertexCollection.edgeConditions != undefined) {
-      for(var conditionName in vertexCollection.edgeConditions) {
-        if(vertexCollection.edgeConditions[conditionName].default) {
-          return conditionName
+    if(vertexCollection!= undefined) {
+      if (vertexCollection.edgeConditions != undefined) {
+        for(var conditionName in vertexCollection.edgeConditions) {
+          if(vertexCollection.edgeConditions[conditionName].default) {
+            return conditionName
+          }
         }
       }
     }
@@ -259,7 +256,7 @@ export default (function () {
           load(data)
 
         } catch (e) {
-          reject('This file is not a wanderer .json file!')
+          reject('This file is not a wanderer .json file! '+e)
         }
 
       }
@@ -279,6 +276,30 @@ export default (function () {
       }
     }
     return false;
+  }
+
+  function getLifecycleData (vertexId) {
+    if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId] != undefined) {
+      return WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId];
+    }
+    return false;
+  }
+
+  function getLifecycleValue (vertexId, key) {
+    if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId] != undefined) {
+      if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId][key] != undefined) {
+        return WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId][key];
+      }
+    }
+    return false;
+  }
+
+  function setLifecycleValue (vertexId, key, value) {
+    WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+      id: vertexId,
+      key: key,
+      value: value
+    })
   }
 
   function replaceWithLifecycleData (value, contextVertexId) {
@@ -383,6 +404,19 @@ export default (function () {
 
   function generateId () {
     return uuidv4()
+  }
+
+  function invokeVertexMethod(targetVertexId, methodName) {
+
+      let targetCytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(targetVertexId)
+      let targetVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[targetVertexId]
+      let targetVertexCollection = getVertexCollection(targetVertexData._collection)
+      if(targetVertexCollection.edgeMethods != undefined) {
+        if(targetVertexCollection.edgeMethods[methodName] != undefined) {
+          targetVertexCollection.edgeMethods[methodName].method(targetCytoscapeVertex, targetVertexData)
+        }
+      }
+
   }
 
   var traversedEdges;
@@ -535,15 +569,7 @@ export default (function () {
               // Call the selected target node edge method
               if(test) {
                 if(currentCytoscapeEdgeData.method != undefined) {
-                  let targetVertexId = expandEdges[i].target().id()
-                  let targetCytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(targetVertexId)
-                  let targetVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[targetVertexId]
-                  let targetVertexCollection = getVertexCollection(targetVertexData._collection)
-                  if(targetVertexCollection.edgeMethods != undefined) {
-                    if(targetVertexCollection.edgeMethods[currentCytoscapeEdgeData.method] != undefined) {
-                      targetVertexCollection.edgeMethods[currentCytoscapeEdgeData.method].method(targetCytoscapeVertex, targetVertexData)
-                    }
-                  }
+                  invokeVertexMethod(expandEdges[i].target().id(), currentCytoscapeEdgeData.method)
                 }
               }
 
@@ -574,11 +600,11 @@ export default (function () {
         // Call the finisher method for this vertex
         // That means, that we have now followed all the outgoing edges of this node
         // We are on our way back to the top
-        if(!test) {
-          if (currentVertexCollection.finisher !== undefined) {
-            currentVertexCollection.finisher(currentCytoscapeVertex, currentVertexData);
-          }
-        }
+        // if(!test) {
+        //   if (currentVertexCollection.finisher !== undefined) {
+        //     currentVertexCollection.finisher(currentCytoscapeVertex, currentVertexData);
+        //   }
+        // }
 
       }
 
@@ -821,6 +847,9 @@ export default (function () {
   return {
     on: on,
     trigger: trigger,
+    getLifecycleData: getLifecycleData,
+    getLifecycleValue: getLifecycleValue,
+    setLifecycleValue: setLifecycleValue,
     registerVertexCollection: registerVertexCollection,
     registerEdgeCollection: registerEdgeCollection,
     getVertexCollections: getVertexCollections,
@@ -832,6 +861,7 @@ export default (function () {
     getEdgeCollection: getEdgeCollection,
     addVertex: addVertex,
     addEdge: addEdge,
+    invokeVertexMethod: invokeVertexMethod,
     load: load,
     loadJsonRemote: loadJsonRemote,
     loadJsonFile: loadJsonFile,

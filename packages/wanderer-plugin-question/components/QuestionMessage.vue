@@ -84,18 +84,22 @@ export default {
 
         if(WandererStoreSingleton.store.state.wanderer.vertexRelations[this.vertexId] != undefined) {
           var outgoingVertices = WandererStoreSingleton.store.state.wanderer.vertexRelations[this.vertexId]
-
-          for(let outgoingVerticesId in outgoingVertices) {
-            let collectionName = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[outgoingVertices[outgoingVerticesId]]._collection
-            if(collectionName=='suggestion') {
-              returnData.push({
-                _id: outgoingVertices[outgoingVerticesId],
-                suggestion: WandererSingleton.getTranslatableVertexValue(outgoingVertices[outgoingVerticesId],'suggestion'),
-                type: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'type'),
-                priority: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'priority')
-              })
+          if (outgoingVertices != undefined) {
+            for(let outgoingVerticesId in outgoingVertices) {
+              if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[outgoingVertices[outgoingVerticesId]] != undefined) {
+                let collectionName = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[outgoingVertices[outgoingVerticesId]]._collection
+                if(collectionName=='suggestion') {
+                  returnData.push({
+                    _id: outgoingVertices[outgoingVerticesId],
+                    suggestion: WandererSingleton.getTranslatableVertexValue(outgoingVertices[outgoingVerticesId],'suggestion'),
+                    type: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'type'),
+                    priority: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'priority')
+                  })
+                }
+              }
             }
           }
+
         }
       }
       return returnData
@@ -263,6 +267,7 @@ export default {
         value: false
       })
 
+      // Mark the suggestions as not answered
       for(var s in this.suggestions) {
         if (this.suggestions.hasOwnProperty(s)) {
           WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
@@ -273,19 +278,19 @@ export default {
         }
       }
 
-      // Wenn die Frage die letzte im Message-Stack ist...
-      if(this.lastOfType) {
-
-        // Ask the question again
-        WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-          // id: traversalResult.lastFoundQuestionId,
-          component: 'wanderer-question-message',
-          vertexId: this.vertexId,
-          backgroundColor: '#007BFF',
-          delay: 2000
-        })
-
-      }
+      // // Wenn die Frage die letzte im Message-Stack ist...
+      // if(this.lastOfType) {
+      //
+      //   // Ask the question again
+      //   WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+      //     // id: traversalResult.lastFoundQuestionId,
+      //     component: 'wanderer-question-message',
+      //     vertexId: this.vertexId,
+      //     backgroundColor: '#007BFF',
+      //     delay: 2000
+      //   })
+      //
+      // }
 
     }
   }

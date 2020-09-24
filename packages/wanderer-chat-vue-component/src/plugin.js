@@ -16,22 +16,28 @@ export default {
     // var messageDelayResetTimeout
     // var messageDelay = 0
 
+    var typingTimer = null;
+
     // Extend vuex with new namespace
     WandererStoreSingleton.store.registerModule(['wanderer', 'chat'], {
       namespaced: true,
       state: {
         messages: [],
-        messageIds: []
+        messageIds: [],
+        typing: false
       },
       mutations: {
+        setTyping (state, typing) {
+          state.typing = typing
+        },
         addMessage (state, message) {
           if (message.id === undefined) {
             // console.log(message)
             // throw Error('Every message needs an unique id!')
             message.id = uuidv4()
           }
-          if (message.component === undefined) { throw Error('Every message needs an component!') }
-          if (message.delay === undefined) { message.delay = 0 }
+          if (message.component === undefined) { throw Error('Every message needs a Vue component!') }
+          // if (message.delay === undefined) { message.delay = 0 }
 
           // Delay the messages and delay every message longer than the message before
           // message.delay = 1000+1000*messageDelay
@@ -48,17 +54,25 @@ export default {
           state.messages.push(message)
           // }
         },
-        showMessage (state, key) {
-          this._vm.$set(state.messages[key], 'show', true)
-        },
+        // showMessage (state, key) {
+        //   this._vm.$set(state.messages[key], 'show', true)
+        // },
         cleanMessages (state) {
           state.messages = []
           state.messageIds = []
         }
+      },
+      actions: {
+        async setTyping(context, time) {
+          context.commit('setTyping', true)
+          setTimeout(()=>{
+            context.commit('setTyping', false)
+          }, time)
+        }
       }
     })
 
-    // This event will be fired on loading new data
+    // This event will be fired on loading new data or on resetting the chat
     WandererSingleton.on('truncate', function () {
       WandererStoreSingleton.store.commit('wanderer/chat/cleanMessages')
     })

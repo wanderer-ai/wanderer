@@ -9,10 +9,7 @@
         :key="message.id"
         :id="message.id"
         :from="message.from"
-        :delay="message.delay"
-        :backgroundColor="message.backgroundColor"
-        :show="message.show"
-        v-on:messageArrived="messageArrived">
+        :backgroundColor="message.backgroundColor">
 
         <component v-bind:is="message.component" :vertexId="message.vertexId" :lastOfType="lastOfType[message.component] == message.id" :last="key == messages.length - 1"></component>
 
@@ -23,7 +20,7 @@
     </div>
     <div class="chat-controls">
 
-      <div v-if="waitingForMessage">
+      <div v-if="typing">
         Typing ...
       </div>
 
@@ -65,6 +62,9 @@ export default {
     messages: function () {
       return WandererStoreSingleton.store.state.wanderer.chat.messages
     },
+    typing: function () {
+      return WandererStoreSingleton.store.state.wanderer.chat.typing
+    },
     lastOfType: function () {
       var result = {};
       for (var key in this.messages) {
@@ -76,26 +76,26 @@ export default {
       return WandererStoreSingleton.store.state.wanderer.vertexDocumentIds.length
     }
   },
-  watch: {
-    // Lets watch the message ids
-    // So we can detect if a new message will income at the stack
-    messageIds: function (newObj, oldObj) {
-
-      this.showNextMessage()
-
-      // Set typing timeout
-      // this.showTyping = true
-      // setTimeout(() => {
-      //   this.showTyping = false
-      // }, newObj[newObj.length - 1].delay)
-
-      // Set auto scroll activation timeout
-      // setTimeout(() => {
-      //   // Scroll to bottom
-      //   this.scrollToBottom()
-      // }, newObj[newObj.length - 1].delay + 100)
-    }
-  },
+  // watch: {
+  //   // Lets watch the message ids
+  //   // So we can detect if a new message will income at the stack
+  //   messageIds: function (newObj, oldObj) {
+  //
+  //     this.showNextMessage()
+  //
+  //     // Set typing timeout
+  //     // this.showTyping = true
+  //     // setTimeout(() => {
+  //     //   this.showTyping = false
+  //     // }, newObj[newObj.length - 1].delay)
+  //
+  //     // Set auto scroll activation timeout
+  //     // setTimeout(() => {
+  //     //   // Scroll to bottom
+  //     //   this.scrollToBottom()
+  //     // }, newObj[newObj.length - 1].delay + 100)
+  //   }
+  // },
   mounted: function () {
     // Lets check if cy is already initiated
     // The Chat component could be part of other libs that have already initiated cy like the builder
@@ -109,9 +109,9 @@ export default {
 
     var component = this;
 
-    WandererSingleton.on('truncate', function() {
-      component.waitingForMessage = false
-    })
+    // WandererSingleton.on('truncate', function() {
+    //   component.waitingForMessage = false
+    // })
 
     this.$nextTick(function () {
 
@@ -149,48 +149,48 @@ export default {
     //     setTimeout(this.scrollToBottom, 1)
     //   }
     // },
-    showNextMessage () {
-      // Check if there is currently a message in que
-      // Because we want only wait for one message at a time
-      if(!this.waitingForMessage){
-        if(this.messages) {
-          for (var key in this.messages) {
-            // Find the first message that has not been arrived
-            if (!this.messages[key].show) {
-              // Wait for this message
-              this.waitingForMessage = true
-              // Show this message
-              WandererStoreSingleton.store.commit('wanderer/chat/showMessage', key)
-              break;
-            }
-          }
-        }
-      }
-    },
-    messageArrived () {
-
-      // A message delay has endet. So it has been arrived
-
-      // this.showTyping = false
-
-      this.$refs['messages'].scrollTo(0,this.$refs['messages'].scrollHeight)
-
-      // Scroll to bottom
-      //this.$refs['messages'].$el.scrollTo(0, this.$refs['messages'].$el.scrollHeight)
-
-      // Now we can show the next message
-      // Lets set waitingForMessage to false so this.showNextMessage will be able to show the next
-      this.waitingForMessage = false
-      this.showNextMessage();
-
-      // var element = document.getElementById('message-'+messageId);
-      // if(element){
-      //   console.log(scroll);
-      //   element.scrollIntoView();
-      // }
-
-      // window.location.href = "#message-"+id;
-    },
+    // showNextMessage () {
+    //   // Check if there is currently a message in que
+    //   // Because we want only wait for one message at a time
+    //   if(!this.waitingForMessage){
+    //     if(this.messages) {
+    //       for (var key in this.messages) {
+    //         // Find the first message that has not been arrived
+    //         if (!this.messages[key].show) {
+    //           // Wait for this message
+    //           this.waitingForMessage = true
+    //           // Show this message
+    //           WandererStoreSingleton.store.commit('wanderer/chat/showMessage', key)
+    //           break;
+    //         }
+    //       }
+    //     }
+    //   }
+    // },
+    // messageArrived () {
+    //
+    //   // A message delay has endet. So it has been arrived
+    //
+    //   // this.showTyping = false
+    //
+    //   this.$refs['messages'].scrollTo(0,this.$refs['messages'].scrollHeight)
+    //
+    //   // Scroll to bottom
+    //   //this.$refs['messages'].$el.scrollTo(0, this.$refs['messages'].$el.scrollHeight)
+    //
+    //   // Now we can show the next message
+    //   // Lets set waitingForMessage to false so this.showNextMessage will be able to show the next
+    //   this.waitingForMessage = false
+    //   this.showNextMessage();
+    //
+    //   // var element = document.getElementById('message-'+messageId);
+    //   // if(element){
+    //   //   console.log(scroll);
+    //   //   element.scrollIntoView();
+    //   // }
+    //
+    //   // window.location.href = "#message-"+id;
+    // },
     toggleReport () {
 
       this.showReport = !this.showReport

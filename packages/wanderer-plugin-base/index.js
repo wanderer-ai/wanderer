@@ -3,6 +3,7 @@ import WandererSingleton from 'wanderer-singleton'
 import WandererStoreSingleton from 'wanderer-store-singleton'
 import WandererCsytoscapeSingleton from 'wanderer-cytoscape-singleton'
 
+import SectionEditor from './components/SectionEditor.vue'
 import FlowEditor from './components/FlowEditor.vue'
 import MessageEditor from './components/MessageEditor.vue'
 import LeadsToEditor from './components/LeadsToEditor.vue'
@@ -12,15 +13,19 @@ export default {
 
   install (Vue) {
 
+    Vue.component('wanderer-section-editor', SectionEditor)
     Vue.component('wanderer-flow-editor', FlowEditor)
     Vue.component('wanderer-leads-to-editor', LeadsToEditor)
     Vue.component('wanderer-message-editor', MessageEditor)
     Vue.component('wanderer-message', Message)
 
-    // var traversalResult = {};
-    var edgeTraversalResult = {};
+    var debug = false
+
+    // Define a few traversal variables
+    var lastTraversedRequiredEdgeIds = []
+    var lastTraversedForbiddenEdgeIds = []
+    var typingTimeouts = {}
     var flowVertexId = '';
-    var transferedMessages = [];
 
     WandererSingleton.registerVertexCollection({
       name: 'flow',
@@ -45,12 +50,6 @@ export default {
         }],
         component: 'wanderer-flow-editor'
       },
-      // lifecycleData: {
-      //   flowFinished: {
-      //     label: 'Flow finished',
-      //     exposeDefault: false
-      //   }
-      // },
       toCytoscape: function(data, language){
         if(data.topic[language]){
           return {
@@ -67,7 +66,120 @@ export default {
 
     })
 
-    // var foundMessages = 0;
+    // Register the section vertex
+    WandererSingleton.registerVertexCollection({
+      name: 'section',
+      builder: {
+        label: 'Section',
+        color: '#cccccc',
+        cytoscapeClasses: 'section',
+        cytoscapeCxtMenuSelector: '.section',
+        showInCxtMenu: false,
+        creatable: true,
+        defaultFields: {
+          title: {
+            en: 'New section',
+            de: 'Neue Section'
+          }
+        },
+        cytoscapeStyles: [{
+          selector: '.section',
+          style: {
+            'height': '100px',
+            'width': '100px',
+            'font-size': '20px',
+            'background-color': '#cccccc',
+            'label': 'data(label)'
+          }
+        }],
+        component: 'wanderer-section-editor',
+        canBeParent: true,
+        canBeChild: false,
+        parentLabel: (data, language) => {
+          if(data.title[language]) {
+            return data.title[language]+(debug? ' ('+data._id+')':'')
+          }
+          return 'Section'
+        },
+      },
+      lifecycleData: {
+        finished: {
+          label: 'Section finished',
+          exposeDefault: false
+        }
+      },
+      toCytoscape: (data, language) => {
+        if(data.title[language]) {
+          return {
+            label: data.title[language]+(debug? ' ('+data._id+')':'')
+          }
+        }
+        return {
+          label: 'Section'
+        }
+      },
+      edgeConditions: {
+        finished: {
+          default: true,
+          label: 'finished',
+          condition: (vertexLifecycleData) => {
+            if(vertexLifecycleData != undefined) {
+              if(vertexLifecycleData.finished) {
+                return true;
+              }
+            }
+            return false;
+          }
+        }
+      },
+      edgeMethods: {
+        reset: {
+          label: 'Reset section',
+          method: (cytoscapeVertex, vertexData) => {
+
+            // Reset section lifecycle data
+            WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'finished', false)
+
+            // Get all child elements of the compound node
+            let childrens = cytoscapeVertex.children();
+            childrens.forEach((child) => {
+              // Invoke the reset method for all child elements
+              WandererSingleton.invokeVertexMethod(child.id(), 'reset');
+            })
+
+          }
+        }
+      },
+      testVisitor: (cytoscapeVertex, vertexData, language) => {
+
+        // Get all child elements of the compound node
+        let childrens = cytoscapeVertex.children();
+
+        let conditionsFullfilled = true;
+
+        childrens.forEach((child) => {
+          // Check, if for all child elements the default edgeCondition is fullfilled
+
+          // Find the default edgeCondition for this vertex
+          // Todo: Move this into the Wanderer core
+          // Also this function is similar to the one defined in wanderer-plugin-base (checking the edges)
+          let sourceNodeCollection = WandererSingleton.getVertexCollectionById(child.id())
+          if(sourceNodeCollection.parentFinisher !== undefined) {
+            let vertexLifecycleData = WandererSingleton.getLifecycleData(child.id())
+            if(!sourceNodeCollection.parentFinisher(vertexLifecycleData)) {
+              conditionsFullfilled = false;
+            }
+          }
+
+        })
+
+        if(conditionsFullfilled) {
+          WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'finished', true)
+        }
+
+      },
+
+    })
 
     WandererSingleton.registerVertexCollection({
       name: 'message',
@@ -94,7 +206,40 @@ export default {
             'label': 'data(label)'
           }
         }],
-        component: 'wanderer-message-editor'
+        component: 'wanderer-message-editor',
+        canBeChild: true
+      },
+      lifecycleData: {
+        sent: {
+          label: 'sent',
+          exposeDefault: false
+        }
+      },
+      edgeConditions: {
+        sent: {
+          default: true,
+          label: 'sent',
+          condition: function (vertexLifecycleData) {
+            if(vertexLifecycleData!=undefined && vertexLifecycleData.sent) {
+              return true;
+            }
+            return false;
+          }
+        }
+      },
+      edgeMethods: {
+        reset: {
+          label: 'Reset message',
+          method: (cytoscapeVertex, vertexData) => {
+            // Clear the typing timeout
+            if(typingTimeouts[cytoscapeVertex.id()] !== undefined) {
+              clearTimeout(typingTimeouts[cytoscapeVertex.id()]);
+              delete typingTimeouts[cytoscapeVertex.id()];
+            }
+            // Reset the lifecycle data
+            WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
+          }
+        }
       },
       toCytoscape: function(data, language){
         if(data.message[language]){
@@ -108,24 +253,45 @@ export default {
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
 
-        // Hand over the message to the chat if it was not transfered before
-        if(transferedMessages.indexOf(cytoscapeVertex.id())==-1){
+        // If this message was not send before
+        if(!WandererSingleton.getLifecycleValue(cytoscapeVertex.id(), 'sent')) {
 
-          transferedMessages.push(cytoscapeVertex.id())
+          // if this message is currently not typing
+          if(typingTimeouts[cytoscapeVertex.id()] === undefined) {
 
-          WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-            // id: traversalResult.lastFoundConclusionIds[i],
-            component: 'wanderer-message',
-            backgroundColor: '#6C757D',
-            vertexId: cytoscapeVertex.id(),
-            delay: 1000
-          })
+            // Send a typing signal to the chat
+            WandererStoreSingleton.store.dispatch('wanderer/chat/setTyping', 1000)
 
-          // foundMessages++
+            // Now send the message after a while
+            // And set the timeout
+            typingTimeouts[cytoscapeVertex.id()] = setTimeout(()=>{
+
+              // Push the message to the chat
+              WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+                component: 'wanderer-message',
+                backgroundColor: '#6C757D',
+                vertexId: cytoscapeVertex.id()
+              })
+
+              // Remember the message now as sent
+              WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', true)
+
+              // Remove the message from the typing object
+              delete typingTimeouts[cytoscapeVertex.id()]
+
+            }, 1000)
+
+          }
 
         }
 
       },
+      parentFinisher: function (vertexLifecycleData) {
+        if(vertexLifecycleData!=undefined && vertexLifecycleData.sent) {
+          return true;
+        }
+        return false;
+      }
     })
 
     WandererSingleton.registerEdgeCollection({
@@ -250,11 +416,11 @@ export default {
       testVisitor: function (cytoscapeEdge, edgeData, language) {
         // Just remember this edges
         if (edgeData.type == 'and') {
-          edgeTraversalResult.lastTraversedRequiredEdgeIds.push(cytoscapeEdge.id())
+          lastTraversedRequiredEdgeIds.push(cytoscapeEdge.id())
         }
         // Use the testVisitor to get a List of all the NOT edges
         if (edgeData.type == 'not') {
-          edgeTraversalResult.lastTraversedForbiddenEdgeIds.push(cytoscapeEdge.id())
+          lastTraversedForbiddenEdgeIds.push(cytoscapeEdge.id())
         }
       },
       visitor: function (cytoscapeEdge, edgeData, language) {
@@ -322,9 +488,11 @@ export default {
           } else {
 
             // Check predefined condition
+            // Todo: Move this to the Wanderer core
+            // This method is similar to the one specified in wanderer-plugin-question
             let sourceNodeCollection = WandererSingleton.getVertexCollection(vertexData._collection)
-            if(sourceNodeCollection.edgeConditions != undefined) {
-              if(sourceNodeCollection.edgeConditions[edgeData.condition] != undefined) {
+            if(sourceNodeCollection.edgeConditions !== undefined) {
+              if(sourceNodeCollection.edgeConditions[edgeData.condition] !== undefined) {
                 return sourceNodeCollection.edgeConditions[edgeData.condition].condition(vertexLifecycleData)
               }
             }
@@ -336,13 +504,13 @@ export default {
       allowTargetTraversal: function (cytoscapeVertex, vertexData, cytoscapeEdge, edgeData, language) {
         if (edgeData.type == 'and') {
           // Have I already visited this required edge?
-          if (edgeTraversalResult.lastTraversedRequiredEdgeIds.indexOf(cytoscapeEdge.id()) === -1) {
+          if (lastTraversedRequiredEdgeIds.indexOf(cytoscapeEdge.id()) === -1) {
             return false
           }
         }
         if (edgeData.type == 'not') {
           // Have I not visited this forbidden edge before?
-          if (edgeTraversalResult.lastTraversedForbiddenEdgeIds.indexOf(cytoscapeEdge.id()) !== -1) {
+          if (lastTraversedForbiddenEdgeIds.indexOf(cytoscapeEdge.id()) !== -1) {
             return false
           }
         }
@@ -350,60 +518,25 @@ export default {
       }
     })
 
-    var edgeTraversalResult = {
-      lastTraversedRequiredEdgeIds: [],
-      lastTraversedForbiddenEdgeIds: []
-    }
-
-    // WandererSingleton.on('traversalFinished', function() {
-    //   // Reset the result object
-    //   edgeTraversalResult = {
-    //     lastTraversedRequiredEdgeIds: [],
-    //     lastTraversedForbiddenEdgeIds: []
-    //   }
-    // })
-
-    //var flowFinished = false;
-
-    // // var offboardingWasDisplayed = false;
-    // WandererSingleton.on('flowFinished', function() {
-    //
-    //   // We have to check if the flow was already finished
-    //   // Because the flow can trigger a traversal for the last time if it was finished
-    //   // This clause will work only one and will then deny all other traversal attempts
-    //   if(!flowFinished){
-    //     flowFinished = true;
-    //
-    //     // Send the finished statement to the root node
-    //     WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-    //       id: flowVertexId,
-    //       key: 'flowFinished',
-    //       value: true
-    //     })
-    //
-    //     // Start the traversal again
-    //     // WandererSingleton.traverse()
-    //
-    //   }
-    //
-    //   // if(!offboardingWasDisplayed){
-    //     // offboardingWasDisplayed = true
-    //     // WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-    //     //   // id: flowVertexId+'_offboarding',
-    //     //   component: 'wanderer-offboarding-message',
-    //     //   vertexId: flowVertexId
-    //     //
-    //     //   delay: 1000
-    //     // })
-    //   // }
-    // })
+    WandererSingleton.on('traversalFinished', function() {
+      // Reset the edge information
+      lastTraversedRequiredEdgeIds = []
+      lastTraversedForbiddenEdgeIds = []
+    })
 
     WandererSingleton.on('truncate', function() {
-      // displayedMessages = []
-      transferedMessages = []
-      // offboardingWasDisplayed = false
-      // onboardingWasDisplayed = false
-      // flowFinished = false
+
+      // Reset the edge information
+      lastTraversedRequiredEdgeIds = []
+      lastTraversedForbiddenEdgeIds = []
+
+      // Clear all timeouts
+      for (i in typingTimeouts) {
+        if(typingTimeouts.hasOwnProperty(i)) {
+          clearTimeout(typingTimeouts[i]);
+          delete typingTimeouts[i]
+        }
+      }
 
     })
 
