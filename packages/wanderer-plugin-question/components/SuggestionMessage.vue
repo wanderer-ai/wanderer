@@ -39,8 +39,8 @@ export default {
 
     this.$nextTick(function () {
 
-      if(WandererStoreSingleton.store.state.wanderer.vertexRelations[this.vertexId] != undefined) {
-        var outgoingVertices = WandererStoreSingleton.store.state.wanderer.vertexRelations[this.vertexId]
+      if(WandererStoreSingleton.store.state.wanderer.vertexChildren[this.vertexId] != undefined) {
+        var outgoingVertices = WandererStoreSingleton.store.state.wanderer.vertexChildren[this.vertexId]
         for(let outgoingVerticesId in outgoingVertices) {
           let collectionName = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[outgoingVertices[outgoingVerticesId]]._collection
           if(collectionName=='suggestion') {

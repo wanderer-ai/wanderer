@@ -15,7 +15,7 @@
         <div v-if="selectedVertexIds.length==0">
 
             <button class="btn btn-secondary mr-4 mb-4" v-for="(collection, name) in possibleVertexCollections" v-bind:key="name" :style="'background-color:'+collection.builder.color+';border-color:'+collection.builder.color+';'" v-on:click="add(name)">
-              <icon name="plus"></icon> {{collection.builder.label}}
+              <icon name="plus"></icon> add {{collection.builder.label}}
             </button>
 
         </div>
@@ -23,7 +23,11 @@
         <div v-if="selectedVertexIds.length==1">
 
           <button class="btn btn-secondary mr-4 mb-4" v-for="(possibleOutgoing) in possibleOutgoingCollections" v-bind:key="possibleOutgoing.to.name" :style="'background-color:'+possibleOutgoing.to.builder.color+';border-color:'+possibleOutgoing.to.builder.color+';'" v-on:click="append(possibleOutgoing.to.name, possibleOutgoing.through[0].name)">
-            <icon name="plus"></icon> {{possibleOutgoing.to.builder.label}}
+            <icon name="plus"></icon> append {{possibleOutgoing.to.builder.label}}
+          </button>
+
+          <button class="btn btn-secondary mr-4 mb-4" v-for="(possibleChild) in possibleChildCollections" v-bind:key="possibleChild.name" :style="'background-color:'+possibleChild.builder.color+';border-color:'+possibleChild.builder.color+';'" v-on:click="inject(possibleChild.name)">
+            <icon name="plus"></icon> inject {{possibleChild.builder.label}}
           </button>
 
         </div>
@@ -76,6 +80,14 @@ export default {
 
       return possibleOutgoingCollections
     },
+    possibleChildCollections () {
+      // Get the collection name from the selected vertex
+      var fromCollectionName = this.$store.state.wanderer.vertexDocumentData[this.selectedVertexIds[0]]._collection
+
+      // Get the possible child collections
+      return WandererBuilderSingleton.getPossibleChildCollections(fromCollectionName)
+
+    },
     possibleVertexCollections () {
       // No source vertex is selected
 
@@ -102,6 +114,12 @@ export default {
     append(vertexCollectionName, edgeCollectionName) {
 
       WandererBuilderSingleton.appendVertex(this.selectedVertexIds[0], vertexCollectionName, edgeCollectionName)
+
+      this.showModal = false
+    },
+    inject(vertexCollectionName) {
+
+      WandererBuilderSingleton.injectVertex(this.selectedVertexIds[0], vertexCollectionName)
 
       this.showModal = false
     },

@@ -1,6 +1,9 @@
 const pkg = require('./package')
 
 module.exports = {
+  router: {
+    base: '/builder/'
+  },
   mode: 'spa',
 
   /*

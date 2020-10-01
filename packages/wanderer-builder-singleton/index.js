@@ -98,7 +98,11 @@ export default class WandererBuilder {
     return selectedEdgeIds
   }
 
-  static addVertex (vertexCollectionName, x, y) {
+  static addVertex (vertexCollectionName, x, y, parent) {
+
+    if(parent == undefined) {
+      parent = false
+    }
 
     let vertexCollections = WandererSingleton.getVertexCollections()
 
@@ -111,6 +115,7 @@ export default class WandererBuilder {
     newVertexData._origin = false
     newVertexData._x = x
     newVertexData._y = y
+    newVertexData._parent = parent
 
     WandererSingleton.addVertex(newVertexData)
 
@@ -148,6 +153,21 @@ export default class WandererBuilder {
 
     var newVertexId = this.addVertex(vertexCollectionName, x, y)
     var newEdgeId = this.addEdge(edgeCollectionName, cytoscapeNodeId, newVertexId)
+
+  }
+
+  static injectVertex (cytoscapeNodeId, vertexCollectionName){
+
+    // Get the position of the source vertex
+    let position = CytoscapeSingleton.cy.getElementById( cytoscapeNodeId ).position()
+
+    var x = position.x + (Math.floor(Math.random() * (100 - 50 + 1) + 50))
+    var y = position.y + (Math.floor(Math.random() * (100 - 50 + 1) + 50))
+
+    var newVertexId = this.addVertex(vertexCollectionName, x, y, cytoscapeNodeId)
+
+    // Rebuild the compound structure
+    WandererSingleton.rebuildCytoscapeCompounds()
 
   }
 
@@ -217,7 +237,7 @@ export default class WandererBuilder {
     return true;
   }
 
-  // Check if a node can be connected to a given collection name throug an incomming edge
+  // Check if a node can be connected to a given collection name through an incomming edge
   static isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName = false) {
     let vertexCollections = WandererSingleton.getVertexCollections()
 
@@ -286,6 +306,74 @@ export default class WandererBuilder {
     return possibleOutgoingCollections
   }
 
+  static getPossibleChildCollections (parentCollectionName) {
+
+    let returnChildCollections = []
+
+    // Get the parent collection
+    let parentCollection = WandererSingleton.getVertexCollection(parentCollectionName)
+
+    if(parentCollection.builder.canBeParent) {
+
+      // Get the possible child collections
+      let possibleChildCollections = WandererSingleton.getVertexCollections()
+
+      // For each collection check if it can used as a child for this parent
+      for(var possibleChildCollectionName in possibleChildCollections) {
+        if (possibleChildCollections.hasOwnProperty(possibleChildCollectionName)) {
+
+          // Is this possible child vertex creatable?
+          if(possibleChildCollections[possibleChildCollectionName].builder.creatable) {
+
+            if(possibleChildCollections[possibleChildCollectionName].builder.canBeChild) {
+
+              // Check if there are possible restrictions of the parent for this node
+              var parentIsAllowed = true; // Allow this parent if there are no restriction rules
+              if(possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents!=undefined) {
+                parentIsAllowed = false; // Do not allow this parents in general if rules was found
+                // Check this restrictions
+                for(var r in possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents) {
+                  if (possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents.hasOwnProperty(r)) {
+                    if(possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents[r] == parentCollectionName) {
+                      parentIsAllowed = true // Allow this parent if it was found in the rules
+                      // console.log(possibleChildCollectionName+' can be child of '+possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents[r])
+                      break;
+                    }
+                  }
+                }
+              }
+
+              // Check if there are possible restrictions of childs for this parent node
+              var childIsAllowed = true; // Allow this child if there are no restriction rules
+              if(parentCollection.builder.restrictPossibleChildren!=undefined) {
+                childIsAllowed = false; // Do not allow this child in general if rules was found
+                // Check this restrictions
+                for(var r in parentCollection.builder.restrictPossibleChildren) {
+                  if (parentCollection.builder.restrictPossibleChildren.hasOwnProperty(r)) {
+                    if(parentCollection.builder.restrictPossibleChildren[r] == possibleChildCollectionName) {
+                      childIsAllowed = true // Allow this parent if it was found in the rules
+                      // console.log(parentCollectionName+' can have child '+parentCollection.builder.restrictPossibleChildren[r])
+                      break;
+                    }
+                  }
+                }
+              }
+
+              // If both is allowed (If this parent can have this child and if this child can have this parent)
+              if(parentIsAllowed&&childIsAllowed) {
+                returnChildCollections.push(possibleChildCollections[possibleChildCollectionName])
+              }
+            }
+          }
+        }
+      }
+
+    }
+
+    return returnChildCollections
+
+  }
+
   // This method will return all possible edges between two vertex collections
   static getPossibleEdgeCollections (fromCollectionName, toCollectionName) {
     let edgeCollections = WandererSingleton.getEdgeCollections()
@@ -305,6 +393,20 @@ export default class WandererBuilder {
       }
     }
     return possibleEdgeCollections
+  }
+
+  static updateVertexStorePosition (cyVertex) {
+    let position = cyVertex.position(); // get position
+    StoreSingleton.store.commit('wanderer/setVertexDataValue', {
+      id: cyVertex.id(),
+      key: '_x',
+      value: position.x
+    })
+    StoreSingleton.store.commit('wanderer/setVertexDataValue', {
+      id: cyVertex.id(),
+      key: '_y',
+      value: position.y
+    })
   }
 
   static initCytoscape (config) {
@@ -344,7 +446,7 @@ export default class WandererBuilder {
       {
         selector: 'edge',
         style: {
-          'curve-style': 'unbundled-bezier',
+          'curve-style': 'bezier',
           'target-arrow-shape': 'triangle',
           'source-arrow-shape': 'circle',
           'opacity': 1
@@ -384,7 +486,7 @@ export default class WandererBuilder {
 
               cxtmenuCommands.push({
                 fillColor: possibleOutgoingVertexCollection.builder.color,
-                content: 'add '+possibleOutgoingVertexCollection.builder.label,
+                content: 'append '+possibleOutgoingVertexCollection.builder.label,
                 select: function(vertex){
                   vertex.trigger('append', {
                     vertexCollectionName: possibleOutgoingVertexCollection.name,
@@ -396,6 +498,27 @@ export default class WandererBuilder {
             }
 
           })(possibleOutgoingCollections[i].to, possibleOutgoingCollections[i].through[0]);
+        }
+
+        let possibleChildCollections = this.getPossibleChildCollections(fromCollectionName)
+        for(let i in possibleChildCollections) {
+          (function(possibleChildCollections) {
+
+            if(possibleChildCollections.builder.showInCxtMenu) {
+
+              cxtmenuCommands.push({
+                fillColor: possibleChildCollections.builder.color,
+                content: 'inject '+possibleChildCollections.builder.label,
+                select: function(vertex){
+                  vertex.trigger('inject', {
+                    vertexCollectionName: possibleChildCollections.name
+                  })
+                }
+              });
+
+            }
+
+          })(possibleChildCollections[i]);
         }
 
         // Add general "add more" function
@@ -471,30 +594,35 @@ export default class WandererBuilder {
     // });
 
     // Select edge(s)
-    CytoscapeSingleton.cy.on('select', 'edge', function(evt){
+    CytoscapeSingleton.cy.on('select', 'edge', function(evt) {
       let lastSelectedEdgesIds = builder.getSelectedEdgeIds()
-      StoreSingleton.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
-    });
+      StoreSingleton.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds)
+    })
 
     // Edit edge
-    CytoscapeSingleton.cy.on('dblclick','edge', function(){
+    CytoscapeSingleton.cy.on('dblclick','edge', function() {
       StoreSingleton.store.commit('wanderer/builder/setEditEdge',this.id())
-    });
+    })
 
     // Unselect edge(s)
-    CytoscapeSingleton.cy.on('unselect', 'edge', function(evt){
+    CytoscapeSingleton.cy.on('unselect', 'edge', function(evt) {
       let lastSelectedEdgesIds = builder.getSelectedEdgeIds()
-      StoreSingleton.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
-    });
+      StoreSingleton.store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds)
+    })
 
     // Append event
-    CytoscapeSingleton.cy.on('append', 'node', function(evt, {vertexCollectionName, edgeCollectionName}){
+    CytoscapeSingleton.cy.on('append', 'node', function(evt, {vertexCollectionName, edgeCollectionName}) {
       builder.appendVertex(this.id(), vertexCollectionName, edgeCollectionName)
+    })
+
+    // Inject event
+    CytoscapeSingleton.cy.on('inject', 'node', function(evt, {vertexCollectionName}) {
+      builder.injectVertex(this.id(), vertexCollectionName)
     })
 
     // Implement drop event
     let dropTimer = null;
-    CytoscapeSingleton.cy.on('drag', 'node', function(event){
+    CytoscapeSingleton.cy.on('drag', 'node', function(event) {
       if(dropTimer){clearTimeout(dropTimer);} // Clear the timeout if set
       // get all grabbed nodes
       var lastGrabbedNodes = CytoscapeSingleton.cy.$('node:grabbed');
@@ -507,25 +635,24 @@ export default class WandererBuilder {
     });
 
     // On drop
-    CytoscapeSingleton.cy.on('drop','node', function(evt){
+    CytoscapeSingleton.cy.on('drop','node', function(evt) {
 
       // Check if this is a origin vertex
-      // We cannot disable drag for this vertex but we can set it back to 0
-      if(StoreSingleton.store.state.wanderer.vertexDocumentData[this.id()]._origin){
+      // We cannot disable drag for this vertex but we can set it back to coordinates 0,0
+      if(StoreSingleton.store.state.wanderer.vertexDocumentData[this.id()]._origin) {
         this.position({x: 0, y: 0});
         StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message:'You cannot move the origin node',type:'warning'})
-      }else{
-        let position = this.position(); // get position
-        StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-          id: this.id(),
-          key: '_x',
-          value: position.x
+      } else {
+
+        // Update the vertex position in store
+        builder.updateVertexStorePosition(this)
+
+        // Also find all compound children and their child childs and update the positions
+        let childrens = this.descendants();
+        childrens.forEach((child) => {
+          builder.updateVertexStorePosition(child)
         })
-        StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-          id: this.id(),
-          key: '_y',
-          value: position.y
-        })
+
       }
     });
 

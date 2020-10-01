@@ -24,7 +24,8 @@ export default {
       state: {
         messages: [],
         messageIds: [],
-        typing: false
+        typing: false,
+        interactions: []
       },
       mutations: {
         setTyping (state, typing) {
@@ -60,7 +61,17 @@ export default {
         cleanMessages (state) {
           state.messages = []
           state.messageIds = []
-        }
+        },
+        addInteraction (state, interaction) {
+
+          if (interaction.component === undefined) { throw Error('Every interaction needs a Vue component!') }
+
+          state.interactions.push(interaction)
+
+        },
+        cleanInteractions (state) {
+          state.interactions = []
+        },
       },
       actions: {
         async setTyping(context, time) {
@@ -75,6 +86,7 @@ export default {
     // This event will be fired on loading new data or on resetting the chat
     WandererSingleton.on('truncate', function () {
       WandererStoreSingleton.store.commit('wanderer/chat/cleanMessages')
+      WandererStoreSingleton.store.commit('wanderer/chat/cleanInteractions')
     })
 
     // // Listen for traversal event

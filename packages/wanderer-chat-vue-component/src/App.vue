@@ -18,13 +18,19 @@
       <div class="chat-messages-bottom-spacing"></div>
 
     </div>
-    <div class="chat-controls">
+    <div class="chat-interactions">
 
       <div v-if="typing">
         Typing ...
       </div>
 
-      <portal-target name="chat-controls" multiple />
+      <div
+        v-for="(interaction,key) of interactions"
+        :key="key">
+
+        <component v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
+
+      </div>
 
       <button class="btn btn-secondary" v-on:click="restart">Restart</button>
       <!-- <button class="btn btn-secondary" v-on:click="toggleReport">Report</button> -->
@@ -61,6 +67,9 @@ export default {
     },
     messages: function () {
       return WandererStoreSingleton.store.state.wanderer.chat.messages
+    },
+    interactions: function () {
+      return WandererStoreSingleton.store.state.wanderer.chat.interactions
     },
     typing: function () {
       return WandererStoreSingleton.store.state.wanderer.chat.typing
@@ -221,7 +230,7 @@ export default {
 .chat-messages-bottom-spacing {
   padding-bottom:100px; /* For some reason I cannot scroll to the final bottom. A few pixels always left. So I added a padding. So the message should always be visible */
 }
-.chat-controls {
+.chat-interactions {
   flex:0 0 100px;
   padding:20px;
 }

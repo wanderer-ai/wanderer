@@ -148,7 +148,6 @@ export default {
       try {
         await WandererSingleton.loadJsonFile(file)
         this.showModal = false
-
       } catch (e) {
         StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e, type: 'danger'})
       }

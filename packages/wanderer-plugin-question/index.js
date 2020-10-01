@@ -1,6 +1,6 @@
 import QuestionEditor from './components/QuestionEditor.vue'
 import SuggestionEditor from './components/SuggestionEditor.vue'
-import QuestionMessage from './components/QuestionMessage.vue'
+import QuestionInteraction from './components/QuestionInteraction.vue'
 import SuggestionMessage from './components/SuggestionMessage.vue'
 import IsAnswerableByEditor from './components/IsAnswerableByEditor.vue'
 import WandererSingleton from 'wanderer-singleton'
@@ -12,14 +12,14 @@ export default {
 
     Vue.component('wanderer-question-editor', QuestionEditor)
     Vue.component('wanderer-suggestion-editor', SuggestionEditor)
-    Vue.component('wanderer-question-message', QuestionMessage)
+    Vue.component('wanderer-question-interaction', QuestionInteraction)
     Vue.component('wanderer-suggestion-message', SuggestionMessage)
     Vue.component('wanderer-is-answerable-by-editor', IsAnswerableByEditor)
 
     var debug = false
 
-    var typingTimeouts = {}
-    var questionFoundUnansweredBefore = false
+    // var typingTimeouts = {}
+    // var questionFoundUnansweredBefore = false
 
     // Register the question vertex
     WandererSingleton.registerVertexCollection({
@@ -31,24 +31,42 @@ export default {
         cytoscapeCxtMenuSelector: '.question',
         showInCxtMenu: true,
         creatable: true,
+        restrictPossibleChildren: [
+          'suggestion'
+        ],
         defaultFields: {
           question: {
             en: 'New question',
             de: 'Neue Frage'
           }
         },
-        cytoscapeStyles: [{
-          selector: '.question',
-          style: {
-            'height': '100px',
-            'width': '100px',
-            'font-size': '20px',
-            'background-color': '#007BFF',
-            'label': 'data(label)'
+        cytoscapeStyles: [
+          {
+            selector: '.question',
+            style: {
+              'height': '100px',
+              'width': '100px',
+              'font-size': '20px',
+              'background-color': '#007BFF',
+              'label': 'data(label)'
+            }
+          },
+          {
+            selector: '.question:parent',
+            style:{
+                'shape': 'roundrectangle',
+            },
           }
-        }],
+        ],
         component: 'wanderer-question-editor',
-        canBeChild: true
+        canBeChild: true,
+        canBeParent: true,
+        parentLabel: (data, language) => {
+          if(data.question[language]) {
+            return data.question[language]+(debug? ' ('+data._id+')':'')
+          }
+          return 'Section'
+        },
       },
       toCytoscape: function(data, language){
         if(data.question[language]){
@@ -61,10 +79,10 @@ export default {
         }
       },
       lifecycleData: {
-        sent: {
-          label: 'sent',
-          exposeDefault: false
-        },
+        // sent: {
+        //   label: 'sent',
+        //   exposeDefault: false
+        // },
         answered: {
           label: 'read',
           exposeDefault: true
@@ -81,16 +99,16 @@ export default {
             return false;
           }
         },
-        sent: {
-          default: false,
-          label: 'sent',
-          condition: function (vertexLifecycleData) {
-            if(vertexLifecycleData!=undefined && vertexLifecycleData.sent) {
-              return true;
-            }
-            return false;
-          }
-        }
+        // sent: {
+        //   default: false,
+        //   label: 'sent',
+        //   condition: function (vertexLifecycleData) {
+        //     if(vertexLifecycleData!=undefined && vertexLifecycleData.sent) {
+        //       return true;
+        //     }
+        //     return false;
+        //   }
+        // }
       },
       edgeMethods: {
         reset: {
@@ -98,13 +116,13 @@ export default {
           method: (cytoscapeVertex, vertexData) => {
 
             // Clear the typing timeout
-            if(typingTimeouts[cytoscapeVertex.id()] !== undefined) {
-              clearTimeout(typingTimeouts[cytoscapeVertex.id()]);
-              delete typingTimeouts[cytoscapeVertex.id()];
-            }
+            // if(typingTimeouts[cytoscapeVertex.id()] !== undefined) {
+            //   clearTimeout(typingTimeouts[cytoscapeVertex.id()]);
+            //   delete typingTimeouts[cytoscapeVertex.id()];
+            // }
 
             // Reset the lifecycle data
-            WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
+            // WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
             WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
 
             // Reset all suggestions
@@ -123,49 +141,51 @@ export default {
 
           // If no other unanswered question was found in traversal before...
           // We want ask all questions after another and not all at the same time
-          if(!questionFoundUnansweredBefore) {
+          //if(!questionFoundUnansweredBefore) {
 
             // I am the question that will now block all other remaining questions until I am answered
-            questionFoundUnansweredBefore = true
+            // questionFoundUnansweredBefore = true
 
-            // Add the question only, if it was not already sent before
-            if(!WandererSingleton.getLifecycleValue(cytoscapeVertex.id(), 'sent')) {
-
-              // if this message is currently not typing
-              if(typingTimeouts[cytoscapeVertex.id()] === undefined) {
+            // // Add the question only, if it was not already sent before
+            // if(!WandererSingleton.getLifecycleValue(cytoscapeVertex.id(), 'sent')) {
+            //
+            //   // if this message is currently not typing
+            //   if(typingTimeouts[cytoscapeVertex.id()] === undefined) {
 
                 // Send a typing signal to the chat
-                WandererStoreSingleton.store.dispatch('wanderer/chat/setTyping', 1000)
+                // WandererStoreSingleton.store.dispatch('wanderer/chat/setTyping', 1000)
 
                 // Now send the message after a while
                 // And set the timeout
                 //(function(vertexId) {
 
-                typingTimeouts[cytoscapeVertex.id()] = setTimeout(()=>{
+                // typingTimeouts[cytoscapeVertex.id()] = setTimeout(()=>{
 
                   // Push the question to the chat
-                  WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-                    component: 'wanderer-question-message',
-                    vertexId: cytoscapeVertex.id(),
-                    backgroundColor: '#007BFF'
+                  WandererStoreSingleton.store.commit('wanderer/chat/addInteraction', {
+                    component: 'wanderer-question-interaction',
+                    vertexId: cytoscapeVertex.id()
                   })
 
-                  WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', true)
+                  // WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', true)
 
                   // Remove the message from the typing object
-                  delete typingTimeouts[cytoscapeVertex.id()]
+                  // delete typingTimeouts[cytoscapeVertex.id()]
 
-                }, 1000)
+                // }, 1000)
 
                 //})(cytoscapeVertex.id())
 
-              }
-            }
-          }
+            //   }
+            // }
+          //}
         }
       },
       expander: function (cytoscapeVertex, vertexData, outboundCyEdges) {
         return outboundCyEdges
+      },
+      childExpander: function (cytoscapeVertex, vertexData, children) {
+        return children
       },
       parentFinisher: function (vertexLifecycleData) {
         if(vertexLifecycleData!=undefined && vertexLifecycleData.answered) {
@@ -186,10 +206,13 @@ export default {
         showInCxtMenu: true,
         creatable: true,
         restrictIncommingConnections: [
-          {
-            from: 'question',
-            through: 'isAnswerableBy'
-          }
+          // {
+          //   from: 'question',
+          //   through: 'isAnswerableBy'
+          // }
+        ],
+        restrictPossibleParents: [
+          'question'
         ],
         defaultFields: {
           'suggestion': {
@@ -293,67 +316,80 @@ export default {
     })
 
     // Register the isAnswerableBy edge
-    WandererSingleton.registerEdgeCollection({
-      name: 'isAnswerableBy',
-      builder: {
-        label: 'isAnswerableBy',
-        cytoscapeClasses: 'isAnswerableBy',
-        creatable: true,
-        defaultFields: function (fromVertexCollection, toVertexCollection) {
-          return {
-            priority: 25
-          }
-        },
-        restrictSourceVertices: [
-          'question'
-        ],
-        restrictTargetVertices: [
-          'suggestion'
-        ],
-        cytoscapeStyles: [{
-          selector: '.isAnswerableBy',
-          style: {
-            'line-color': '#28A745',
-            'target-arrow-color': '#28A745',
-            'source-arrow-color': '#28A745',
-            'width': 'data(priority)',
-            'label': 'data(label)'
-          }
-        }],
-        component: 'wanderer-is-answerable-by-editor'
-      },
-      toCytoscape: function(data){
+    // WandererSingleton.registerEdgeCollection({
+    //   name: 'isAnswerableBy',
+    //   builder: {
+    //     label: 'isAnswerableBy',
+    //     cytoscapeClasses: 'isAnswerableBy',
+    //     creatable: true,
+    //     defaultFields: function (fromVertexCollection, toVertexCollection) {
+    //       return {
+    //         priority: 25
+    //       }
+    //     },
+    //     restrictSourceVertices: [
+    //       'question'
+    //     ],
+    //     restrictTargetVertices: [
+    //       'suggestion'
+    //     ],
+    //     cytoscapeStyles: [{
+    //       selector: '.isAnswerableBy',
+    //       style: {
+    //         'line-color': '#28A745',
+    //         'target-arrow-color': '#28A745',
+    //         'source-arrow-color': '#28A745',
+    //         'width': 'data(priority)',
+    //         'label': 'data(label)'
+    //       }
+    //     }],
+    //     component: 'wanderer-is-answerable-by-editor'
+    //   },
+    //   toCytoscape: function(data){
+    //
+    //     var priority = data['priority'] / 5;
+    //     if (priority < 1) {
+    //       priority = 1
+    //     }
+    //
+    //     return {
+    //       // label: data._id,
+    //       priority: priority
+    //     }
+    //   },
+    // })
 
-        var priority = data['priority'] / 5;
-        if (priority < 1) {
-          priority = 1
-        }
+    // Listen for traversal event
+    WandererSingleton.on('traversalStart', function() {
 
-        return {
-          // label: data._id,
-          priority: priority
-        }
-      },
+      // questionFoundUnansweredBefore = false;
+
+      WandererStoreSingleton.store.commit('wanderer/chat/cleanInteractions')
+
+
     })
 
     // Listen for traversal event
     WandererSingleton.on('traversalFinished', function() {
 
-      questionFoundUnansweredBefore = false;
+      // questionFoundUnansweredBefore = false;
+
+      // WandererStoreSingleton.store.commit('wanderer/chat/cleanInteractions')
+
 
     })
 
     WandererSingleton.on('truncate', function() {
 
-      questionFoundUnansweredBefore = false
+      // questionFoundUnansweredBefore = false
 
       // Clear all timeouts
-      for (i in typingTimeouts) {
-        if(typingTimeouts.hasOwnProperty(i)) {
-          clearTimeout(typingTimeouts[i]);
-          delete typingTimeouts[i]
-        }
-      }
+      // for (i in typingTimeouts) {
+      //   if(typingTimeouts.hasOwnProperty(i)) {
+      //     clearTimeout(typingTimeouts[i]);
+      //     delete typingTimeouts[i]
+      //   }
+      // }
 
     })
 

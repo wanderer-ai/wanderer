@@ -25,6 +25,7 @@ export default {
         edgeDocumentIds: [],
         edgeDocumentData: {},
         vertexRelations: {},
+        vertexChildren: {},
         // enabledLanguages: ['en', 'de'],
         currentLanguage: 'en',
         // collectedValues: {},
@@ -35,6 +36,9 @@ export default {
       mutations: {
         setVertexRelations (state, {vertexId, vertexRelations}) {
           this._vm.$set(state.vertexRelations, vertexId, vertexRelations)
+        },
+        setVertexChildren (state, {vertexId, vertexChildren}) {
+          this._vm.$set(state.vertexChildren, vertexId, vertexChildren)
         },
         setOriginVertex (state, vertexId) {
           state.originVertexId = vertexId
@@ -118,6 +122,7 @@ export default {
           this._vm.$set(state, 'traversedEdges', [])
           this._vm.$set(state, 'traversedVertices', [])
           this._vm.$set(state, 'vertexRelations', {})
+          this._vm.$set(state, 'vertexChildren', {})
         },
         // setValue (state, {key, value}) {
         //   this._vm.$set(state.collectedValues, key, value)
@@ -135,6 +140,7 @@ export default {
           this._vm.$set(state, 'traversedEdges', [])
           this._vm.$set(state, 'traversedVertices', [])
           this._vm.$set(state, 'vertexRelations', {})
+          this._vm.$set(state, 'vertexChildren', {})
         }
       }
     })

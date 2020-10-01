@@ -3,44 +3,34 @@
 
     {{question}}
 
-    <span v-if="answered" class="button-again" v-on:click="askAgain()">↺</span>
+    <div v-for="suggestion in suggestions" :key="suggestion._id">
 
-    <portal to="chat-controls" :order="1">
-
-      <div v-if="!answered && lastOfType">
-
-        <div v-for="suggestion in suggestions" :key="suggestion._id">
-
-          <div class="form-check" v-if="suggestion.type=='checkbox'">
-            <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]" :id="suggestion._id">
-            <label class="form-check-label" :for="suggestion._id" v-if="suggestion.suggestion">
-              {{suggestion.suggestion}}
-            </label>
-          </div>
-
-          <div class="form-group" v-if="suggestion.type=='text'">
-            <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
-            <input type="text" class="form-control" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
-          </div>
-
-          <div class="form-group" v-if="suggestion.type=='textarea'">
-            <label  v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
-            <textarea class="form-control" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
-          </div>
-
-        </div>
-
-        <div class="btn-group has-wrap">
-
-          <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" class="btn btn-secondary" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
-
-          <button v-if="requireAnswerButton" class="btn btn-secondary" v-on:click="answer()">Answer</button>
-
-        </div>
-
+      <div class="form-check" v-if="suggestion.type=='checkbox'">
+        <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]" :id="suggestion._id">
+        <label class="form-check-label" :for="suggestion._id" v-if="suggestion.suggestion">
+          {{suggestion.suggestion}}
+        </label>
       </div>
 
-    </portal>
+      <div class="form-group" v-if="suggestion.type=='text'">
+        <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
+        <input type="text" class="form-control" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
+      </div>
+
+      <div class="form-group" v-if="suggestion.type=='textarea'">
+        <label  v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
+        <textarea class="form-control" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
+      </div>
+
+    </div>
+
+    <div class="btn-group has-wrap">
+
+      <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" class="btn btn-secondary" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
+
+      <button v-if="requireAnswerButton" class="btn btn-secondary" v-on:click="answer()">Answer</button>
+
+    </div>
 
   </div>
 </template>
@@ -82,18 +72,18 @@ export default {
       let returnData = []
       if(this.vertexId != undefined) {
 
-        if(WandererStoreSingleton.store.state.wanderer.vertexRelations[this.vertexId] != undefined) {
-          var outgoingVertices = WandererStoreSingleton.store.state.wanderer.vertexRelations[this.vertexId]
-          if (outgoingVertices != undefined) {
-            for(let outgoingVerticesId in outgoingVertices) {
-              if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[outgoingVertices[outgoingVerticesId]] != undefined) {
-                let collectionName = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[outgoingVertices[outgoingVerticesId]]._collection
+        if(WandererStoreSingleton.store.state.wanderer.vertexChildren[this.vertexId] != undefined) {
+          var childrens = WandererStoreSingleton.store.state.wanderer.vertexChildren[this.vertexId]
+          if (childrens != undefined) {
+            for(let childId in childrens) {
+              if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[childrens[childId]] != undefined) {
+                let collectionName = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[childrens[childId]]._collection
                 if(collectionName=='suggestion') {
                   returnData.push({
-                    _id: outgoingVertices[outgoingVerticesId],
-                    suggestion: WandererSingleton.getTranslatableVertexValue(outgoingVertices[outgoingVerticesId],'suggestion'),
-                    type: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'type'),
-                    priority: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'priority')
+                    _id: childrens[childId],
+                    suggestion: WandererSingleton.getTranslatableVertexValue(childrens[childId],'suggestion'),
+                    type: WandererSingleton.getVertexValue(childrens[childId],'type'),
+                    priority: WandererSingleton.getVertexValue(childrens[childId],'priority')
                   })
                 }
               }
@@ -264,6 +254,12 @@ export default {
       WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
         id: this.vertexId,
         key: 'answered',
+        value: false
+      })
+
+      WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+        id: this.vertexId,
+        key: 'sent',
         value: false
       })
 

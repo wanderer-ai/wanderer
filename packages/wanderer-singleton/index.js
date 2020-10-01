@@ -254,6 +254,7 @@ export default (function () {
         try {
           var data = JSON.parse(e.target.result)
           load(data)
+          resolve()
 
         } catch (e) {
           reject('This file is not a wanderer .json file! '+e)
@@ -377,17 +378,7 @@ export default (function () {
     let vertex = WandererCytoscapeSingleton.cy.getElementById(vertexData._id)
     vertex.data(cytoscapeData)
 
-    // Add compound nodes
-    if(vertexData._parent != undefined && vertexData._parent) {
-      vertex = vertex.move({
-        parent: vertexData._parent
-      });
-    } else {
-      // Remove from compound node
-      vertex = vertex.move({
-        parent: null
-      });
-    }
+    rebuildCytoscapeCompounds()
 
   }
 
@@ -400,6 +391,34 @@ export default (function () {
     cytoscapeData.id = edgeData._id; // You cannot override the id
     let edge = WandererCytoscapeSingleton.cy.getElementById(edgeData._id)
     edge.data(cytoscapeData)
+  }
+
+  // This function rebuilds the cytoscape compound tree
+  // We have to execute this function for example if a parent data has changed or if we have reloaded all the data
+  // The parent tree can only rebuild if all nodes are present
+  function rebuildCytoscapeCompounds () {
+
+    let vertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData
+
+    for(let i in vertexData) {
+      if(vertexData.hasOwnProperty(i)) {
+
+        let vertex = WandererCytoscapeSingleton.cy.getElementById(vertexData[i]._id)
+
+        if(vertexData[i]._parent != undefined && vertexData[i]._parent) {
+          vertex = vertex.move({
+            parent: vertexData[i]._parent
+          });
+        } else {
+          // Remove from compound node
+          vertex = vertex.move({
+            parent: null
+          });
+        }
+
+      }
+    }
+
   }
 
   function generateId () {
@@ -416,6 +435,85 @@ export default (function () {
           targetVertexCollection.edgeMethods[methodName].method(targetCytoscapeVertex, targetVertexData)
         }
       }
+
+  }
+
+  function isEdgeTraversable(cytoscapeEdge, cytoscapeVertex) {
+    var edgeTraversable = true
+    let cytoscapeEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[cytoscapeEdge.id()]
+    let cytoscapeEdgeCollection = getEdgeCollection(cytoscapeEdgeData._collection)
+    let vertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[cytoscapeVertex.id()]
+    if(cytoscapeEdgeCollection.allowTraversal !== undefined) {
+      edgeTraversable = cytoscapeEdgeCollection.allowTraversal(
+        cytoscapeVertex,
+        vertexData,
+        cytoscapeEdge,
+        cytoscapeEdgeData,
+        WandererStoreSingleton.store.state.wanderer.currentLanguage
+      )
+    }
+    return edgeTraversable
+  }
+
+  function getOutboundCytoscapeEdges(cytoscapeVertex) {
+    // Get edges
+    let cytoscapeEdges = cytoscapeVertex.connectedEdges()
+
+    // Get outbound edges
+    let cytoscapeOutboundEdges = []
+    cytoscapeEdges.forEach(function(currentCytoscapeEdge) {
+      if(cytoscapeVertex.id()==currentCytoscapeEdge.data('source')) {
+        if(isEdgeTraversable(currentCytoscapeEdge, cytoscapeVertex)) {
+          cytoscapeOutboundEdges.push(currentCytoscapeEdge);
+        }
+      }
+    })
+
+    return cytoscapeOutboundEdges
+  }
+
+  function getInboundCytoscapeEdges(cytoscapeVertex) {
+    let cytoscapeEdges = cytoscapeVertex.connectedEdges()
+
+    // Get inbound edges
+    let cytoscapeInboundEdges = []
+    cytoscapeEdges.forEach(function(currentCytoscapeEdge) {
+      if(cytoscapeVertex.id()==currentCytoscapeEdge.data('target')) {
+        cytoscapeInboundEdges.push(currentCytoscapeEdge);
+      }
+    })
+    return cytoscapeInboundEdges
+  }
+
+  // Check for a given node, if all inbound edges will allow to enter this node
+  function isVertexTraversable(cytoscapeVertex, vertexData) {
+
+    // Get inbound edges
+    let cytoscapeInboundEdges = getInboundCytoscapeEdges(cytoscapeVertex)
+
+    // Check for every edge if there is a allowTargetTraversal function that would allow or restrict the traversal of the current vertex
+    var vertexTraversable = true
+    if (cytoscapeInboundEdges.length) {
+      for (let i in cytoscapeInboundEdges) {
+        let currentCytoscapeEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[cytoscapeInboundEdges[i].id()]
+        let currentCytoscapeEdgeCollection = getEdgeCollection(currentCytoscapeEdgeData._collection)
+        if(currentCytoscapeEdgeCollection.allowTargetTraversal !== undefined) {
+          vertexTraversable = currentCytoscapeEdgeCollection.allowTargetTraversal(
+            cytoscapeVertex,
+            vertexData,
+            cytoscapeInboundEdges[i],
+            currentCytoscapeEdgeData,
+            WandererStoreSingleton.store.state.wanderer.currentLanguage
+          )
+          // If one of the inbound edges says NO...
+          if(!vertexTraversable) {
+            break; // We dont have to check the other edges
+          }
+        }
+      }
+    }
+
+    return vertexTraversable
 
   }
 
@@ -441,11 +539,14 @@ export default (function () {
       test = true;
     }
 
+    // This is the first call of the recursive stack
     if (!recursiveCall) {
 
+      // This is not a test traversal
+      if(!test) {
+        trigger('traversalStart')
+      }
       // console.log('tick');
-
-      // This is the first call of the recursive stack
 
       // Forget the traversed edges and vertices from the last traversal
       WandererStoreSingleton.store.commit('wanderer/resetTraversal')
@@ -457,54 +558,12 @@ export default (function () {
 
     if (nodeId) {
 
-
       // Get node data
       let currentCytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(nodeId)
       let currentVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[nodeId]
       let currentVertexCollection = getVertexCollection(currentVertexData._collection)
 
-      // Get edges
-      let cytoscapeEdges = currentCytoscapeVertex.connectedEdges()
-
-      // Get outbound edges
-      let cytoscapeOutboundEdges = []
-      cytoscapeEdges.forEach(function(currentCytoscapeEdge){
-        if(currentCytoscapeVertex.id()==currentCytoscapeEdge.data('source')){
-          cytoscapeOutboundEdges.push(currentCytoscapeEdge);
-        }
-      })
-
-      // Get inbound edges
-      let cytoscapeInboundEdges = []
-      cytoscapeEdges.forEach(function(currentCytoscapeEdge){
-        if(currentCytoscapeVertex.id()==currentCytoscapeEdge.data('target')){
-          cytoscapeInboundEdges.push(currentCytoscapeEdge);
-        }
-      })
-
-      // Check for every edge if there is a allowTargetTraversal function that would allow or restrict the traversal of the current vertex
-      var vertexTraversable = true
-      if (cytoscapeInboundEdges.length) {
-        for (let i in cytoscapeInboundEdges) {
-          let currentCytoscapeEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[cytoscapeInboundEdges[i].id()]
-          let currentCytoscapeEdgeCollection = getEdgeCollection(currentCytoscapeEdgeData._collection)
-          if(currentCytoscapeEdgeCollection.allowTargetTraversal !== undefined) {
-            vertexTraversable = currentCytoscapeEdgeCollection.allowTargetTraversal(
-              currentCytoscapeVertex,
-              currentVertexData,
-              cytoscapeInboundEdges[i],
-              currentCytoscapeEdgeData,
-              WandererStoreSingleton.store.state.wanderer.currentLanguage
-            )
-            // If one of the inbound edges says NO...
-            if(!vertexTraversable) {
-              break; // Do not check the other edges
-            }
-          }
-        }
-      }
-
-      if (vertexTraversable) {
+      if (isVertexTraversable(currentCytoscapeVertex, currentVertexData)) {
         // Remember this vertex as visited
         WandererStoreSingleton.store.commit('wanderer/rememberTraversedVertex', currentCytoscapeVertex.id())
 
@@ -518,13 +577,53 @@ export default (function () {
           }
         }
 
+        // Get outbound edges
+        let cytoscapeOutboundEdges = getOutboundCytoscapeEdges(currentCytoscapeVertex)
+
+        // Get the children if present
+        var cytoscapeChildren = currentCytoscapeVertex.children();
+        if(!cytoscapeChildren.empty()) {
+
+          var childIds = []
+
+          // For each child
+          cytoscapeChildren.forEach((childCytoscapeVertex) => {
+            let childVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[childCytoscapeVertex.id()]
+            let childVertexCollection = getVertexCollection(childVertexData._collection)
+            // Check if the child is traversable
+            if (isVertexTraversable(childCytoscapeVertex, childVertexData)) {
+              // Get the child edges
+              let childOutboundEdges = getOutboundCytoscapeEdges(childCytoscapeVertex)
+              // Merge the edges together with the parent
+              cytoscapeOutboundEdges = cytoscapeOutboundEdges.concat(childOutboundEdges)
+              // Mark this child node as visited
+              WandererStoreSingleton.store.commit('wanderer/rememberTraversedVertex', childCytoscapeVertex.id())
+              traversedVertices = traversedVertices.union(childCytoscapeVertex);
+              // Add it to the children array of this vertex
+              childIds.push(childCytoscapeVertex.id())
+            }
+          })
+
+          // Store the childrens of each node in the VueX store
+          WandererStoreSingleton.store.commit('wanderer/setVertexChildren', {
+            vertexId: nodeId,
+            vertexChildren: childIds
+          })
+
+        }
+
         // Are there outbound edges?
         if (cytoscapeOutboundEdges.length) {
+
           let expandEdges = cytoscapeOutboundEdges
+
           // Is there a expander available for this kind of node which will alter the expand edges?
+          // Todo: This could be a little bit wired since we can now merge child edges
+          // Please check if we need this "expanders"
           if (currentVertexCollection.expander) {
             expandEdges = currentVertexCollection.expander(currentCytoscapeVertex, currentVertexData, cytoscapeOutboundEdges)
           }
+
           // Sort the outbound edges
           expandEdges = expandEdges.sort(function(a, b) {
               return WandererStoreSingleton.store.state.wanderer.edgeDocumentData[b.id()]['priority']-WandererStoreSingleton.store.state.wanderer.edgeDocumentData[a.id()]['priority']
@@ -534,25 +633,17 @@ export default (function () {
 
           // expand the edges
           for (let i in expandEdges) {
-            var edgeTraversable = true
-            let currentCytoscapeEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[expandEdges[i].id()]
-            let currentCytoscapeEdgeCollection = getEdgeCollection(currentCytoscapeEdgeData._collection)
-            if(currentCytoscapeEdgeCollection.allowTraversal !== undefined) {
-              edgeTraversable = currentCytoscapeEdgeCollection.allowTraversal(
-                currentCytoscapeVertex,
-                currentVertexData,
-                expandEdges[i],
-                currentCytoscapeEdgeData,
-                WandererStoreSingleton.store.state.wanderer.currentLanguage
-              )
-            }
 
-            if(edgeTraversable) {
+
+            // if(edgeTraversable) {
 
               // Remember this edge as visited
               WandererStoreSingleton.store.commit('wanderer/rememberTraversedEdge', expandEdges[i].id())
 
               traversedEdges = traversedEdges.union(expandEdges[i]);
+
+              let currentCytoscapeEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[expandEdges[i].id()]
+              let currentCytoscapeEdgeCollection = getEdgeCollection(currentCytoscapeEdgeData._collection)
 
               // Call the visitor for this edge if present
               // But only if we are not in test mode
@@ -585,11 +676,12 @@ export default (function () {
 
 
 
-            }
+            //}
 
           } // For each expandable edge
 
           // Store the possible vertices for each vertex inside vuex
+          // Todo: I think we dont need this anymore
           WandererStoreSingleton.store.commit('wanderer/setVertexRelations', {
             vertexId: nodeId,
             vertexRelations: relatedVertexIds
@@ -862,6 +954,7 @@ export default (function () {
     addVertex: addVertex,
     addEdge: addEdge,
     invokeVertexMethod: invokeVertexMethod,
+    rebuildCytoscapeCompounds: rebuildCytoscapeCompounds,
     load: load,
     loadJsonRemote: loadJsonRemote,
     loadJsonFile: loadJsonFile,

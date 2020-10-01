@@ -19,12 +19,12 @@
 
         <p>
           <button v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeVertices()">
-            Remove {{selectedVertexIds.length}} selected vertices and all connected edges forever
+            Remove {{selectedVertexIds.length}} selected vertices and all connected edges
           </button>
         </p>
         <p>
           <button v-if="selectedEdgeIds.length" class="btn btn-danger" v-on:click="removeEdges()" >
-            Remove {{selectedEdgeIds.length}} selected edges forever
+            Remove {{selectedEdgeIds.length}} selected edges
           </button>
         </p>
 
@@ -108,11 +108,27 @@ export default {
 
       for (let i in vertexIds) {
 
-        if(this.$store.state.wanderer.vertexDocumentData[vertexIds[i]]._origin){
+        if(this.$store.state.wanderer.vertexDocumentData[vertexIds[i]]._origin) {
           this.$store.dispatch('wanderer/builder/addAlert',{message:'You cannot remove the origin node',type:'warning'})
-        }else{
+        } else {
+
+          // If there are child nodes
+          let childrens = this.$cytoscape.cy.getElementById(vertexIds[i]).children();
+          childrens.forEach((child) => {
+            // Remove the parent information from the vertex store
+            this.$store.commit('wanderer/setVertexDataValue', {
+              id: child.id(),
+              key: '_parent',
+              value: false
+            })
+            // Remove compound from cytoscape child
+            child.move({
+              parent: null
+            });
+          })
+
           // Remove the connected edges
-          this.$cytoscape.cy.getElementById(vertexIds[i]).connectedEdges().forEach(function (edge) {
+          this.$cytoscape.cy.getElementById(vertexIds[i]).connectedEdges().forEach((edge) => {
             component.$wanderer.removeEdge(edge.id())
           })
           // Remove the vertex
