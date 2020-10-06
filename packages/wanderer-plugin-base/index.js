@@ -388,9 +388,9 @@ export default {
             expose: '',
             method: false,
             condition: false,
-            compareVariable: false,
-            compareCondition: '==',
-            compareValue: ''
+            // compareVariable: false,
+            // compareCondition: '==',
+            // compareValue: ''
           }
 
           // Check the source node collection for default edge conditions
@@ -460,12 +460,12 @@ export default {
         }
 
         if (data.condition) {
-          if(data.condition=='custom') {
-            if(data.compareVariable) {
-              label = label+' ['+data.compareVariable + data.compareCondition + data.compareValue+']'
-              line = 'dashed'
-            }
-          } else {
+          // if(data.condition=='custom') {
+          //   if(data.compareVariable) {
+          //     label = label+' ['+data.compareVariable + data.compareCondition + data.compareValue+']'
+          //     line = 'dashed'
+          //   }
+          // } else {
 
               // Only draw condition if not default
               if(defaultCondition!=data.condition) {
@@ -476,7 +476,7 @@ export default {
 
               line = 'dashed'
 
-          }
+          // }
         }
 
         if (data.method) {
@@ -511,60 +511,60 @@ export default {
 
           let vertexLifecycleData = WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[cytoscapeVertex.id()]
 
-          if(edgeData.condition=='custom') {
-
-            // Check custom conditions
-
-            if (edgeData.compareVariable) {
-              // Get the lifecycle data of the source node
-              if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[cytoscapeVertex.id()] != undefined){
-
-                var variable = vertexLifecycleData[edgeData.compareVariable]
-                var value = edgeData.compareValue
-
-                // Convert strings to int if necessary
-                // So the end user has not to deal with types like strings and int
-                if(parseInt(variable)){
-                  variable = parseInt(variable)
-                }
-                if(parseInt(value)){
-                  value = parseInt(value)
-                }
-
-                if(edgeData.compareCondition == '==') {
-                  if(variable == value) {
-                    return true
-                  }
-                }
-                if(edgeData.compareCondition == '!=') {
-                  if(variable != value) {
-                    return true
-                  }
-                }
-                if(edgeData.compareCondition == '<=') {
-                  if(variable <= value) {
-                    return true
-                  }
-                }
-                if(edgeData.compareCondition == '>=') {
-                  if(variable >= value) {
-                    return true
-                  }
-                }
-                if(edgeData.compareCondition == '<') {
-                  if(variable < value) {
-                    return true
-                  }
-                }
-                if(edgeData.compareCondition == '>') {
-                  if(variable > value) {
-                    return true
-                  }
-                }
-              }
-              return false
-            }
-          } else {
+          // if(edgeData.condition=='custom') {
+          //
+          //   // Check custom conditions
+          //
+          //   if (edgeData.compareVariable) {
+          //     // Get the lifecycle data of the source node
+          //     if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[cytoscapeVertex.id()] != undefined){
+          //
+          //       var variable = vertexLifecycleData[edgeData.compareVariable]
+          //       var value = edgeData.compareValue
+          //
+          //       // Convert strings to int if necessary
+          //       // So the end user has not to deal with types like strings and int
+          //       if(parseInt(variable)){
+          //         variable = parseInt(variable)
+          //       }
+          //       if(parseInt(value)){
+          //         value = parseInt(value)
+          //       }
+          //
+          //       if(edgeData.compareCondition == '==') {
+          //         if(variable == value) {
+          //           return true
+          //         }
+          //       }
+          //       if(edgeData.compareCondition == '!=') {
+          //         if(variable != value) {
+          //           return true
+          //         }
+          //       }
+          //       if(edgeData.compareCondition == '<=') {
+          //         if(variable <= value) {
+          //           return true
+          //         }
+          //       }
+          //       if(edgeData.compareCondition == '>=') {
+          //         if(variable >= value) {
+          //           return true
+          //         }
+          //       }
+          //       if(edgeData.compareCondition == '<') {
+          //         if(variable < value) {
+          //           return true
+          //         }
+          //       }
+          //       if(edgeData.compareCondition == '>') {
+          //         if(variable > value) {
+          //           return true
+          //         }
+          //       }
+          //     }
+          //     return false
+          //   }
+          // } else {
 
             // Check predefined condition
             // Todo: Move this to the Wanderer core
@@ -575,7 +575,7 @@ export default {
                 return sourceNodeCollection.edgeConditions[edgeData.condition].condition(vertexLifecycleData)
               }
             }
-          }
+          // }
         }
 
         return true

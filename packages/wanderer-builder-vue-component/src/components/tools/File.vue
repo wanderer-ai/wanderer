@@ -12,6 +12,11 @@
     <portal to="modals" :order="1">
       <modal :showHeader="false" :showFooter="vertexCount>0" :showClose="true" :show="showModal"  v-on:closeButton="showModal=false">
 
+        <div class="alert alert-warning" role="alert">
+          <strong>Important information:</strong> This software is experimental! Currently you should not use Wanderer.ai for production projects!
+          The project is in a early stage of development. So your conversation flows could break in the future.
+        </div>
+
         <div class="mb-4">
           <h5 class="card-title">New to Wanderer.ai?</h5>
 

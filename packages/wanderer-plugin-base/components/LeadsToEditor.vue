@@ -46,11 +46,11 @@
         <option
           v-for="edgeCondition, name in edgeConditions"
           :value="name">{{edgeCondition.label}}{{(edgeCondition.default? ' (default)':'')}}</option>
-        <option value="custom">custom</option>
+        <!-- <option value="custom">custom</option> -->
       </select>
     </div>
 
-    <div class="row">
+    <!-- <div class="row">
       <div class="col">
         <div class="form-group" v-if="condition=='custom'">
           <select id="compareVariable" class="form-control" v-model="compareVariable">
@@ -60,13 +60,10 @@
               :value="name">{{data.label}}</option>
           </select>
         </div>
-        <!-- <div class="form-group" v-if="condition=='custom'">
-          <input type="text" v-model="compareVariable" class="form-control" id="compareVariable" placeholder="variable">
-        </div> -->
+
       </div>
       <div class="col">
         <div class="form-group" v-if="condition=='custom'">
-          <!-- <label for="compareCondition">Compare Condition</label> -->
           <select id="compareCondition" class="form-control" v-model="compareCondition">
             <option value="==">==</option>
             <option value=">">&gt;</option>
@@ -78,11 +75,10 @@
       </div>
       <div class="col">
         <div class="form-group" v-if="condition=='custom'">
-          <!-- <label for="compareValue">Compare Value</label> -->
           <input type="text" v-model="compareValue" class="form-control" id="compareValue" placeholder="value">
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="form-group">
       <label for="edgeMethod">Invoke method</label>
@@ -111,9 +107,9 @@ export default {
     method: WandererBuilder.getEdgeModel('method'),
     priority: WandererBuilder.getEdgeModel('priority'),
     condition: WandererBuilder.getEdgeModel('condition'),
-    compareVariable: WandererBuilder.getEdgeModel('compareVariable'),
-    compareCondition: WandererBuilder.getEdgeModel('compareCondition'),
-    compareValue: WandererBuilder.getEdgeModel('compareValue'),
+    // compareVariable: WandererBuilder.getEdgeModel('compareVariable'),
+    // compareCondition: WandererBuilder.getEdgeModel('compareCondition'),
+    // compareValue: WandererBuilder.getEdgeModel('compareValue'),
     lifecycleData () {
       if (this.$store.state.wanderer.builder.editEdge !== 0) {
         let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(this.$store.state.wanderer.builder.editEdge)

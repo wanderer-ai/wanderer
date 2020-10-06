@@ -13,14 +13,14 @@
       <modal title="Wanderer.ai Conversation Builder" :show="showModal"  v-on:closeButton="showModal=false">
 
         <p>
-          Version {{version}}
+          <strong>
+            Version {{version}}
+          </strong>
         </p>
         <p>
-          This software was published under the {{license}} open source license.
-          You can use it for private and commercial projects.
-        </p>
-        <p>
-          Do you need Help? Check out the documentation.
+          Hey! This is a free service! Use it for commercial or private projects as long as you use it with the wanderer.ai domain.
+          If you want to run chatbots built with this software on your own domain, take a look at the
+          <a target="_blank" href="https://wanderer.ai/pricing/">licensing model</a>.
         </p>
         <p>
           Are you interested in the technology behind?
@@ -53,7 +53,6 @@ export default {
   },
   data: function () {
     return {
-      license: 'Apache 2.0',
       showModal: false
     }
   },

@@ -16,9 +16,9 @@
           Warning! This vertex is not part of the current flow! Maybe it was dynamically imported. You can edit this node. But it will not be saved into your flow!
         </div>
 
-          <component v-bind:is="editVertexCollection.component"></component>
+        <component v-bind:is="editVertexCollection.component"></component>
 
-          <language-switcher />
+        <language-switcher />
 
       </modal>
     </portal>

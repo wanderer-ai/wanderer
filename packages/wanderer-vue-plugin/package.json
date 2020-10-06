@@ -7,7 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
   "dependencies": {
     "wanderer-singleton": "^1.0.0",
     "wanderer-store-singleton": "^1.0.0",

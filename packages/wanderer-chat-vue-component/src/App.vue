@@ -29,7 +29,7 @@
         v-for="(interaction,key) of interactions"
         :key="key">
 
-        <component v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
+        <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
 
       </div>
 
