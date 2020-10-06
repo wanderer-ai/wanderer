@@ -26,12 +26,13 @@
     <edit-vertex-tool />
     <edit-edge-tool />
     <remove-tool />
+    <unlink-tool />
     <connect-tool />
-    <file-tool :show="showFileTool" />
+    <file-tool :show="showFileTool" v-on:startTutorial="startTutorial()"/>
     <language-tool />
     <chat-tool v-on:toggle="toggleChatPanel()"/>
     <add-vertex-tool />
-    <welcome-tool v-on:startTutorial="startTutorial()" v-on:openFileTool="openFileTool()" />
+    <!-- <welcome-tool v-on:startTutorial="startTutorial()" v-on:openFileTool="openFileTool()" /> -->
 
   </div>
 </template>
@@ -47,12 +48,13 @@ import InfoTool from './components/tools/Info.vue'
 import EditVertexTool from './components/tools/EditVertex.vue'
 import EditEdgeTool from './components/tools/EditEdge.vue'
 import RemoveTool from './components/tools/Remove.vue'
+import UnlinkTool from './components/tools/Unlink.vue'
 import ConnectTool from './components/tools/Connect.vue'
 import FileTool from './components/tools/File.vue'
 import LanguageTool from './components/tools/Language.vue'
 import ChatTool from './components/tools/Chat.vue'
 import AddVertexTool from './components/tools/AddVertex.vue'
-import WelcomeTool from './components/tools/Welcome.vue'
+// import WelcomeTool from './components/tools/Welcome.vue'
 
 import WandererSingleton from 'wanderer-singleton'
 
@@ -67,23 +69,24 @@ export default {
     EditVertexTool,
     EditEdgeTool,
     RemoveTool,
+    UnlinkTool,
     ConnectTool,
     FileTool,
     LanguageTool,
     ChatTool,
     AddVertexTool,
-    WelcomeTool
+    // WelcomeTool
   },
   data: function () {
     return {
       showChatPanel: false,
-      showFileTool: false
+      showFileTool: true
     }
   },
   methods: {
-    openFileTool () {
-      this.showFileTool = true
-    },
+    // openFileTool () {
+    //   this.showFileTool = true
+    // },
     toggleChatPanel () {
       if(this.showChatPanel){
         this.showChatPanel = false

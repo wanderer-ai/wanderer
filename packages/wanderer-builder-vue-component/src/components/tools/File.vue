@@ -10,42 +10,66 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <modal title="Save or restore project" :showClose="vertexCount>0" :show="showModal"  v-on:closeButton="showModal=false">
+      <modal :showHeader="false" :showFooter="vertexCount>0" :showClose="true" :show="showModal"  v-on:closeButton="showModal=false">
 
-        <div class="row">
-          <div class="col has-devider" v-if="vertexCount">
+        <div class="mb-4">
+          <h5 class="card-title">New to Wanderer.ai?</h5>
 
-            <h5 class="card-title">Save the current project</h5>
-            <p class="card-text">Save and download the current project as {{fileName}}</p>
-            <a href="#" class="btn btn-primary" v-on:click="exportJsonFile()">Save current</a>
+          <span class="btn btn-primary" v-on:click="startEmptyProject()">
+            <icon name="file"></icon>
+            Start a new project
+          </span>
 
-          </div>
-          <div class="col has-devider">
+          <span>
+            or
+          </span>
 
-            <h5 class="card-title">Start a new project</h5>
-            <p class="card-text">Start a completly new project</p>
-            <a href="#" class="btn btn-primary" v-on:click="startEmptyProject()">Start new</a>
+          <span class="btn btn-warning" v-on:click="startTutorial()">
+            <icon name="book"></icon>
+            Start a tutorial now
+          </span>
 
-          </div>
-          <div class="col has-devider">
+        </div>
 
-            <h5 class="card-title">Restore from file</h5>
-            <p class="card-text">Restore an existing project from a project file.</p>
-            <div class="upload-btn-wrapper">
-              <button class="btn btn-primary">Restore from file</button>
-              <input class="btn" type="file" @change="loadJsonFile">
+        <div class="mb-4" v-if="vertexCount">
+          <h5 class="card-title">Current Project</h5>
+
+          <span class="btn btn-success" v-on:click="exportJsonFile()">
+            <icon name="download"></icon>
+            Download your current project
+          </span>
+
+        </div>
+
+        <div class="mb-4">
+          <h5 class="card-title">Restore existing projects</h5>
+
+          <span class="upload-btn-wrapper">
+            <button class="btn btn-primary">
+              <icon name="upload"></icon>
+              Restore from file
+            </button>
+            <input class="btn" type="file" @change="loadJsonFile">
+          </span>
+        </div>
+
+        <div>
+          <h5 class="card-title">Restore from URL</h5>
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="btn btn-primary" v-on:click="loadJsonRemote(url)">
+                <icon name="globe"></icon>
+                Restore from URL
+              </span>
             </div>
-
-          </div>
-
-          <div class="col has-devider">
-
-            <h5 class="card-title">Load from URL</h5>
-            <p class="card-text">Load a project by URL</p>
             <input type="text" class="form-control" v-model="url">
-            <a href="#" class="btn btn-primary" v-on:click="loadJsonRemote(url)">Load</a>
-
           </div>
+
+        </div>
+
+        <div>
+
 
 
         </div>
@@ -66,6 +90,13 @@ import Icon from 'vue-awesome/components/Icon'
 import StoreSingleton from 'wanderer-store-singleton'
 import WandererSingleton from 'wanderer-singleton'
 
+// Icons
+import 'vue-awesome/icons/download'
+import 'vue-awesome/icons/book'
+import 'vue-awesome/icons/file'
+import 'vue-awesome/icons/upload'
+import 'vue-awesome/icons/globe'
+
 import {version} from '../../../package.json'
 
 export default {
@@ -81,7 +112,7 @@ export default {
   data: function () {
     return {
       showModal: this.show,
-      url: ''
+      url: 'https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json'
     }
   },
   watch: {
@@ -106,6 +137,10 @@ export default {
     }
   },
   methods: {
+    startTutorial (url) {
+      this.showModal = false
+      this.$emit('startTutorial')
+    },
     startEmptyProject () {
       WandererSingleton.load(this.resetIds({
         "wanderer": "web-wanderer",
@@ -186,13 +221,23 @@ export default {
       }
 
       // export vertices
-      for(let i in this.$store.state.wanderer.vertexDocumentIds){
-        exportData.vertices.push(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
+      for(let i in this.$store.state.wanderer.vertexDocumentIds) {
+        if(
+          this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]]['_immutable'] === undefined ||
+          this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]]['_immutable'] === false
+        ) {
+          exportData.vertices.push(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
+        }
       }
 
       // export edges
-      for(let i in this.$store.state.wanderer.edgeDocumentIds){
-        exportData.edges.push(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
+      for(let i in this.$store.state.wanderer.edgeDocumentIds) {
+        if(
+          this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]]['_immutable'] === undefined ||
+          this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]]['_immutable'] === false
+        ) {
+          exportData.edges.push(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
+        }
       }
 
       return exportData

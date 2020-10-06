@@ -24,8 +24,8 @@ export default {
         vertexDocumentData: {},
         edgeDocumentIds: [],
         edgeDocumentData: {},
-        vertexRelations: {},
-        vertexChildren: {},
+        // vertexRelations: {},
+        // vertexChildren: {},
         // enabledLanguages: ['en', 'de'],
         currentLanguage: 'en',
         // collectedValues: {},
@@ -34,12 +34,12 @@ export default {
         traversedVertices: []
       },
       mutations: {
-        setVertexRelations (state, {vertexId, vertexRelations}) {
-          this._vm.$set(state.vertexRelations, vertexId, vertexRelations)
-        },
-        setVertexChildren (state, {vertexId, vertexChildren}) {
-          this._vm.$set(state.vertexChildren, vertexId, vertexChildren)
-        },
+        // setVertexRelations (state, {vertexId, vertexRelations}) {
+        //   this._vm.$set(state.vertexRelations, vertexId, vertexRelations)
+        // },
+        // setVertexChildren (state, {vertexId, vertexChildren}) {
+        //   this._vm.$set(state.vertexChildren, vertexId, vertexChildren)
+        // },
         setOriginVertex (state, vertexId) {
           state.originVertexId = vertexId
         },
@@ -111,18 +111,17 @@ export default {
         setCurrentLanguage (state, language) {
           state.currentLanguage = language
         },
-        rememberTraversedEdge (state, edgeId) {
-          state.traversedEdges.push(edgeId)
+        rememberTraversedEdges (state, edgeIds) {
+          this._vm.$set(state, 'traversedEdges', edgeIds)
         },
-        rememberTraversedVertex (state, vertexId) {
-          // Push document id
-          state.traversedVertices.push(vertexId)
+        rememberTraversedVertices (state, vertexIds) {
+          this._vm.$set(state, 'traversedVertices', vertexIds)
         },
         resetTraversal (state) {
           this._vm.$set(state, 'traversedEdges', [])
           this._vm.$set(state, 'traversedVertices', [])
-          this._vm.$set(state, 'vertexRelations', {})
-          this._vm.$set(state, 'vertexChildren', {})
+          // this._vm.$set(state, 'vertexRelations', {})
+          // this._vm.$set(state, 'vertexChildren', {})
         },
         // setValue (state, {key, value}) {
         //   this._vm.$set(state.collectedValues, key, value)
@@ -139,8 +138,8 @@ export default {
           this._vm.$set(state, 'vertexLifecycleData', {})
           this._vm.$set(state, 'traversedEdges', [])
           this._vm.$set(state, 'traversedVertices', [])
-          this._vm.$set(state, 'vertexRelations', {})
-          this._vm.$set(state, 'vertexChildren', {})
+          // this._vm.$set(state, 'vertexRelations', {})
+          // this._vm.$set(state, 'vertexChildren', {})
         }
       }
     })

@@ -7,7 +7,7 @@
     </div>
 
     <div class="form-group">
-      <label for="url">Jump URL</label>
+      <label for="url">Import URL</label>
       <input v-model="url" type="text" class="form-control" id="url" placeholder="https://">
     </div>
 

@@ -156,20 +156,20 @@ export default class WandererBuilder {
 
   }
 
-  static injectVertex (cytoscapeNodeId, vertexCollectionName){
-
-    // Get the position of the source vertex
-    let position = CytoscapeSingleton.cy.getElementById( cytoscapeNodeId ).position()
-
-    var x = position.x + (Math.floor(Math.random() * (100 - 50 + 1) + 50))
-    var y = position.y + (Math.floor(Math.random() * (100 - 50 + 1) + 50))
-
-    var newVertexId = this.addVertex(vertexCollectionName, x, y, cytoscapeNodeId)
-
-    // Rebuild the compound structure
-    WandererSingleton.rebuildCytoscapeCompounds()
-
-  }
+  // static injectVertex (cytoscapeNodeId, vertexCollectionName){
+  //
+  //   // Get the position of the source vertex
+  //   let position = CytoscapeSingleton.cy.getElementById( cytoscapeNodeId ).position()
+  //
+  //   var x = position.x + (Math.floor(Math.random() * (100 - 50 + 1) + 50))
+  //   var y = position.y + (Math.floor(Math.random() * (100 - 50 + 1) + 50))
+  //
+  //   var newVertexId = this.addVertex(vertexCollectionName, x, y, cytoscapeNodeId)
+  //
+  //   // Rebuild the compound structure
+  //   WandererSingleton.rebuildCytoscapeCompounds()
+  //
+  // }
 
   // Check if an edge is allowed between two vertices
   static isAllowedConnection (fromCollectionName, toCollectionName, throughCollectionName) {
@@ -288,7 +288,8 @@ export default class WandererBuilder {
               if(edgeCollections[throughCollectionName].builder.creatable) {
                 if(
                   this.isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName) &&
-                  this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName)
+                  this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName) &&
+                  this.isAllowedConnection(fromCollectionName, toCollectionName, throughCollectionName)
                 ){
                   possibleOutgoingCollection.through.push(edgeCollections[throughCollectionName])
                 }
@@ -306,73 +307,73 @@ export default class WandererBuilder {
     return possibleOutgoingCollections
   }
 
-  static getPossibleChildCollections (parentCollectionName) {
-
-    let returnChildCollections = []
-
-    // Get the parent collection
-    let parentCollection = WandererSingleton.getVertexCollection(parentCollectionName)
-
-    if(parentCollection.builder.canBeParent) {
-
-      // Get the possible child collections
-      let possibleChildCollections = WandererSingleton.getVertexCollections()
-
-      // For each collection check if it can used as a child for this parent
-      for(var possibleChildCollectionName in possibleChildCollections) {
-        if (possibleChildCollections.hasOwnProperty(possibleChildCollectionName)) {
-
-          // Is this possible child vertex creatable?
-          if(possibleChildCollections[possibleChildCollectionName].builder.creatable) {
-
-            if(possibleChildCollections[possibleChildCollectionName].builder.canBeChild) {
-
-              // Check if there are possible restrictions of the parent for this node
-              var parentIsAllowed = true; // Allow this parent if there are no restriction rules
-              if(possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents!=undefined) {
-                parentIsAllowed = false; // Do not allow this parents in general if rules was found
-                // Check this restrictions
-                for(var r in possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents) {
-                  if (possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents.hasOwnProperty(r)) {
-                    if(possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents[r] == parentCollectionName) {
-                      parentIsAllowed = true // Allow this parent if it was found in the rules
-                      // console.log(possibleChildCollectionName+' can be child of '+possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents[r])
-                      break;
-                    }
-                  }
-                }
-              }
-
-              // Check if there are possible restrictions of childs for this parent node
-              var childIsAllowed = true; // Allow this child if there are no restriction rules
-              if(parentCollection.builder.restrictPossibleChildren!=undefined) {
-                childIsAllowed = false; // Do not allow this child in general if rules was found
-                // Check this restrictions
-                for(var r in parentCollection.builder.restrictPossibleChildren) {
-                  if (parentCollection.builder.restrictPossibleChildren.hasOwnProperty(r)) {
-                    if(parentCollection.builder.restrictPossibleChildren[r] == possibleChildCollectionName) {
-                      childIsAllowed = true // Allow this parent if it was found in the rules
-                      // console.log(parentCollectionName+' can have child '+parentCollection.builder.restrictPossibleChildren[r])
-                      break;
-                    }
-                  }
-                }
-              }
-
-              // If both is allowed (If this parent can have this child and if this child can have this parent)
-              if(parentIsAllowed&&childIsAllowed) {
-                returnChildCollections.push(possibleChildCollections[possibleChildCollectionName])
-              }
-            }
-          }
-        }
-      }
-
-    }
-
-    return returnChildCollections
-
-  }
+  // static getPossibleChildCollections (parentCollectionName) {
+  //
+  //   let returnChildCollections = []
+  //
+  //   // Get the parent collection
+  //   let parentCollection = WandererSingleton.getVertexCollection(parentCollectionName)
+  //
+  //   if(parentCollection.builder.canBeParent) {
+  //
+  //     // Get the possible child collections
+  //     let possibleChildCollections = WandererSingleton.getVertexCollections()
+  //
+  //     // For each collection check if it can used as a child for this parent
+  //     for(var possibleChildCollectionName in possibleChildCollections) {
+  //       if (possibleChildCollections.hasOwnProperty(possibleChildCollectionName)) {
+  //
+  //         // Is this possible child vertex creatable?
+  //         if(possibleChildCollections[possibleChildCollectionName].builder.creatable) {
+  //
+  //           if(possibleChildCollections[possibleChildCollectionName].builder.canBeChild) {
+  //
+  //             // Check if there are possible restrictions of the parent for this node
+  //             var parentIsAllowed = true; // Allow this parent if there are no restriction rules
+  //             if(possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents!=undefined) {
+  //               parentIsAllowed = false; // Do not allow this parents in general if rules was found
+  //               // Check this restrictions
+  //               for(var r in possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents) {
+  //                 if (possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents.hasOwnProperty(r)) {
+  //                   if(possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents[r] == parentCollectionName) {
+  //                     parentIsAllowed = true // Allow this parent if it was found in the rules
+  //                     // console.log(possibleChildCollectionName+' can be child of '+possibleChildCollections[possibleChildCollectionName].builder.restrictPossibleParents[r])
+  //                     break;
+  //                   }
+  //                 }
+  //               }
+  //             }
+  //
+  //             // Check if there are possible restrictions of childs for this parent node
+  //             var childIsAllowed = true; // Allow this child if there are no restriction rules
+  //             if(parentCollection.builder.restrictPossibleChildren!=undefined) {
+  //               childIsAllowed = false; // Do not allow this child in general if rules was found
+  //               // Check this restrictions
+  //               for(var r in parentCollection.builder.restrictPossibleChildren) {
+  //                 if (parentCollection.builder.restrictPossibleChildren.hasOwnProperty(r)) {
+  //                   if(parentCollection.builder.restrictPossibleChildren[r] == possibleChildCollectionName) {
+  //                     childIsAllowed = true // Allow this parent if it was found in the rules
+  //                     // console.log(parentCollectionName+' can have child '+parentCollection.builder.restrictPossibleChildren[r])
+  //                     break;
+  //                   }
+  //                 }
+  //               }
+  //             }
+  //
+  //             // If both is allowed (If this parent can have this child and if this child can have this parent)
+  //             if(parentIsAllowed&&childIsAllowed) {
+  //               returnChildCollections.push(possibleChildCollections[possibleChildCollectionName])
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //
+  //   }
+  //
+  //   return returnChildCollections
+  //
+  // }
 
   // This method will return all possible edges between two vertex collections
   static getPossibleEdgeCollections (fromCollectionName, toCollectionName) {
@@ -439,8 +440,8 @@ export default class WandererBuilder {
         style: {
           'label': 'data(label)',
           'text-wrap': 'wrap',
-          'text-max-width': '200px',
-          'background-opacity': 1
+          'text-max-width': '300px',
+          'border-width': 5
         }
       },
       {
@@ -449,13 +450,12 @@ export default class WandererBuilder {
           'curve-style': 'bezier',
           'target-arrow-shape': 'triangle',
           'source-arrow-shape': 'circle',
-          'opacity': 1
+          'text-rotation': 'autorotate'
         }
       },
       {
         selector: 'node:selected',
         style: {
-          'border-width': 2,
           'border-color': 'black'
         }
       },
@@ -480,46 +480,48 @@ export default class WandererBuilder {
 
         let possibleOutgoingCollections = this.getPossibleOutgoingCollections(fromCollectionName)
         for(let i in possibleOutgoingCollections) {
-          (function(possibleOutgoingVertexCollection, possibleOutgoingEdgeCollection) {
+          for(let t in possibleOutgoingCollections[i].through) {
+            (function(possibleOutgoingVertexCollection, possibleOutgoingEdgeCollection) {
 
-            if(possibleOutgoingVertexCollection.builder.showInCxtMenu) {
+              if(possibleOutgoingVertexCollection.builder.appendableViaCxtMenu) {
 
-              cxtmenuCommands.push({
-                fillColor: possibleOutgoingVertexCollection.builder.color,
-                content: 'append '+possibleOutgoingVertexCollection.builder.label,
-                select: function(vertex){
-                  vertex.trigger('append', {
-                    vertexCollectionName: possibleOutgoingVertexCollection.name,
-                    edgeCollectionName: possibleOutgoingEdgeCollection.name
-                  })
-                }
-              });
+                cxtmenuCommands.push({
+                  fillColor: possibleOutgoingVertexCollection.builder.color,
+                  content: possibleOutgoingEdgeCollection.name+' '+possibleOutgoingVertexCollection.builder.label,
+                  select: function(vertex){
+                    vertex.trigger('append', {
+                      vertexCollectionName: possibleOutgoingVertexCollection.name,
+                      edgeCollectionName: possibleOutgoingEdgeCollection.name
+                    })
+                  }
+                });
 
-            }
+              }
 
-          })(possibleOutgoingCollections[i].to, possibleOutgoingCollections[i].through[0]);
+            })(possibleOutgoingCollections[i].to, possibleOutgoingCollections[i].through[t]);
+          }
         }
 
-        let possibleChildCollections = this.getPossibleChildCollections(fromCollectionName)
-        for(let i in possibleChildCollections) {
-          (function(possibleChildCollections) {
-
-            if(possibleChildCollections.builder.showInCxtMenu) {
-
-              cxtmenuCommands.push({
-                fillColor: possibleChildCollections.builder.color,
-                content: 'inject '+possibleChildCollections.builder.label,
-                select: function(vertex){
-                  vertex.trigger('inject', {
-                    vertexCollectionName: possibleChildCollections.name
-                  })
-                }
-              });
-
-            }
-
-          })(possibleChildCollections[i]);
-        }
+        // let possibleChildCollections = this.getPossibleChildCollections(fromCollectionName)
+        // for(let i in possibleChildCollections) {
+        //   (function(possibleChildCollections) {
+        //
+        //     if(possibleChildCollections.builder.injectableViaCxtMenu) {
+        //
+        //       cxtmenuCommands.push({
+        //         fillColor: possibleChildCollections.builder.color,
+        //         content: 'inject '+possibleChildCollections.builder.label,
+        //         select: function(vertex){
+        //           vertex.trigger('inject', {
+        //             vertexCollectionName: possibleChildCollections.name
+        //           })
+        //         }
+        //       });
+        //
+        //     }
+        //
+        //   })(possibleChildCollections[i]);
+        // }
 
         // Add general "add more" function
         // cxtmenuCommands.push({
@@ -615,10 +617,10 @@ export default class WandererBuilder {
       builder.appendVertex(this.id(), vertexCollectionName, edgeCollectionName)
     })
 
-    // Inject event
-    CytoscapeSingleton.cy.on('inject', 'node', function(evt, {vertexCollectionName}) {
-      builder.injectVertex(this.id(), vertexCollectionName)
-    })
+    // // Inject event
+    // CytoscapeSingleton.cy.on('inject', 'node', function(evt, {vertexCollectionName}) {
+    //   builder.injectVertex(this.id(), vertexCollectionName)
+    // })
 
     // Implement drop event
     let dropTimer = null;

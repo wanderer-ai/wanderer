@@ -1,17 +1,19 @@
 <template>
   <div>
 
-    <div v-for="answer in answers" :key="answer._id">
+    <span v-for="answer in answers" :key="answer._id">
 
-      <div v-if="answer.type=='button' || answer.type=='checkbox'">
+      <span v-if="answer.type=='button' || answer.type=='checkbox'">
         {{answer.suggestion}}
-      </div>
+      </span>
 
-      <div v-if="answer.type=='text' || answer.type=='textarea'">
+      <span v-if="answer.type=='text' || answer.type=='textarea'">
         <span v-if="answer.suggestion">{{answer.suggestion}}:</span> {{answer.value}}
-      </div>
+      </span>
 
-    </div>
+    </span>
+
+    <span class="button--repeat" v-if="repeatable" v-on:click="askAgain()">↺</span>
 
   </div>
 </template>
@@ -39,39 +41,82 @@ export default {
 
     this.$nextTick(function () {
 
-      if(WandererStoreSingleton.store.state.wanderer.vertexChildren[this.vertexId] != undefined) {
-        var outgoingVertices = WandererStoreSingleton.store.state.wanderer.vertexChildren[this.vertexId]
-        for(let outgoingVerticesId in outgoingVertices) {
-          let collectionName = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[outgoingVertices[outgoingVerticesId]]._collection
-          if(collectionName=='suggestion') {
-            var data = WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[outgoingVertices[outgoingVerticesId]]
-            if(data.answered != undefined && data.answered) {
-              this.answers.push({
-                _id: outgoingVertices[outgoingVerticesId],
-                suggestion: WandererSingleton.getTranslatableVertexValue(outgoingVertices[outgoingVerticesId],'suggestion'),
-                type: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'type'),
-                priority: WandererSingleton.getVertexValue(outgoingVertices[outgoingVerticesId],'priority'),
-                value: data.value
-              })
+      if(this.vertexId != undefined) {
+
+        if(WandererStoreSingleton.store.state.wanderer.question.suggestions[this.vertexId] != undefined) {
+          var suggestionIds = WandererStoreSingleton.store.state.wanderer.question.suggestions[this.vertexId]
+          if (suggestionIds != undefined) {
+
+            suggestionIds = suggestionIds.sort(function(a, b) {
+                return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[b]['priority']-WandererStoreSingleton.store.state.wanderer.vertexDocumentData[a]['priority']
+            })
+
+            for(let suggestionId in suggestionIds) {
+
+              var data = WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[suggestionIds[suggestionId]]
+              if(data.answered != undefined && data.answered) {
+
+                this.answers.push({
+                  _id: suggestionIds[suggestionId],
+                  suggestion: WandererSingleton.getTranslatableVertexValue(suggestionIds[suggestionId],'suggestion'),
+                  type: WandererSingleton.getEvaluatedVertexValue(suggestionIds[suggestionId],'type'),
+                  priority: WandererSingleton.getEvaluatedVertexValue(suggestionIds[suggestionId],'priority')
+                })
+
+              }
+
             }
           }
+
         }
       }
 
     })
   },
-  // computed: {
-  //   answers: function () {
-  //     let returnData = []
-  //     if(this.vertexId != undefined) {
-  //
-  //     }
-  //     return returnData
-  //   }
-  // }
+  computed: {
+    answered: function () {
+      return WandererSingleton.getLifecycleValue(this.vertexId, 'answered')
+    },
+    repeatable: function () {
+      return WandererSingleton.isVertexInTraversal(this.vertexId)
+    }
+  },
+  methods: {
+    askAgain () {
+
+      // this.answered = false;
+
+      // Mark this question as not answered
+      WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+        id: this.vertexId,
+        key: 'answered',
+        value: false
+      })
+
+      WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+        id: this.vertexId,
+        key: 'sent',
+        value: false
+      })
+
+      // Mark the suggestions as not answered
+      for(var s in this.suggestions) {
+        if (this.suggestions.hasOwnProperty(s)) {
+          WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+            id: this.suggestions[s]._id,
+            key: 'answered',
+            value: false
+          })
+        }
+      }
+
+    }
+  }
 }
 </script>
 
 <style>
-
+.button--repeat {
+  cursor:pointer;
+}
 </style>

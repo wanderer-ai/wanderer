@@ -104,12 +104,5 @@ export default {
   opacity: 0;
 }
 
-.col.has-devider {
-  border-right:1px solid #eee;
-}
-
-.col.has-devider:last-of-type {
-  border-right:0;
-}
 
 </style>

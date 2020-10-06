@@ -85,7 +85,7 @@
     </div>
 
     <div class="form-group">
-      <label for="edgeMethod">Method</label>
+      <label for="edgeMethod">Invoke method</label>
       <select id="edgeMethod" class="form-control" v-model="method">
         <option :value="false">none</option>
         <option

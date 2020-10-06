@@ -112,27 +112,13 @@ export default {
           this.$store.dispatch('wanderer/builder/addAlert',{message:'You cannot remove the origin node',type:'warning'})
         } else {
 
-          // If there are child nodes
-          let childrens = this.$cytoscape.cy.getElementById(vertexIds[i]).children();
-          childrens.forEach((child) => {
-            // Remove the parent information from the vertex store
-            this.$store.commit('wanderer/setVertexDataValue', {
-              id: child.id(),
-              key: '_parent',
-              value: false
-            })
-            // Remove compound from cytoscape child
-            child.move({
-              parent: null
-            });
-          })
-
           // Remove the connected edges
           this.$cytoscape.cy.getElementById(vertexIds[i]).connectedEdges().forEach((edge) => {
             component.$wanderer.removeEdge(edge.id())
           })
           // Remove the vertex
           this.$wanderer.removeVertex(vertexIds[i])
+
         }
 
       }

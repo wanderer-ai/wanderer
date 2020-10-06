@@ -11,6 +11,11 @@
 
     <portal to="modals" :order="1">
       <modal :title="editEdgeCollection.label" :show="showEdgeEditorModal" v-on:closeButton="closeEdgeEditorModal()">
+
+        <div v-if="isImmutable" class="alert alert-warning" role="alert">
+          Warning! This edge is not part of the current flow! Maybe it was dynamically imported. You can edit this edge. But it will not be saved into your flow!
+        </div>
+
         <component v-bind:is="editEdgeCollection.component"></component>
         <!-- <language-switcher /> -->
       </modal>
@@ -50,7 +55,12 @@ export default {
     },
     selectedEdges () {
       return this.$store.state.wanderer.builder.selectedEdgeIds.length
-    }
+    },
+    isImmutable () {
+      if (this.$store.state.wanderer.builder.editEdge !== 0) {
+        return this.$wanderer.getEdgeValue(this.$store.state.wanderer.builder.editEdge, '_immutable')
+      }
+    },
   },
   methods: {
     closeEdgeEditorModal () {

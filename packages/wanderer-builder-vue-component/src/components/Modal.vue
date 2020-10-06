@@ -5,8 +5,8 @@
       <div class="modal-wrapper">
         <div class="modal-container">
 
-          <div class="modal-header">
-            <h5 class="modal-title">{{title}}</h5>
+          <div v-if="showHeader" class="modal-header">
+            <h5 class="modal-title" v-if="title">{{title}}</h5>
           </div>
 
           <div class="modal-body">
@@ -17,7 +17,7 @@
 
           </div>
 
-          <div class="modal-footer">
+          <div v-if="showFooter" class="modal-footer">
 
             <div class="btn-group">
 
@@ -45,13 +45,21 @@ export default {
   props: {
     title: {
       type: String,
-      default: 'Modal window'
+      default: ''
     },
     show: {
       type: Boolean,
       default: false
     },
     showClose: {
+      type: Boolean,
+      default: true
+    },
+    showHeader: {
+      type: Boolean,
+      default: true
+    },
+    showFooter: {
       type: Boolean,
       default: true
     }

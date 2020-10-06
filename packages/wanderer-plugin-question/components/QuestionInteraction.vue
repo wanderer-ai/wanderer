@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!answered">
 
     {{question}}
 
@@ -24,11 +24,9 @@
 
     </div>
 
-    <div class="btn-group has-wrap">
+    <div class="btn-group has-wrap shake">
 
       <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" class="btn btn-secondary" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
-
-      <button v-if="requireAnswerButton" class="btn btn-secondary" v-on:click="answer()">Answer</button>
 
     </div>
 
@@ -55,7 +53,7 @@ export default {
   data: function() {
     return {
       values: {},
-      answered: false
+      // answered: false
     }
   },
   computed: {
@@ -67,26 +65,34 @@ export default {
         return WandererSingleton.getTranslatableVertexValue(this.vertexId,'question')
       }
     },
+    // button: function () {
+    //   if(this.vertexId != undefined){
+    //     return WandererSingleton.getTranslatableVertexValue(this.vertexId,'button')
+    //   }
+    // },
     suggestions: function () {
 
       let returnData = []
       if(this.vertexId != undefined) {
 
-        if(WandererStoreSingleton.store.state.wanderer.vertexChildren[this.vertexId] != undefined) {
-          var childrens = WandererStoreSingleton.store.state.wanderer.vertexChildren[this.vertexId]
-          if (childrens != undefined) {
-            for(let childId in childrens) {
-              if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[childrens[childId]] != undefined) {
-                let collectionName = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[childrens[childId]]._collection
-                if(collectionName=='suggestion') {
-                  returnData.push({
-                    _id: childrens[childId],
-                    suggestion: WandererSingleton.getTranslatableVertexValue(childrens[childId],'suggestion'),
-                    type: WandererSingleton.getVertexValue(childrens[childId],'type'),
-                    priority: WandererSingleton.getVertexValue(childrens[childId],'priority')
-                  })
-                }
-              }
+        if(WandererStoreSingleton.store.state.wanderer.question.suggestions[this.vertexId] != undefined) {
+          var suggestionIds = WandererStoreSingleton.store.state.wanderer.question.suggestions[this.vertexId]
+
+          if (suggestionIds != undefined) {
+
+            suggestionIds = suggestionIds.sort(function(a, b) {
+                return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[b]['priority']-WandererStoreSingleton.store.state.wanderer.vertexDocumentData[a]['priority']
+            })
+
+            for(let suggestionId in suggestionIds) {
+
+              returnData.push({
+                _id: suggestionIds[suggestionId],
+                suggestion: WandererSingleton.getTranslatableVertexValue(suggestionIds[suggestionId],'suggestion'),
+                type: WandererSingleton.getEvaluatedVertexValue(suggestionIds[suggestionId],'type'),
+                priority: WandererSingleton.getEvaluatedVertexValue(suggestionIds[suggestionId],'priority')
+              })
+
             }
           }
 
@@ -94,68 +100,18 @@ export default {
       }
       return returnData
     },
-    // suggestions: function () {
-    //   // We have got a list of ids. Now we fill it with data
-    //   if(this.data.suggestionVertexIds != undefined){
-    //     let returnData = []
-    //     for(let i in this.data.suggestionVertexIds){
-    //       returnData.push({
-    //         _id: this.data.suggestionVertexIds[i],
-    //         suggestion: WandererSingleton.getTranslatableVertexValue(this.data.suggestionVertexIds[i],'suggestion'),
-    //         type: WandererSingleton.getVertexValue(this.data.suggestionVertexIds[i],'type'),
-    //         priority: WandererSingleton.getVertexValue(this.data.suggestionVertexIds[i],'priority')
-    //       })
-    //     }
-    //     // console.log(returnData)
-    //     returnData = returnData.sort((a, b) => (a.priority < b.priority) ? 1 : -1)
-    //
-    //     return returnData
-    //   }
-    // },
-    // answered: function () {
-    //   if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredQuestions.indexOf(this.vertexId)===-1){
-    //     return false
-    //   }
-    //   return true
-    // },
-    requireAnswerButton: function () {
-      var require = false
-      for (var i in this.suggestions) {
-        if (this.suggestions[i].type !== 'button') {
-          require = true
-        }
-      }
-      return require
-    }
+
+    answered: function () {
+      return WandererSingleton.getLifecycleValue(this.vertexId, 'answered')
+    },
+
   },
   methods: {
-    // answerButton (suggestionVertexId) {
-    //   // Mark component as answered
-    //   this.answered = true
-    //   // Mark question as answered in store
-    //   WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.vertexId)
-    //   // Mark suggestion as answered in store
-    //   WandererStoreSingleton.store.commit('wanderer/plugin-question/answerSuggestion', suggestionVertexId)
-    //   // Add answer message
-    //   var answerObject = {}
-    //   answerObject[suggestionVertexId] = true;
-    //   WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-    //     // id: this.vertexId+'_suggestion',
-    //     component: 'wanderer-suggestion-message',
-    //     from: 'local',
-    //     backgroundColor: '#28A745',
-    //     delay: 0,
-    //     data: {
-    //       answers: answerObject
-    //     }
-    //   })
-    //   // Start next traversal tick
-    //   WandererSingleton.traverse()
-    // },
+
     answer (suggestionVertexId) {
 
       // Mark component (this question) as answered
-      this.answered = true
+      // this.answered = true
 
       // Mark question as answered in store
       // WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.vertexId)
@@ -164,6 +120,8 @@ export default {
         key: 'answered',
         value: true
       })
+
+      // console.log('setting lifecycle value for '+this.vertexId);
 
       // Store the answered suggestions inside this object
       // var answerObject = {}
@@ -246,59 +204,40 @@ export default {
       // WandererSingleton.traverse()
 
     },
-    askAgain () {
 
-      // this.answered = false;
-
-      // Mark this question as not answered
-      WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-        id: this.vertexId,
-        key: 'answered',
-        value: false
-      })
-
-      WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-        id: this.vertexId,
-        key: 'sent',
-        value: false
-      })
-
-      // Mark the suggestions as not answered
-      for(var s in this.suggestions) {
-        if (this.suggestions.hasOwnProperty(s)) {
-          WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-            id: this.suggestions[s]._id,
-            key: 'answered',
-            value: false
-          })
-        }
-      }
-
-      // // Wenn die Frage die letzte im Message-Stack ist...
-      // if(this.lastOfType) {
-      //
-      //   // Ask the question again
-      //   WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-      //     // id: traversalResult.lastFoundQuestionId,
-      //     component: 'wanderer-question-message',
-      //     vertexId: this.vertexId,
-      //     backgroundColor: '#007BFF',
-      //     delay: 2000
-      //   })
-      //
-      // }
-
-    }
   }
 }
 </script>
 
 <style>
-.button-again {
+/* .button-again {
   cursor:pointer;
-}
+} */
 
 .btn-group.has-wrap {
   flex-wrap: wrap;
 }
+
+.shake {
+  /* Start the shake animation and make the animation last for 0.5 seconds */
+  animation: shake 5s;
+
+  /* When the animation is finished, start again */
+  animation-iteration-count: infinite;
+}
+
+@keyframes shake {
+  0% { transform: translate(0px, 0px) rotate(0deg); }
+  1% { transform: translate(-1px, -2px) rotate(-1deg); }
+  2% { transform: translate(-3px, 0px) rotate(1deg); }
+  3% { transform: translate(3px, 2px) rotate(0deg); }
+  4% { transform: translate(1px, -1px) rotate(1deg); }
+  5% { transform: translate(-1px, 2px) rotate(-1deg); }
+  6% { transform: translate(-3px, 1px) rotate(0deg); }
+  7% { transform: translate(3px, 1px) rotate(-1deg); }
+  8% { transform: translate(-1px, -1px) rotate(1deg); }
+  9% { transform: translate(1px, 2px) rotate(0deg); }
+  10% { transform: translate(0px, 0px) rotate(0deg); }
+}
+
 </style>

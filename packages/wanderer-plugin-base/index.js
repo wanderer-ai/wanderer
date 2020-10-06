@@ -25,7 +25,7 @@ export default {
     var lastTraversedRequiredEdgeIds = []
     var lastTraversedForbiddenEdgeIds = []
     var typingTimeouts = {}
-    var flowVertexId = '';
+    // var flowVertexId = '';
 
     WandererSingleton.registerVertexCollection({
       name: 'flow',
@@ -43,14 +43,16 @@ export default {
           style: {
             'height': '200px',
             'width': '200px',
-            'font-size': '20px',
+            'font-size': '30px',
             'background-color': '#6C757D',
+            'border-color': '#6C757D',
+            'border-width': '5px',
             'label': 'data(label)'
           }
         }],
         component: 'wanderer-flow-editor'
       },
-      toCytoscape: function(data, language){
+      toCytoscape: function(data, language) {
         if(data.topic[language]){
           return {
             label: data.topic[language]
@@ -60,11 +62,23 @@ export default {
           label: 'Flow'
         }
       },
+      edgeMethods: {
+        // reset: {
+        //   label: 'Reset flow',
+        //   method: (cytoscapeVertex, vertexData) => {
+        //
+        //     WandererStoreSingleton.store.commit('wanderer/cleanVertexLifecycleData')
+        //     WandererSingleton.trigger('truncate')
+        //
+        //   }
+        // }
+      },
       visitor: function (cytoscapeVertex, vertexData, language) {
-        flowVertexId = cytoscapeVertex.id()
+        // flowVertexId = cytoscapeVertex.id()
       }
 
     })
+
 
     // Register the section vertex
     WandererSingleton.registerVertexCollection({
@@ -74,7 +88,8 @@ export default {
         color: '#cccccc',
         cytoscapeClasses: 'section',
         cytoscapeCxtMenuSelector: '.section',
-        showInCxtMenu: false,
+        appendableViaCxtMenu: true,
+        injectableViaCxtMenu: false,
         creatable: true,
         defaultFields: {
           title: {
@@ -82,16 +97,31 @@ export default {
             de: 'Neue Section'
           }
         },
-        cytoscapeStyles: [{
-          selector: '.section',
-          style: {
-            'height': '100px',
-            'width': '100px',
-            'font-size': '20px',
-            'background-color': '#cccccc',
-            'label': 'data(label)'
+        cytoscapeStyles: [
+          {
+            selector: '.section',
+            style: {
+              'shape': 'round-rectangle',
+              'height': '150px',
+              'width': '150px',
+              'font-size': '30px',
+              'background-color': '#cccccc',
+              'border-color': '#cccccc',
+              'border-width': '5px',
+              'label': 'data(label)'
+            }
+          },
+          {
+            selector: '.section:parent',
+            style:{
+              'background-opacity': 0,
+              'background-color': '#fff',
+              // 'shape': 'roundrectangle',
+              'border-color': '#cccccc',
+              'padding': '100px'
+            },
           }
-        }],
+        ],
         component: 'wanderer-section-editor',
         canBeParent: true,
         canBeChild: false,
@@ -140,44 +170,89 @@ export default {
             // Reset section lifecycle data
             WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'finished', false)
 
-            // Get all child elements of the compound node
-            let childrens = cytoscapeVertex.children();
-            childrens.forEach((child) => {
-              // Invoke the reset method for all child elements
-              WandererSingleton.invokeVertexMethod(child.id(), 'reset');
+            // Find all child elements
+            // Now for this target get all outbound edges
+            let outboundCyEdges = WandererSingleton.getOutboundCytoscapeEdges(cytoscapeVertex)
+            outboundCyEdges.forEach((outboundCyEdge) => {
+
+              // Get the data for each edge
+              let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
+
+              // If the child is connected via a watch edge...
+              if(outboundEdgeData._collection == 'watch') {
+                // Invoke the reset method for all child elements
+                WandererSingleton.invokeVertexMethod(outboundCyEdge.target().id(), 'reset');
+              }
+
             })
+
+            // Get all child elements of the compound node
+            // let childrens = cytoscapeVertex.children();
+            // childrens.forEach((child) => {
+            //   // Invoke the reset method for all child elements
+            //   WandererSingleton.invokeVertexMethod(child.id(), 'reset');
+            // })
 
           }
         }
       },
       testVisitor: (cytoscapeVertex, vertexData, language) => {
 
-        // Get all child elements of the compound node
-        let childrens = cytoscapeVertex.children();
-
         let conditionsFullfilled = true;
 
-        childrens.forEach((child) => {
-          // Check, if for all child elements the default edgeCondition is fullfilled
+        // Find all child elements
+        // Now for this target get all outbound edges
+        let outboundCyEdges = WandererSingleton.getOutboundCytoscapeEdges(cytoscapeVertex)
+        outboundCyEdges.forEach((outboundCyEdge) => {
 
-          // Find the default edgeCondition for this vertex
-          // Todo: Move this into the Wanderer core
-          // Also this function is similar to the one defined in wanderer-plugin-base (checking the edges)
-          let sourceNodeCollection = WandererSingleton.getVertexCollectionById(child.id())
-          if(sourceNodeCollection.parentFinisher !== undefined) {
-            let vertexLifecycleData = WandererSingleton.getLifecycleData(child.id())
-            if(!sourceNodeCollection.parentFinisher(vertexLifecycleData)) {
-              conditionsFullfilled = false;
+          // Get the data for each edge
+          let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
+
+          // If the child is connected via a watch edge...
+          if(outboundEdgeData._collection == 'watch') {
+
+            // Get the child node
+            let child = outboundCyEdge.target()
+
+            // Find the default edgeCondition for this vertex
+            // Todo: Move this into the Wanderer core
+            // Also this function is similar to the one defined in wanderer-plugin-base (checking the edges)
+            let collection = WandererSingleton.getVertexCollectionById(child.id())
+            if(collection.parentFinisher !== undefined) {
+              let vertexLifecycleData = WandererSingleton.getLifecycleData(child.id())
+              if(!collection.parentFinisher(vertexLifecycleData)) {
+                conditionsFullfilled = false;
+              }
             }
+
           }
 
         })
 
+        // Mark this section as finished
         if(conditionsFullfilled) {
           WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'finished', true)
         }
 
       },
+      expander: (cytoscapeVertex, currentVertexData, outboundCyEdges) => {
+        let returnEdges = []
+
+        // For each outgoing edges
+        outboundCyEdges.forEach((outboundCyEdge) => {
+
+          // Get the data for each edge
+          let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
+
+          // If this is not a watch edge...
+          if(outboundEdgeData._collection != 'watch') {
+            returnEdges.push(outboundCyEdge)
+          }
+
+        })
+
+        return returnEdges
+      }
 
     })
 
@@ -185,11 +260,12 @@ export default {
       name: 'message',
       builder: {
         label: 'Message',
-        color: '#6C757D',
+        color: '#007BFF',
         cytoscapeClasses: 'message',
         cytoscapeCxtMenuSelector: '.message',
         creatable: true,
-        showInCxtMenu: true,
+        appendableViaCxtMenu: true,
+        injectableViaCxtMenu: true,
         defaultFields: {
           message: {
             en: 'New message',
@@ -199,10 +275,13 @@ export default {
         cytoscapeStyles: [{
           selector: '.message',
           style: {
+            'shape': 'round-rectangle',
             'height': '50px',
-            'width': '50px',
+            'width': '150px',
             'font-size': '20px',
-            'background-color': '#6C757D',
+            'background-color': '#007BFF',
+            'border-color': '#007BFF',
+            'border-width': '5px',
             'label': 'data(label)'
           }
         }],
@@ -401,7 +480,7 @@ export default {
         }
 
         if (data.method) {
-          if(targetNodeCollection.edgeMethods!=undefined) {
+          if(targetNodeCollection.edgeMethods && targetNodeCollection.edgeMethods[data.method]) {
             label = label+' ('+targetNodeCollection.edgeMethods[data.method].label+')'
           }
         }
@@ -518,6 +597,105 @@ export default {
       }
     })
 
+    // Register the isAnswerableBy edge
+    WandererSingleton.registerEdgeCollection({
+      name: 'watch',
+      builder: {
+        label: 'watch',
+        cytoscapeClasses: 'watch',
+        creatable: true,
+        defaultFields: function (fromVertexCollection, toVertexCollection) {
+          return {
+            // priority: 25
+          }
+        },
+        restrictSourceVertices: [
+          'section'
+        ],
+        cytoscapeStyles: [{
+          selector: '.watch',
+          style: {
+            'display': 'none',
+            'line-color': '#6C757D',
+            'target-arrow-color': '#6C757D',
+            'source-arrow-color': '#6C757D',
+            // 'width': 'data(priority)',
+            // 'label': 'data(label)'
+          }
+        }],
+        // component: 'wanderer-is-answerable-by-editor'
+      },
+      // isChildEdge: true,
+      // toCytoscape: function(data){
+      //
+      //   return {
+      //     // label: data._id,
+      //     // priority: priority
+      //   }
+      // },
+      afterCreate: (cytoscapeEdge, data) => {
+        // Move the target to the source node
+        cytoscapeEdge.target().move({
+          parent: cytoscapeEdge.source().id()
+        });
+      },
+      beforeRemove: (cytoscapeEdge) => {
+        // Move the node out of its parent
+        // console.log('unlink')
+        cytoscapeEdge.target().move({
+          parent: null
+        });
+      }
+    })
+
+    // WandererSingleton.registerEdgeCollection({
+    //   name: 'contains',
+    //   builder: {
+    //     label: 'contains',
+    //     cytoscapeClasses: 'contains',
+    //     creatable: true,
+    //     defaultFields: function (fromVertexCollection, toVertexCollection) {
+    //
+    //       var defaultData = {
+    //
+    //       }
+    //
+    //       return defaultData
+    //     },
+    //     cytoscapeStyles: [{
+    //       selector: '.contains',
+    //       style: {
+    //         'line-color': '#6C757D',
+    //         'target-arrow-color': '#6C757D',
+    //         'source-arrow-color': '#6C757D',
+    //         'width': 'data(priority)',
+    //         'label': 'data(label)',
+    //         'line-style': 'data(line)'
+    //       }
+    //     }],
+    //     // component: 'wanderer-leads-to-editor'
+    //   },
+    //   toCytoscape: function(data) {
+    //
+    //     return {
+    //       // line: line,
+    //       label: 'contains',
+    //       // type: data['type'],
+    //       // priority: priority
+    //     }
+    //   },
+    //   testVisitor: function (cytoscapeEdge, edgeData, language) {
+    //   },
+    //   visitor: function (cytoscapeEdge, edgeData, language) {
+    //   },
+    //   allowTraversal: function (cytoscapeVertex, vertexData, cytoscapeEdge, edgeData, language) {
+    //     return true
+    //   },
+    //   allowTargetTraversal: function (cytoscapeVertex, vertexData, cytoscapeEdge, edgeData, language) {
+    //
+    //   }
+    // })
+
     WandererSingleton.on('traversalFinished', function() {
       // Reset the edge information
       lastTraversedRequiredEdgeIds = []
@@ -531,7 +709,7 @@ export default {
       lastTraversedForbiddenEdgeIds = []
 
       // Clear all timeouts
-      for (i in typingTimeouts) {
+      for (let i in typingTimeouts) {
         if(typingTimeouts.hasOwnProperty(i)) {
           clearTimeout(typingTimeouts[i]);
           delete typingTimeouts[i]

@@ -26,9 +26,9 @@
             <icon name="plus"></icon> append {{possibleOutgoing.to.builder.label}}
           </button>
 
-          <button class="btn btn-secondary mr-4 mb-4" v-for="(possibleChild) in possibleChildCollections" v-bind:key="possibleChild.name" :style="'background-color:'+possibleChild.builder.color+';border-color:'+possibleChild.builder.color+';'" v-on:click="inject(possibleChild.name)">
+          <!-- <button class="btn btn-secondary mr-4 mb-4" v-for="(possibleChild) in possibleChildCollections" v-bind:key="possibleChild.name" :style="'background-color:'+possibleChild.builder.color+';border-color:'+possibleChild.builder.color+';'" v-on:click="inject(possibleChild.name)">
             <icon name="plus"></icon> inject {{possibleChild.builder.label}}
-          </button>
+          </button> -->
 
         </div>
 
@@ -70,24 +70,27 @@ export default {
     //   return false
     // },
     possibleOutgoingCollections () {
-      var returnCollections = {};
+      if(this.selectedVertexIds.length == 1) {
+        var returnCollections = {};
 
-      // Get the collection name from the selected vertex
-      var fromCollectionName = this.$store.state.wanderer.vertexDocumentData[this.selectedVertexIds[0]]._collection
+        // Get the collection name from the selected vertex
+        var fromCollectionName = this.$store.state.wanderer.vertexDocumentData[this.selectedVertexIds[0]]._collection
 
-      // Get the possible outgoing collection and its possible edge
-      var possibleOutgoingCollections = WandererBuilderSingleton.getPossibleOutgoingCollections(fromCollectionName)
+        // Get the possible outgoing collection and its possible edge
+        var possibleOutgoingCollections = WandererBuilderSingleton.getPossibleOutgoingCollections(fromCollectionName)
 
-      return possibleOutgoingCollections
+        return possibleOutgoingCollections
+      }
     },
-    possibleChildCollections () {
-      // Get the collection name from the selected vertex
-      var fromCollectionName = this.$store.state.wanderer.vertexDocumentData[this.selectedVertexIds[0]]._collection
-
-      // Get the possible child collections
-      return WandererBuilderSingleton.getPossibleChildCollections(fromCollectionName)
-
-    },
+    // possibleChildCollections () {
+    //   if(this.selectedVertexIds.length == 1) {
+    //     // Get the collection name from the selected vertex
+    //     var fromCollectionName = this.$store.state.wanderer.vertexDocumentData[this.selectedVertexIds[0]]._collection
+    //
+    //     // Get the possible child collections
+    //     return WandererBuilderSingleton.getPossibleChildCollections(fromCollectionName)
+    //   }
+    // },
     possibleVertexCollections () {
       // No source vertex is selected
 
@@ -117,12 +120,12 @@ export default {
 
       this.showModal = false
     },
-    inject(vertexCollectionName) {
-
-      WandererBuilderSingleton.injectVertex(this.selectedVertexIds[0], vertexCollectionName)
-
-      this.showModal = false
-    },
+    // inject(vertexCollectionName) {
+    //
+    //   WandererBuilderSingleton.injectVertex(this.selectedVertexIds[0], vertexCollectionName)
+    //
+    //   this.showModal = false
+    // },
     add (vertexCollectionName) {
 
       var x = (Math.floor(Math.random() * (200 - 100 + 1) + 100))

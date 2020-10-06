@@ -16,20 +16,44 @@ export default {
     Vue.component('wanderer-suggestion-message', SuggestionMessage)
     Vue.component('wanderer-is-answerable-by-editor', IsAnswerableByEditor)
 
+    // Add a separate store module
+    WandererStoreSingleton.store.registerModule(['wanderer', 'question'], {
+      namespaced: true,
+      state: {
+        suggestions: {}
+      },
+      mutations: {
+        addSuggestions (state, {questionId, suggestionIds}) {
+
+          // Add suggestion array
+          if(state.suggestions[questionId] == undefined) {
+            this._vm.$set(state.suggestions, questionId, [])
+          }
+
+          this._vm.$set(state.suggestions, questionId, suggestionIds)
+
+        },
+        truncate (state) {
+          this._vm.$set(state, 'suggestions', {})
+        }
+      }
+    })
+
     var debug = false
 
-    // var typingTimeouts = {}
-    // var questionFoundUnansweredBefore = false
+    // Define some variables for collecting some data while traversing
+    var foundQuestions = {}
 
     // Register the question vertex
     WandererSingleton.registerVertexCollection({
       name: 'question',
       builder: {
         label: 'Question',
-        color: '#007BFF',
+        color: '#28A745',
         cytoscapeClasses: 'question',
         cytoscapeCxtMenuSelector: '.question',
-        showInCxtMenu: true,
+        appendableViaCxtMenu: true,
+        injectableViaCxtMenu: true,
         creatable: true,
         restrictPossibleChildren: [
           'suggestion'
@@ -38,23 +62,35 @@ export default {
           question: {
             en: 'New question',
             de: 'Neue Frage'
-          }
+          },
+          // button: {
+          //   en: 'ok',
+          //   de: 'ok'
+          // }
         },
         cytoscapeStyles: [
           {
             selector: '.question',
             style: {
-              'height': '100px',
-              'width': '100px',
-              'font-size': '20px',
-              'background-color': '#007BFF',
+              'shape': 'round-rectangle',
+              'height': '150px',
+              'width': '150px',
+              'font-size': '30px',
+              'background-opacity': 0,
+              'background-color': '#fff',
+              'border-color': '#28A745',
+              'border-width': '20px',
               'label': 'data(label)'
             }
           },
           {
             selector: '.question:parent',
             style:{
-                'shape': 'roundrectangle',
+              'background-opacity': 0,
+              'background-color': '#fff',
+              // 'shape': 'roundrectangle',
+              'border-color': '#28A745',
+              'padding': '50px'
             },
           }
         ],
@@ -65,7 +101,7 @@ export default {
           if(data.question[language]) {
             return data.question[language]+(debug? ' ('+data._id+')':'')
           }
-          return 'Section'
+          return 'Question'
         },
       },
       toCytoscape: function(data, language){
@@ -126,8 +162,8 @@ export default {
             WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
 
             // Reset all suggestions
-            var childrens = cytoscapeVertex.outgoers('.suggestion');
-            childrens.forEach(function(child) {
+            var children = cytoscapeVertex.children('.suggestion');
+            children.forEach(function(child) {
               WandererSingleton.setLifecycleValue(child.id(), 'answered', false)
             })
 
@@ -161,11 +197,14 @@ export default {
 
                 // typingTimeouts[cytoscapeVertex.id()] = setTimeout(()=>{
 
+                  // Add the query to the traversal result
+                  foundQuestions[cytoscapeVertex.id()] = []
+
                   // Push the question to the chat
-                  WandererStoreSingleton.store.commit('wanderer/chat/addInteraction', {
-                    component: 'wanderer-question-interaction',
-                    vertexId: cytoscapeVertex.id()
-                  })
+                  // WandererStoreSingleton.store.commit('wanderer/chat/addInteraction', {
+                  //   component: 'wanderer-question-interaction',
+                  //   vertexId: cytoscapeVertex.id()
+                  // })
 
                   // WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', true)
 
@@ -182,11 +221,70 @@ export default {
         }
       },
       expander: function (cytoscapeVertex, vertexData, outboundCyEdges) {
+
+        let returnEdges = []
+
+        // Iterate over the outbound cytoscape edges
+        outboundCyEdges.forEach(function(outboundCyEdge) {
+
+          // Get the data for each edge
+          let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
+
+          if(outboundEdgeData._collection == 'isAnswerableBy') {
+
+            // We want now merge the outgoing edges of each conneced suggestion to create a super vertex
+            // So lets get the Id of the target node
+            let suggestionNode = outboundCyEdge.target()
+
+            // Get the suggestion data
+            let suggestionVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[suggestionNode.id()]
+
+            if (WandererSingleton.isVertexTraversable(suggestionNode, suggestionVertexData)) {
+
+              // Now for this target get all outbound edges
+              var outgoingChildEdges = WandererSingleton.getOutboundCytoscapeEdges(suggestionNode)
+              for(let i in outgoingChildEdges) {
+                if(WandererSingleton.isEdgeTraversable(outgoingChildEdges[i], suggestionNode)) {
+                  returnEdges.push(outgoingChildEdges[i])
+                }
+              }
+
+
+              // returnEdges = returnEdges.concat(WandererSingleton.getOutboundCytoscapeEdges(suggestionNode))
+
+              // Remember the suggestion Vertex as visited (Do not create infinite circles)
+              // WandererStoreSingleton.store.commit('wanderer/rememberTraversedVertex', suggestionNode.id())
+
+              // Add this suggestion to question result
+              if(foundQuestions[cytoscapeVertex.id()]) {
+                foundQuestions[cytoscapeVertex.id()].push(suggestionNode.id())
+              }
+
+              // Add the vertexId to the question/suggestions store
+              // WandererStoreSingleton.store.commit('wanderer/question/addSuggestion', {
+              //   questionId: cytoscapeVertex.id(),
+              //   suggestionId: suggestionNode.id()
+              // })
+            }
+
+          } else {
+            returnEdges.push(outboundCyEdge)
+          }
+
+          // Push the edge only if the suggestion was answered
+          // if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredSuggestions.indexOf(cytoscapeVertex.id())!=-1){
+            returnEdges.push(outboundCyEdge)
+          // }
+
+        })
+
+        return returnEdges
+
         return outboundCyEdges
       },
-      childExpander: function (cytoscapeVertex, vertexData, children) {
-        return children
-      },
+      // childExpander: function (cytoscapeVertex, vertexData, children) {
+      //   return children
+      // },
       parentFinisher: function (vertexLifecycleData) {
         if(vertexLifecycleData!=undefined && vertexLifecycleData.answered) {
           return true;
@@ -203,14 +301,15 @@ export default {
         color: '#28A745',
         cytoscapeClasses: 'suggestion',
         cytoscapeCxtMenuSelector: '.suggestion',
-        showInCxtMenu: true,
+        appendableViaCxtMenu: true,
+        injectableViaCxtMenu: true,
         creatable: true,
-        restrictIncommingConnections: [
-          // {
-          //   from: 'question',
-          //   through: 'isAnswerableBy'
-          // }
-        ],
+        // restrictIncommingConnections: [
+        //   // {
+        //   //   from: 'question',
+        //   //   through: 'isAnswerableBy'
+        //   // }
+        // ],
         restrictPossibleParents: [
           'question'
         ],
@@ -230,6 +329,8 @@ export default {
             'width': 'data(priority)',
             'font-size': '20px',
             'background-color': '#28A745',
+            'border-color': '#28A745',
+            'border-width': '5px',
             'label': 'data(label)'
           }
         }],
@@ -299,98 +400,116 @@ export default {
 
       },
       expander: function (cytoscapeVertex, currentVertexData, outboundCyEdges) {
-        let returnEdges = []
-
-        // Iterate over he outbound cytoscape edges
-        outboundCyEdges.forEach(function(outboundCyEdge) {
-
-          // Push the edge only if the suggestion was answered
-          // if(WandererStoreSingleton.store.state.wanderer['plugin-question'].answeredSuggestions.indexOf(cytoscapeVertex.id())!=-1){
-            returnEdges.push(outboundCyEdge)
-          // }
-
-        })
-
-        return returnEdges
+        // Never expand your edges singe the question vertex will do this within its own expander
+        return []
       }
     })
 
     // Register the isAnswerableBy edge
-    // WandererSingleton.registerEdgeCollection({
-    //   name: 'isAnswerableBy',
-    //   builder: {
-    //     label: 'isAnswerableBy',
-    //     cytoscapeClasses: 'isAnswerableBy',
-    //     creatable: true,
-    //     defaultFields: function (fromVertexCollection, toVertexCollection) {
-    //       return {
-    //         priority: 25
-    //       }
-    //     },
-    //     restrictSourceVertices: [
-    //       'question'
-    //     ],
-    //     restrictTargetVertices: [
-    //       'suggestion'
-    //     ],
-    //     cytoscapeStyles: [{
-    //       selector: '.isAnswerableBy',
-    //       style: {
-    //         'line-color': '#28A745',
-    //         'target-arrow-color': '#28A745',
-    //         'source-arrow-color': '#28A745',
-    //         'width': 'data(priority)',
-    //         'label': 'data(label)'
-    //       }
-    //     }],
-    //     component: 'wanderer-is-answerable-by-editor'
-    //   },
-    //   toCytoscape: function(data){
-    //
-    //     var priority = data['priority'] / 5;
-    //     if (priority < 1) {
-    //       priority = 1
-    //     }
-    //
-    //     return {
-    //       // label: data._id,
-    //       priority: priority
-    //     }
-    //   },
-    // })
+    WandererSingleton.registerEdgeCollection({
+      name: 'isAnswerableBy',
+      builder: {
+        label: 'isAnswerableBy',
+        cytoscapeClasses: 'isAnswerableBy',
+        creatable: true,
+        defaultFields: function (fromVertexCollection, toVertexCollection) {
+          return {
+            // priority: 25
+          }
+        },
+        restrictSourceVertices: [
+          'question'
+        ],
+        restrictTargetVertices: [
+          'suggestion'
+        ],
+        cytoscapeStyles: [{
+          selector: '.isAnswerableBy',
+          style: {
+            'display': 'none',
+            'line-color': '#28A745',
+            'target-arrow-color': '#28A745',
+            'source-arrow-color': '#28A745',
+            // 'width': 'data(priority)',
+            // 'label': 'data(label)'
+          }
+        }],
+        component: 'wanderer-is-answerable-by-editor'
+      },
+      // isChildEdge: true,
+      // toCytoscape: function(data){
+      //
+      //   return {
+      //     // label: data._id,
+      //     // priority: priority
+      //   }
+      // },
+      afterCreate: (cytoscapeEdge, data) => {
+        // Move the target to the source node
+        cytoscapeEdge.target().move({
+          parent: cytoscapeEdge.source().id()
+        });
+      },
+      beforeRemove: (cytoscapeEdge) => {
+        // Move the node out of its parent
+        // console.log('unlink')
+        cytoscapeEdge.target().move({
+          parent: null
+        });
+      }
+    })
 
     // Listen for traversal event
     WandererSingleton.on('traversalStart', function() {
 
-      // questionFoundUnansweredBefore = false;
 
-      WandererStoreSingleton.store.commit('wanderer/chat/cleanInteractions')
 
 
     })
 
-    // Listen for traversal event
+    // Listen for traversal fineshed event
     WandererSingleton.on('traversalFinished', function() {
 
-      // questionFoundUnansweredBefore = false;
+      // Clear the current interactions from the chat
+      WandererStoreSingleton.store.commit('wanderer/chat/cleanInteractions')
 
-      // WandererStoreSingleton.store.commit('wanderer/chat/cleanInteractions')
+      // Remove the suggestions
+      // Because maybe some have been removed or blocked
+      WandererStoreSingleton.store.commit('wanderer/question/truncate')
 
+      // Add all found suggestions
+      for (let q in foundQuestions) {
+        if(foundQuestions.hasOwnProperty(q)) {
+
+          // If suggestions was found for this interaction
+          if(foundQuestions[q].length) {
+
+            // Push the question to the chat
+            WandererStoreSingleton.store.commit('wanderer/chat/addInteraction', {
+              component: 'wanderer-question-interaction',
+              vertexId: q
+            })
+
+            // Add the vertexId to the question/suggestions store
+            WandererStoreSingleton.store.commit('wanderer/question/addSuggestions', {
+              questionId: q,
+              suggestionIds: foundQuestions[q]
+            })
+
+          }
+
+        }
+      }
+
+      // Reset the result object
+      foundQuestions = {}
 
     })
 
-    WandererSingleton.on('truncate', function() {
-
-      // questionFoundUnansweredBefore = false
-
-      // Clear all timeouts
-      // for (i in typingTimeouts) {
-      //   if(typingTimeouts.hasOwnProperty(i)) {
-      //     clearTimeout(typingTimeouts[i]);
-      //     delete typingTimeouts[i]
-      //   }
-      // }
-
+    // On truncate event
+    WandererSingleton.on('truncate', function () {
+      // Truncate the question store
+      WandererStoreSingleton.store.commit('wanderer/question/truncate')
     })
 
   }

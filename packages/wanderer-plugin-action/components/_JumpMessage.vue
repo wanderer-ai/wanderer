@@ -25,7 +25,7 @@ export default {
   computed: {
     url: function () {
       if(this.vertexId != undefined) {
-        return WandererSingleton.getVertexValue(this.vertexId,'url')
+        return WandererSingleton.getEvaluatedVertexValue(this.vertexId,'url')
       }
     },
     label: function () {
