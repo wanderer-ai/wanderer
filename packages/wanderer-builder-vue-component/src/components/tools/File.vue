@@ -10,7 +10,7 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <modal :showHeader="false" :showFooter="vertexCount>0" :showClose="true" :show="showModal"  v-on:closeButton="showModal=false">
+      <modal :showHeader="true" title="Save and Restore" :showFooter="true" :showClose="vertexCount>0" :show="showModal"  v-on:closeButton="showModal=false">
 
         <div class="alert alert-warning" role="alert">
           <strong>Important information:</strong> This software is experimental! Currently you should not use Wanderer.ai for production projects!
@@ -18,7 +18,6 @@
         </div>
 
         <div class="mb-4">
-          <h5 class="card-title">New to Wanderer.ai?</h5>
 
           <span class="btn btn-primary" v-on:click="startEmptyProject()">
             <icon name="file"></icon>
@@ -34,10 +33,19 @@
             Start a tutorial now
           </span>
 
+          <span>
+            or
+          </span>
+
+          <span class="btn btn-primary upload-btn-wrapper">
+            <icon name="upload"></icon>
+            Restore from file
+            <input class="btn" type="file" @change="loadJsonFile">
+          </span>
+
         </div>
 
         <div class="mb-4" v-if="vertexCount">
-          <h5 class="card-title">Current Project</h5>
 
           <span class="btn btn-success" v-on:click="exportJsonFile()">
             <icon name="download"></icon>
@@ -47,19 +55,6 @@
         </div>
 
         <div class="mb-4">
-          <h5 class="card-title">Restore existing projects</h5>
-
-          <span class="upload-btn-wrapper">
-            <button class="btn btn-primary">
-              <icon name="upload"></icon>
-              Restore from file
-            </button>
-            <input class="btn" type="file" @change="loadJsonFile">
-          </span>
-        </div>
-
-        <div>
-          <h5 class="card-title">Restore from URL</h5>
 
           <div class="input-group mb-3">
             <div class="input-group-prepend">
@@ -92,7 +87,7 @@ import Modal from '../Modal.vue'
 import 'vue-awesome/icons/save'
 import Icon from 'vue-awesome/components/Icon'
 
-import StoreSingleton from 'wanderer-store-singleton'
+import WandererStoreSingleton from 'wanderer-store-singleton'
 import WandererSingleton from 'wanderer-singleton'
 
 // Icons
@@ -148,9 +143,6 @@ export default {
     },
     startEmptyProject () {
       WandererSingleton.load(this.resetIds({
-        "wanderer": "web-wanderer",
-        "version": "1.0.0",
-        "languages": ["en","de"],
         "vertices": [
           {
             "_collection": "flow",
@@ -164,7 +156,11 @@ export default {
               "de": "Neuer Chat-Flow"
             },
             "author": "Unknown",
-            "license": "MIT"
+            "license": "MIT",
+            "builder": "wanderer.ai",
+            "target": "web",
+            "version": "1.0.0",
+            "time": ""
           }
         ]
       }))
@@ -177,7 +173,7 @@ export default {
         await WandererSingleton.loadJsonRemote(url)
         this.showModal = false
       } catch (e) {
-        StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e, type: 'danger'})
+        WandererStoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e, type: 'danger'})
       }
 
     },
@@ -189,7 +185,7 @@ export default {
         await WandererSingleton.loadJsonFile(file)
         this.showModal = false
       } catch (e) {
-        StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e, type: 'danger'})
+        WandererStoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e, type: 'danger'})
       }
 
     },
@@ -218,9 +214,6 @@ export default {
     generateExportData () {
       let exportData = {
         // version: WandererConfig.version,
-        wanderer: 'web-wanderer',
-        version: this.version,
-        time: new Date(),
         vertices: [],
         edges: []
       }
@@ -231,6 +224,31 @@ export default {
           this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]]['_immutable'] === undefined ||
           this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]]['_immutable'] === false
         ) {
+
+          // Override some flow values before saving it to the file
+          if(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]]['_origin']) {
+            WandererStoreSingleton.store.commit('wanderer/setVertexDataValue', {
+              id: this.$store.state.wanderer.vertexDocumentIds[i],
+              key: 'builder',
+              value: 'wanderer.ai'
+            })
+            WandererStoreSingleton.store.commit('wanderer/setVertexDataValue', {
+              id: this.$store.state.wanderer.vertexDocumentIds[i],
+              key: 'target',
+              value: 'web'
+            })
+            WandererStoreSingleton.store.commit('wanderer/setVertexDataValue', {
+              id: this.$store.state.wanderer.vertexDocumentIds[i],
+              key: 'version',
+              value: this.version
+            })
+            WandererStoreSingleton.store.commit('wanderer/setVertexDataValue', {
+              id: this.$store.state.wanderer.vertexDocumentIds[i],
+              key: 'time',
+              value: new Date()
+            })
+          }
+
           exportData.vertices.push(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
         }
       }

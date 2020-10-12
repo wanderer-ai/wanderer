@@ -1,38 +1,34 @@
 
 <template>
-  <div class="chat">
+  <div class="chat" ref="messages">
 
-    <div class="chat-messages" ref="messages">
-
+    <div class="chat--messages">
       <message
         v-for="(message,key) of messages"
         :key="message.id"
         :id="message.id"
         :from="message.from"
         :backgroundColor="message.backgroundColor">
-
         <component v-bind:is="message.component" :vertexId="message.vertexId" :lastOfType="lastOfType[message.component] == message.id" :last="key == messages.length - 1"></component>
-
       </message>
-
-      <div v-if="typing">
-        Typing ...
-      </div>
-
-      <div class="chat-messages-bottom-spacing"></div>
-
     </div>
-    <div class="chat-interactions">
 
-      <div
+    <div class="typing" v-if="typing">
+      <span class="circle bouncing"></span>
+      <span class="circle bouncing"></span>
+      <span class="circle bouncing"></span>
+    </div>
+
+    <div class="chat--interactions">
+      <message
         v-if="interactions.length"
         v-for="(interaction,key) of interactions"
-        :key="key">
-
+        :key="interaction.vertexId"
+        :id="interaction.vertexId"
+        from="remote"
+        backgroundColor="#6C757D">
         <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
-
-      </div>
-
+      </message>
     </div>
 
   </div>
@@ -46,6 +42,8 @@ import CytoscapeSingleton from 'wanderer-cytoscape-singleton'
 
 import Message from './components/Message.vue'
 // import Report from './components/Report.vue'
+
+var interactionsCount = 0;
 
 export default {
   name: 'App',
@@ -70,6 +68,9 @@ export default {
     interactions: function () {
       return WandererStoreSingleton.store.state.wanderer.chat.interactions
     },
+    interactionVertexIds: function () {
+      return WandererStoreSingleton.store.state.wanderer.chat.interactionVertexIds
+    },
     typing: function () {
       return WandererStoreSingleton.store.state.wanderer.chat.typing
     },
@@ -88,16 +89,17 @@ export default {
     // Lets watch the message ids
     // So we can detect if a new message will income at the stack
     messageIds: function (newObj, oldObj) {
-
-      var component = this
-
-      // Set auto scroll activation timeout
-      if(this.scrollTimeout) {
-        clearTimeout(this.scrollTimeout)
+      this.scrollToBottom()
+    },
+    interactionVertexIds: function (newObj, oldObj) {
+      // This object will be completely overidden on every cycle. So lets watch the length only.
+      if(interactionsCount!=this.interactionVertexIds.length) {
+        interactionsCount = this.interactionVertexIds.length
+        this.scrollToBottom()
       }
-      this.scrollTimeout = setTimeout(() => {
-        this.$refs['messages'].scrollTo(0,this.$refs['messages'].scrollHeight)
-      }, 100)
+    },
+    typing: function () {
+      // this.scrollToBottom()
     }
   },
   mounted: function () {
@@ -114,42 +116,90 @@ export default {
 
     WandererSingleton.stopTraversal()
 
-    // if(this.scrollTimeout) {
-    //   clearTimeout(this.scrollTimeout)
-    // }
   },
   methods: {
+    scrollToBottom: function () {
 
+      // Set auto scroll activation timeout
+      if(this.scrollTimeout) {
+        clearTimeout(this.scrollTimeout)
+      }
+
+      this.scrollTimeout = setTimeout(() => {
+        this.$refs['messages'].scrollTo(0,this.$refs['messages'].scrollHeight)
+      }, 100)
+
+    }
   }
 }
 
 </script>
 
 <style>
-.chat{
-
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: stretch;
+.chat {
   height:100%;
-}
-.chat-messages {
+  padding-top:25px;
   overflow-y: scroll;
-  flex:1 1;
-  padding:20px;
-}
-.chat-messages-bottom-spacing {
-  padding-bottom:100px; /* For some reason I cannot scroll to the final bottom. A few pixels always left. So I added a padding. So the message should always be visible */
-}
-.chat-interactions {
-  flex:0 0 100px;
-  padding:20px;
 }
 
+.chat--messages {
 
+}
 
+.typing {
+  display: block;
+  width: 60px;
+  height: 40px;
+  background-color: #6C757D;
+  margin-left: 20px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom:25px;
+}
+
+.circle {
+  display: block;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background-color: #fff;
+  margin: 3px;
+}
+
+.circle.bouncing {
+  animation: bounce 600ms ease-in-out infinite;
+}
+
+.circle.scaling {
+  animation: typing 600ms ease-in-out infinite;
+}
+
+.circle:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.circle:nth-child(2) {
+  animation-delay: 200ms
+}
+
+.circle:nth-child(3) {
+  animation-delay: 400ms
+}
+
+@keyframes typing {
+  0% { transform: scale(1); }
+  33% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  33% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
 
 </style>

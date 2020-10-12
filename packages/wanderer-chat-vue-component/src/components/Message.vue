@@ -3,7 +3,6 @@
   <div>
 
     <div
-      :id="'message-'+id"
       class="bubble"
       v-bind:class="{
         'bubble--local': from=='local',
@@ -38,10 +37,6 @@
 
 export default {
   props: {
-    id: {
-      default: '',
-      type: String
-    },
     from: {
       default: 'remote',
       type: String

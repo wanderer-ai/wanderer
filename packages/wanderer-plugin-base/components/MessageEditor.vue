@@ -3,7 +3,7 @@
 
     <div class="form-group">
       <label for="message">Message</label>
-      <input v-model="message" type="text" class="form-control" id="message" placeholder="Enter your message">
+      <textarea v-model="message" type="text" class="form-control" id="message" placeholder="Enter your message"></textarea>
     </div>
 
   </div>

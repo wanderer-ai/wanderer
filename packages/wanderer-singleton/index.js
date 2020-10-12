@@ -274,8 +274,20 @@ export default (function () {
 
   }
 
+  function checkImportData (data) {
+    // Search for the origin node
+    for (var key in data.vertices) {
+      if(data.vertices[key]['_collection'] == 'flow') {
+        if(data.vertices[key]['builder'] == 'wanderer.ai') {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   function importData (data, parentVertexId) {
-    if(data.wanderer == undefined) {
+    if(!checkImportData(data)) {
       throw('This data does not look like a wanderer flow :-(')
     } else {
 
@@ -363,7 +375,7 @@ export default (function () {
 
   function load (data) {
 
-    if(data.wanderer == undefined) {
+    if(!checkImportData(data)) {
       throw('This data does not look like a wanderer flow :-(')
     } else {
       // Load the data
@@ -708,7 +720,6 @@ export default (function () {
   var traversedVertices
   var traversedEdgeIds = []
   var traversedVerticeIds = []
-  var animating = false
   var animateIn = false
   var traversing = false;
 
@@ -890,7 +901,7 @@ export default (function () {
                   // We dont want to build a unlimited recursion!
                   if(traversedVerticeIds.indexOf(expandEdges[i].target().id()) == -1) {
                     // Give the browser some time to react
-                    await wait(10)
+                    await wait(5)
                     await traverse(expandEdges[i].target().id(), true, test)
                   }
 
@@ -920,12 +931,15 @@ export default (function () {
         // Now start the real traversal.
         // Without testing the track
         // Give the browser some time to react
-        await wait(10)
+        await wait(5)
         await traverse(nodeId, false, false)
       } else {
 
         // Finish the current traversal by emittig the event
         trigger('traversalFinished')
+
+        // Animate the traversed edges and vertices
+        animateTraversal(traversedEdges, traversedVertices)
 
         // Forget the traversed edges and vertices from the last traversal
         WandererStoreSingleton.store.commit('wanderer/resetTraversal')
@@ -934,49 +948,39 @@ export default (function () {
         // Send all traversed edges and vertices in store
         WandererStoreSingleton.store.commit('wanderer/rememberTraversedVertices', traversedVerticeIds)
 
-        // WandererStoreSingleton.store.commit('wanderer/rememberTraversedEdge', traversedEdgeIds)
-
-        // Start a pulsing animation for the traversed path (Fade out)
-        // if(!animating) {
-        //
-        //   // Stop all running animations
-        //   WandererCytoscapeSingleton.cy.nodes().stop();
-        //   WandererCytoscapeSingleton.cy.edges().stop();
-        //
-        //   animating = true;
-        //   animateIn = !animateIn;
-        //   var opacity = 0.7;
-        //   var pulseTime = 800;
-        //
-        //   if (animateIn) {
-        //     opacity = 1;
-        //     pulseTime = 200;
-        //   }
-        //
-        //   traversedEdges.animate({
-        //     style: { 'opacity': opacity },
-        //   }, {
-        //     duration: pulseTime,
-        //   });
-        //
-        //   traversedVertices.animate({
-        //     style: { 'background-opacity': opacity },
-        //   }, {
-        //     duration: pulseTime,
-        //   });
-        //
-        //   setTimeout(function() {
-        //     animating = false;
-        //   }, pulseTime)
-        //
-        // }
-
         // Restart the traversal tick
         // Give the browser some time to react
-        await wait(1000)
+        await wait(200)
         await traverse()
 
       }
+
+    }
+
+  }
+
+  var animating = false
+  function animateTraversal (traversedEdges, traversedVertices) {
+
+    if(!animating) {
+
+      animating = true
+
+      // Stop all animations
+      // WandererCytoscapeSingleton.cy.nodes().stop();
+      // WandererCytoscapeSingleton.cy.edges().stop();
+
+      traversedEdges.addClass('pulse');
+      traversedVertices.addClass('pulse');
+
+      setTimeout(function() {
+
+        traversedEdges.removeClass('pulse');
+        traversedVertices.removeClass('pulse');
+
+        animating = false
+
+      }, 1000)
 
     }
 

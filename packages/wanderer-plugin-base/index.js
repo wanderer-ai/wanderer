@@ -3,7 +3,7 @@ import WandererSingleton from 'wanderer-singleton'
 import WandererStoreSingleton from 'wanderer-store-singleton'
 import WandererCsytoscapeSingleton from 'wanderer-cytoscape-singleton'
 
-import SectionEditor from './components/SectionEditor.vue'
+// import SectionEditor from './components/SectionEditor.vue'
 import FlowEditor from './components/FlowEditor.vue'
 import MessageEditor from './components/MessageEditor.vue'
 import LeadsToEditor from './components/LeadsToEditor.vue'
@@ -13,7 +13,7 @@ export default {
 
   install (Vue) {
 
-    Vue.component('wanderer-section-editor', SectionEditor)
+    // Vue.component('wanderer-section-editor', SectionEditor)
     Vue.component('wanderer-flow-editor', FlowEditor)
     Vue.component('wanderer-leads-to-editor', LeadsToEditor)
     Vue.component('wanderer-message-editor', MessageEditor)
@@ -25,7 +25,8 @@ export default {
     var lastTraversedRequiredEdgeIds = []
     var lastTraversedForbiddenEdgeIds = []
     var typingTimeouts = {}
-    // var flowVertexId = '';
+    var resetMessages = []
+    // var resetSections = []
 
     WandererSingleton.registerVertexCollection({
       name: 'flow',
@@ -80,181 +81,161 @@ export default {
     })
 
 
-    // Register the section vertex
-    WandererSingleton.registerVertexCollection({
-      name: 'section',
-      builder: {
-        label: 'Section',
-        color: '#cccccc',
-        cytoscapeClasses: 'section',
-        cytoscapeCxtMenuSelector: '.section',
-        appendableViaCxtMenu: true,
-        injectableViaCxtMenu: false,
-        creatable: true,
-        defaultFields: {
-          title: {
-            en: 'New section',
-            de: 'Neue Section'
-          }
-        },
-        cytoscapeStyles: [
-          {
-            selector: '.section',
-            style: {
-              'shape': 'round-rectangle',
-              'height': '150px',
-              'width': '150px',
-              'font-size': '30px',
-              'background-color': '#cccccc',
-              'border-color': '#cccccc',
-              'border-width': '5px',
-              'label': 'data(label)'
-            }
-          },
-          {
-            selector: '.section:parent',
-            style:{
-              'background-opacity': 0,
-              'background-color': '#fff',
-              // 'shape': 'roundrectangle',
-              'border-color': '#cccccc',
-              'padding': '100px'
-            },
-          }
-        ],
-        component: 'wanderer-section-editor',
-        canBeParent: true,
-        canBeChild: false,
-        parentLabel: (data, language) => {
-          if(data.title[language]) {
-            return data.title[language]+(debug? ' ('+data._id+')':'')
-          }
-          return 'Section'
-        },
-      },
-      lifecycleData: {
-        finished: {
-          label: 'Section finished',
-          exposeDefault: false
-        }
-      },
-      toCytoscape: (data, language) => {
-        if(data.title[language]) {
-          return {
-            label: data.title[language]+(debug? ' ('+data._id+')':'')
-          }
-        }
-        return {
-          label: 'Section'
-        }
-      },
-      edgeConditions: {
-        finished: {
-          default: true,
-          label: 'finished',
-          condition: (vertexLifecycleData) => {
-            if(vertexLifecycleData != undefined) {
-              if(vertexLifecycleData.finished) {
-                return true;
-              }
-            }
-            return false;
-          }
-        }
-      },
-      edgeMethods: {
-        reset: {
-          label: 'Reset section',
-          method: (cytoscapeVertex, vertexData) => {
-
-            // Reset section lifecycle data
-            WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'finished', false)
-
-            // Find all child elements
-            // Now for this target get all outbound edges
-            let outboundCyEdges = WandererSingleton.getOutboundCytoscapeEdges(cytoscapeVertex)
-            outboundCyEdges.forEach((outboundCyEdge) => {
-
-              // Get the data for each edge
-              let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
-
-              // If the child is connected via a watch edge...
-              if(outboundEdgeData._collection == 'watch') {
-                // Invoke the reset method for all child elements
-                WandererSingleton.invokeVertexMethod(outboundCyEdge.target().id(), 'reset');
-              }
-
-            })
-
-            // Get all child elements of the compound node
-            // let childrens = cytoscapeVertex.children();
-            // childrens.forEach((child) => {
-            //   // Invoke the reset method for all child elements
-            //   WandererSingleton.invokeVertexMethod(child.id(), 'reset');
-            // })
-
-          }
-        }
-      },
-      testVisitor: (cytoscapeVertex, vertexData, language) => {
-
-        let conditionsFullfilled = true;
-
-        // Find all child elements
-        // Now for this target get all outbound edges
-        let outboundCyEdges = WandererSingleton.getOutboundCytoscapeEdges(cytoscapeVertex)
-        outboundCyEdges.forEach((outboundCyEdge) => {
-
-          // Get the data for each edge
-          let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
-
-          // If the child is connected via a watch edge...
-          if(outboundEdgeData._collection == 'watch') {
-
-            // Get the child node
-            let child = outboundCyEdge.target()
-
-            // Find the default edgeCondition for this vertex
-            // Todo: Move this into the Wanderer core
-            // Also this function is similar to the one defined in wanderer-plugin-base (checking the edges)
-            let collection = WandererSingleton.getVertexCollectionById(child.id())
-            if(collection.parentFinisher !== undefined) {
-              let vertexLifecycleData = WandererSingleton.getLifecycleData(child.id())
-              if(!collection.parentFinisher(vertexLifecycleData)) {
-                conditionsFullfilled = false;
-              }
-            }
-
-          }
-
-        })
-
-        // Mark this section as finished
-        if(conditionsFullfilled) {
-          WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'finished', true)
-        }
-
-      },
-      expander: (cytoscapeVertex, currentVertexData, outboundCyEdges) => {
-        let returnEdges = []
-
-        // For each outgoing edges
-        outboundCyEdges.forEach((outboundCyEdge) => {
-
-          // Get the data for each edge
-          let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
-
-          // If this is not a watch edge...
-          if(outboundEdgeData._collection != 'watch') {
-            returnEdges.push(outboundCyEdge)
-          }
-
-        })
-
-        return returnEdges
-      }
-
-    })
+    // // Register the section vertex
+    // WandererSingleton.registerVertexCollection({
+    //   name: 'section',
+    //   builder: {
+    //     label: 'Section',
+    //     color: '#cccccc',
+    //     cytoscapeClasses: 'section',
+    //     cytoscapeCxtMenuSelector: '.section',
+    //     appendableViaCxtMenu: true,
+    //     injectableViaCxtMenu: false,
+    //     creatable: true,
+    //     defaultFields: {
+    //       title: {
+    //         en: 'New section',
+    //         de: 'Neue Section'
+    //       }
+    //     },
+    //     cytoscapeStyles: [
+    //       {
+    //         selector: '.section',
+    //         style: {
+    //           'shape': 'round-rectangle',
+    //           'height': '150px',
+    //           'width': '150px',
+    //           'font-size': '30px',
+    //           'background-color': '#cccccc',
+    //           'border-color': '#cccccc',
+    //           'border-width': '5px',
+    //           'label': 'data(label)'
+    //         }
+    //       },
+    //       {
+    //         selector: '.section:parent',
+    //         style:{
+    //           'background-opacity': 0,
+    //           'background-color': '#fff',
+    //           // 'shape': 'roundrectangle',
+    //           'border-color': '#cccccc',
+    //           'padding': '100px'
+    //         },
+    //       }
+    //     ],
+    //     component: 'wanderer-section-editor',
+    //     canBeParent: true,
+    //     canBeChild: false,
+    //     parentLabel: (data, language) => {
+    //       if(data.title[language]) {
+    //         return data.title[language]+(debug? ' ('+data._id+')':'')
+    //       }
+    //       return 'Section'
+    //     },
+    //   },
+    //   lifecycleData: {
+    //     finished: {
+    //       label: 'Section finished',
+    //       exposeDefault: false
+    //     }
+    //   },
+    //   toCytoscape: (data, language) => {
+    //     if(data.title[language]) {
+    //       return {
+    //         label: data.title[language]+(debug? ' ('+data._id+')':'')
+    //       }
+    //     }
+    //     return {
+    //       label: 'Section'
+    //     }
+    //   },
+    //   edgeConditions: {
+    //     finished: {
+    //       default: true,
+    //       label: 'finished',
+    //       condition: (vertexLifecycleData) => {
+    //         if(vertexLifecycleData != undefined) {
+    //           if(vertexLifecycleData.finished) {
+    //             return true;
+    //           }
+    //         }
+    //         return false;
+    //       }
+    //     }
+    //   },
+    //   edgeMethods: {
+    //     reset: {
+    //       label: 'Reset section',
+    //       method: (cytoscapeVertex, vertexData) => {
+    //
+    //         // Its not a good Idea to reset the node directly inside the flow
+    //         // We should store this reset request for later and should execute it if the traversal has finished
+    //         // The reason is, that the node will start to blink if it resets itself for example
+    //         // This can happen, if other nodes leads to this node
+    //         resetSections.push(cytoscapeVertex)
+    //
+    //       }
+    //     }
+    //   },
+    //   testVisitor: (cytoscapeVertex, vertexData, language) => {
+    //
+    //     let conditionsFullfilled = true;
+    //
+    //     // Find all child elements
+    //     // Now for this target get all outbound edges
+    //     let outboundCyEdges = WandererSingleton.getOutboundCytoscapeEdges(cytoscapeVertex)
+    //     outboundCyEdges.forEach((outboundCyEdge) => {
+    //
+    //       // Get the data for each edge
+    //       let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
+    //
+    //       // If the child is connected via a watch edge...
+    //       if(outboundEdgeData._collection == 'watch') {
+    //
+    //         // Get the child node
+    //         let child = outboundCyEdge.target()
+    //
+    //         // Find the default edgeCondition for this vertex
+    //         // Todo: Move this into the Wanderer core
+    //         // Also this function is similar to the one defined in wanderer-plugin-base (checking the edges)
+    //         let collection = WandererSingleton.getVertexCollectionById(child.id())
+    //         if(collection.sectionFinisher !== undefined) {
+    //           let vertexLifecycleData = WandererSingleton.getLifecycleData(child.id())
+    //           if(!collection.sectionFinisher(vertexLifecycleData)) {
+    //             conditionsFullfilled = false;
+    //           }
+    //         }
+    //
+    //       }
+    //
+    //     })
+    //
+    //     // Mark this section as finished
+    //     if(conditionsFullfilled) {
+    //       WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'finished', true)
+    //     }
+    //
+    //   },
+    //   expander: (cytoscapeVertex, currentVertexData, outboundCyEdges) => {
+    //     let returnEdges = []
+    //
+    //     // For each outgoing edges
+    //     outboundCyEdges.forEach((outboundCyEdge) => {
+    //
+    //       // Get the data for each edge
+    //       let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
+    //
+    //       // If this is not a watch edge...
+    //       if(outboundEdgeData._collection != 'watch') {
+    //         returnEdges.push(outboundCyEdge)
+    //       }
+    //
+    //     })
+    //
+    //     return returnEdges
+    //   }
+    //
+    // })
 
     WandererSingleton.registerVertexCollection({
       name: 'message',
@@ -266,6 +247,7 @@ export default {
         creatable: true,
         appendableViaCxtMenu: true,
         injectableViaCxtMenu: true,
+        ctxMenuAllowedEdge: 'leadsTo',
         defaultFields: {
           message: {
             en: 'New message',
@@ -310,13 +292,13 @@ export default {
         reset: {
           label: 'Reset message',
           method: (cytoscapeVertex, vertexData) => {
-            // Clear the typing timeout
-            if(typingTimeouts[cytoscapeVertex.id()] !== undefined) {
-              clearTimeout(typingTimeouts[cytoscapeVertex.id()]);
-              delete typingTimeouts[cytoscapeVertex.id()];
-            }
-            // Reset the lifecycle data
-            WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
+
+            // Its not a good Idea to reset the node directly inside the flow
+            // We should store this reset request for later and should execute it if the traversal has finished
+            // The reason is, that the node will start to blink if it resets itself for example
+            // This can happen, if other nodes leads to this node
+            resetMessages.push(cytoscapeVertex)
+
           }
         }
       },
@@ -365,18 +347,18 @@ export default {
         }
 
       },
-      parentFinisher: function (vertexLifecycleData) {
-        if(vertexLifecycleData!=undefined && vertexLifecycleData.sent) {
-          return true;
-        }
-        return false;
-      }
+      // sectionFinisher: function (vertexLifecycleData) {
+      //   if(vertexLifecycleData!=undefined && vertexLifecycleData.sent) {
+      //     return true;
+      //   }
+      //   return false;
+      // }
     })
 
     WandererSingleton.registerEdgeCollection({
       name: 'leadsTo',
       builder: {
-        label: 'leadsTo',
+        label: 'leads to',
         cytoscapeClasses: 'leadsTo',
         creatable: true,
         defaultFields: function (fromVertexCollection, toVertexCollection) {
@@ -597,56 +579,56 @@ export default {
       }
     })
 
-    // Register the isAnswerableBy edge
-    WandererSingleton.registerEdgeCollection({
-      name: 'watch',
-      builder: {
-        label: 'watch',
-        cytoscapeClasses: 'watch',
-        creatable: true,
-        defaultFields: function (fromVertexCollection, toVertexCollection) {
-          return {
-            // priority: 25
-          }
-        },
-        restrictSourceVertices: [
-          'section'
-        ],
-        cytoscapeStyles: [{
-          selector: '.watch',
-          style: {
-            'display': 'none',
-            'line-color': '#6C757D',
-            'target-arrow-color': '#6C757D',
-            'source-arrow-color': '#6C757D',
-            // 'width': 'data(priority)',
-            // 'label': 'data(label)'
-          }
-        }],
-        // component: 'wanderer-is-answerable-by-editor'
-      },
-      // isChildEdge: true,
-      // toCytoscape: function(data){
-      //
-      //   return {
-      //     // label: data._id,
-      //     // priority: priority
-      //   }
-      // },
-      afterCreate: (cytoscapeEdge, data) => {
-        // Move the target to the source node
-        cytoscapeEdge.target().move({
-          parent: cytoscapeEdge.source().id()
-        });
-      },
-      beforeRemove: (cytoscapeEdge) => {
-        // Move the node out of its parent
-        // console.log('unlink')
-        cytoscapeEdge.target().move({
-          parent: null
-        });
-      }
-    })
+    // // Register the isAnswerableBy edge
+    // WandererSingleton.registerEdgeCollection({
+    //   name: 'watch',
+    //   builder: {
+    //     label: 'watch',
+    //     cytoscapeClasses: 'watch',
+    //     creatable: true,
+    //     defaultFields: function (fromVertexCollection, toVertexCollection) {
+    //       return {
+    //         // priority: 25
+    //       }
+    //     },
+    //     // restrictSourceVertices: [
+    //     //   'section'
+    //     // ],
+    //     cytoscapeStyles: [{
+    //       selector: '.watch',
+    //       style: {
+    //         'display': 'none',
+    //         'line-color': '#6C757D',
+    //         'target-arrow-color': '#6C757D',
+    //         'source-arrow-color': '#6C757D',
+    //         // 'width': 'data(priority)',
+    //         // 'label': 'data(label)'
+    //       }
+    //     }],
+    //     // component: 'wanderer-is-answerable-by-editor'
+    //   },
+    //   // isChildEdge: true,
+    //   // toCytoscape: function(data){
+    //   //
+    //   //   return {
+    //   //     // label: data._id,
+    //   //     // priority: priority
+    //   //   }
+    //   // },
+    //   afterCreate: (cytoscapeEdge, data) => {
+    //     // Move the target to the source node
+    //     cytoscapeEdge.target().move({
+    //       parent: cytoscapeEdge.source().id()
+    //     });
+    //   },
+    //   beforeRemove: (cytoscapeEdge) => {
+    //     // Move the node out of its parent
+    //     // console.log('unlink')
+    //     cytoscapeEdge.target().move({
+    //       parent: null
+    //     });
+    //   }
+    // })
 
     // WandererSingleton.registerEdgeCollection({
     //   name: 'contains',
@@ -700,6 +682,50 @@ export default {
       // Reset the edge information
       lastTraversedRequiredEdgeIds = []
       lastTraversedForbiddenEdgeIds = []
+
+      // // Reset sections
+      // for(var cytoscapeVertex of resetSections) {
+      //   // Reset section lifecycle data
+      //   WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'finished', false)
+      //
+      //   // Find all child elements
+      //   // Now for this target get all outbound edges
+      //   let outboundCyEdges = WandererSingleton.getOutboundCytoscapeEdges(cytoscapeVertex)
+      //   outboundCyEdges.forEach((outboundCyEdge) => {
+      //
+      //     // Get the data for each edge
+      //     let outboundEdgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[outboundCyEdge.id()]
+      //
+      //     // If the child is connected via a watch edge...
+      //     if(outboundEdgeData._collection == 'watch') {
+      //       // Invoke the reset method for all child elements
+      //       WandererSingleton.invokeVertexMethod(outboundCyEdge.target().id(), 'reset');
+      //     }
+      //
+      //   })
+      // }
+      //
+      // // Reset the reset object
+      // resetSections = []
+
+      // Reset messages
+      for(var cytoscapeVertex of resetMessages) {
+
+        // Do not clear the timeout here! Because the message was already sent!
+        // Do not clear already sent messages!
+        // Clear the typing timeout
+        // if(typingTimeouts[cytoscapeVertex.id()] !== undefined) {
+        //   clearTimeout(typingTimeouts[cytoscapeVertex.id()]);
+        //   delete typingTimeouts[cytoscapeVertex.id()];
+        // }
+
+        // Reset the lifecycle data
+        WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
+      }
+
+      // Reset the reset object
+      resetMessages = []
+
     })
 
     WandererSingleton.on('truncate', function() {
@@ -716,6 +742,8 @@ export default {
         }
       }
 
+      resetMessages = []
+      // resetSections = []
     })
 
   },

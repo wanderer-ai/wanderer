@@ -27,6 +27,7 @@
     "wanderer-plugin-base": "^1.0.0",
     "wanderer-plugin-conclusion": "^1.0.0",
     "wanderer-plugin-question": "^1.0.0",
+    "wanderer-plugin-time": "^1.0.0",
     "wanderer-singleton": "^1.0.0",
     "wanderer-store-singleton": "^1.0.0",
     "wanderer-vue-plugin": "^1.0.0"

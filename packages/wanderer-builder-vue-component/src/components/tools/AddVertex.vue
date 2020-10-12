@@ -22,13 +22,13 @@
 
         <div v-if="selectedVertexIds.length==1">
 
-          <button class="btn btn-secondary mr-4 mb-4" v-for="(possibleOutgoing) in possibleOutgoingCollections" v-bind:key="possibleOutgoing.to.name" :style="'background-color:'+possibleOutgoing.to.builder.color+';border-color:'+possibleOutgoing.to.builder.color+';'" v-on:click="append(possibleOutgoing.to.name, possibleOutgoing.through[0].name)">
-            <icon name="plus"></icon> append {{possibleOutgoing.to.builder.label}}
-          </button>
+          <span v-for="(possibleOutgoing) in possibleOutgoingCollections" v-bind:key="possibleOutgoing.to.name">
 
-          <!-- <button class="btn btn-secondary mr-4 mb-4" v-for="(possibleChild) in possibleChildCollections" v-bind:key="possibleChild.name" :style="'background-color:'+possibleChild.builder.color+';border-color:'+possibleChild.builder.color+';'" v-on:click="inject(possibleChild.name)">
-            <icon name="plus"></icon> inject {{possibleChild.builder.label}}
-          </button> -->
+            <button class="btn btn-secondary mr-4 mb-4" v-for="(through) in possibleOutgoing.through" v-bind:key="possibleOutgoing.to.name" :style="'background-color:'+possibleOutgoing.to.builder.color+';border-color:'+possibleOutgoing.to.builder.color+';'" v-on:click="append(possibleOutgoing.to.name, through.name)">
+              <icon name="plus"></icon> {{through.builder.label}} {{possibleOutgoing.to.builder.label}}
+            </button>
+
+          </span>
 
         </div>
 

@@ -2,6 +2,7 @@ import QuestionEditor from './components/QuestionEditor.vue'
 import SuggestionEditor from './components/SuggestionEditor.vue'
 import QuestionInteraction from './components/QuestionInteraction.vue'
 import SuggestionMessage from './components/SuggestionMessage.vue'
+import QuestionMessage from './components/QuestionMessage.vue'
 import IsAnswerableByEditor from './components/IsAnswerableByEditor.vue'
 import WandererSingleton from 'wanderer-singleton'
 import WandererStoreSingleton from 'wanderer-store-singleton'
@@ -14,6 +15,7 @@ export default {
     Vue.component('wanderer-suggestion-editor', SuggestionEditor)
     Vue.component('wanderer-question-interaction', QuestionInteraction)
     Vue.component('wanderer-suggestion-message', SuggestionMessage)
+    Vue.component('wanderer-question-message', QuestionMessage)
     Vue.component('wanderer-is-answerable-by-editor', IsAnswerableByEditor)
 
     // Add a separate store module
@@ -43,6 +45,7 @@ export default {
 
     // Define some variables for collecting some data while traversing
     var foundQuestions = {}
+    var resetQuestions = []
 
     // Register the question vertex
     WandererSingleton.registerVertexCollection({
@@ -54,6 +57,7 @@ export default {
         cytoscapeCxtMenuSelector: '.question',
         appendableViaCxtMenu: true,
         injectableViaCxtMenu: true,
+        ctxMenuAllowedEdge: 'leadsTo',
         creatable: true,
         restrictPossibleChildren: [
           'suggestion'
@@ -63,10 +67,9 @@ export default {
             en: 'New question',
             de: 'Neue Frage'
           },
-          // button: {
-          //   en: 'ok',
-          //   de: 'ok'
-          // }
+          hideMessages: false,
+          drawAttention: true,
+          smallButtons: false
         },
         cytoscapeStyles: [
           {
@@ -148,24 +151,15 @@ export default {
       },
       edgeMethods: {
         reset: {
-          label: 'Reset message',
+          label: 'Reset question',
           method: (cytoscapeVertex, vertexData) => {
 
-            // Clear the typing timeout
-            // if(typingTimeouts[cytoscapeVertex.id()] !== undefined) {
-            //   clearTimeout(typingTimeouts[cytoscapeVertex.id()]);
-            //   delete typingTimeouts[cytoscapeVertex.id()];
-            // }
-
-            // Reset the lifecycle data
-            // WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
-            WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
-
-            // Reset all suggestions
-            var children = cytoscapeVertex.children('.suggestion');
-            children.forEach(function(child) {
-              WandererSingleton.setLifecycleValue(child.id(), 'answered', false)
-            })
+            // Its not a good Idea to reset the question directly inside the flow
+            // We should store this reset request for later and should execute it if the traversal has finished
+            // The reason is, that the question will start to blink if it resets itself for example
+            // This can happen, if other questions leads to this question
+            // This is ok because the interactions will be pushed to the interface at traversal end too
+            resetQuestions.push(cytoscapeVertex)
 
           }
         }
@@ -285,7 +279,7 @@ export default {
       // childExpander: function (cytoscapeVertex, vertexData, children) {
       //   return children
       // },
-      parentFinisher: function (vertexLifecycleData) {
+      sectionFinisher: function (vertexLifecycleData) {
         if(vertexLifecycleData!=undefined && vertexLifecycleData.answered) {
           return true;
         }
@@ -301,6 +295,7 @@ export default {
         color: '#28A745',
         cytoscapeClasses: 'suggestion',
         cytoscapeCxtMenuSelector: '.suggestion',
+        ctxMenuAllowedEdge: 'isAnswerableBy',
         appendableViaCxtMenu: true,
         injectableViaCxtMenu: true,
         creatable: true,
@@ -409,7 +404,7 @@ export default {
     WandererSingleton.registerEdgeCollection({
       name: 'isAnswerableBy',
       builder: {
-        label: 'isAnswerableBy',
+        label: 'is answerable by',
         cytoscapeClasses: 'isAnswerableBy',
         creatable: true,
         defaultFields: function (fromVertexCollection, toVertexCollection) {
@@ -459,14 +454,6 @@ export default {
       }
     })
 
-    // Listen for traversal event
-    WandererSingleton.on('traversalStart', function() {
-
-
-
-
-    })
-
     // Listen for traversal fineshed event
     WandererSingleton.on('traversalFinished', function() {
 
@@ -483,6 +470,7 @@ export default {
 
           // If suggestions was found for this interaction
           if(foundQuestions[q].length) {
+
 
             // Push the question to the chat
             WandererStoreSingleton.store.commit('wanderer/chat/addInteraction', {
@@ -504,12 +492,32 @@ export default {
       // Reset the result object
       foundQuestions = {}
 
+      // Reset questions
+      for(var cytoscapeVertex of resetQuestions) {
+        // Reset the lifecycle data
+        // WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
+        WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
+
+        // Reset all suggestions
+        var children = cytoscapeVertex.children('.suggestion');
+        children.forEach(function(child) {
+          WandererSingleton.setLifecycleValue(child.id(), 'answered', false)
+        })
+      }
+
+      // Reset the reset questions
+      resetQuestions = []
+
     })
 
     // On truncate event
     WandererSingleton.on('truncate', function () {
       // Truncate the question store
       WandererStoreSingleton.store.commit('wanderer/question/truncate')
+      // Reset the reset questions
+      resetQuestions = []
+      // Reset the result object
+      foundQuestions = {}
     })
 
   }

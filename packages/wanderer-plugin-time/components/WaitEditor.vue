@@ -2,8 +2,8 @@
   <div>
 
     <div class="form-group">
-      <label for="label">Conclusion</label>
-      <input v-model="label" type="text" class="form-control" id="label" placeholder="Label">
+      <label for="seconds">Seconds</label>
+      <input v-model="seconds" type="number" class="form-control" id="seconds" placeholder="10">
     </div>
 
   </div>
@@ -15,7 +15,7 @@ import WandererBuilder from 'wanderer-builder-singleton'
 
 export default {
   computed: {
-    label: WandererBuilder.getVertexModel('label')
+    seconds: WandererBuilder.getVertexModel('seconds')
   }
 }
 </script>

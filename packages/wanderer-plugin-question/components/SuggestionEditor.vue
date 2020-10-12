@@ -21,10 +21,6 @@
       <input type="range" v-model="priority" class="custom-range" id="priority" min="0" max="100">
     </div>
 
-    <!-- <div class="form-group">
-      <label for="name">Name</label>
-      <input v-model="name" type="text" class="form-control" id="name" placeholder="name">
-    </div> -->
 
   </div>
 </template>
@@ -37,7 +33,6 @@ export default {
   computed: {
     suggestion: WandererBuilder.getTranslatableVertexModel('suggestion'),
     type: WandererBuilder.getVertexModel('type'),
-    // name: WandererBuilder.getVertexModel('name'),
     priority: WandererBuilder.getVertexModel('priority')
   }
 }

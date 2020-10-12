@@ -16,6 +16,7 @@ import WandererPluginQuestion from 'wanderer-plugin-question'
 import WandererPluginConclusion from 'wanderer-plugin-conclusion'
 import WandererPluginApi from 'wanderer-plugin-api'
 import WandererPluginAction from 'wanderer-plugin-action'
+import WandererPluginTime from 'wanderer-plugin-time'
 
 import StoreSingeton from 'wanderer-store-singleton'
 
@@ -35,14 +36,11 @@ export default ({ app, store }) => {
     WandererBuilderComponent,
     WandererChatComponent,
     WandererPluginBase,
-
-    // Place this plugin before the questions plugin.
-    // So the conclusions will appear befor the questions in the chat!
-    // As an alternative this could be reached by using priorities inside the traversalFinished event callbacks
+    WandererPluginTime,
     WandererPluginConclusion,
-
     WandererPluginQuestion,
-    WandererPluginAction,
+    WandererPluginAction
+
     // WandererPluginApi
   ]})
 

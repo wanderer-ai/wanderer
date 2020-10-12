@@ -231,7 +231,7 @@ export default {
       },
       edgeMethods: {
         reset: {
-          label: 'Reset language',
+          label: 'Reset language switch',
           method: (cytoscapeVertex, vertexData) => {
 
             WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'switched', false)
@@ -258,10 +258,15 @@ export default {
         // Switch the language
         if(!WandererSingleton.getLifecycleValue(cytoscapeVertex.id(), 'switched')) {
 
-          WandererSingleton.setLanguage(vertexData.switchToLanguage);
+          // Don't switch the language if its the same one
+          if(WandererStoreSingleton.store.state.wanderer.currentLanguage != vertexData.switchToLanguage) {
 
-          // Remember this data as imported
-          WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'switched', true)
+            WandererSingleton.setLanguage(vertexData.switchToLanguage);
+
+            WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'switched', true)
+
+          }
+
         }
 
       }

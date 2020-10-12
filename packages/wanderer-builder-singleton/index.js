@@ -441,7 +441,9 @@ export default class WandererBuilder {
           'label': 'data(label)',
           'text-wrap': 'wrap',
           'text-max-width': '300px',
-          'border-width': 5
+          'border-width': 5,
+          'transition-property': 'border-color',
+          'transition-duration': '0.5s',
         }
       },
       {
@@ -450,7 +452,21 @@ export default class WandererBuilder {
           'curve-style': 'bezier',
           'target-arrow-shape': 'triangle',
           'source-arrow-shape': 'circle',
-          'text-rotation': 'autorotate'
+          'text-rotation': 'autorotate',
+          'transition-property': 'line-color',
+          'transition-duration': '0.5s'
+        }
+      },
+      {
+        selector: 'node.pulse',
+        style: {
+          'border-color': '#FF8800'
+        }
+      },
+      {
+        selector: 'edge.pulse',
+        style: {
+          'line-color': '#FF8800'
         }
       },
       {
@@ -485,17 +501,18 @@ export default class WandererBuilder {
 
               if(possibleOutgoingVertexCollection.builder.appendableViaCxtMenu) {
 
-                cxtmenuCommands.push({
-                  fillColor: possibleOutgoingVertexCollection.builder.color,
-                  content: possibleOutgoingEdgeCollection.name+' '+possibleOutgoingVertexCollection.builder.label,
-                  select: function(vertex){
-                    vertex.trigger('append', {
-                      vertexCollectionName: possibleOutgoingVertexCollection.name,
-                      edgeCollectionName: possibleOutgoingEdgeCollection.name
-                    })
-                  }
-                });
-
+                if(possibleOutgoingVertexCollection.builder.ctxMenuAllowedEdge&&possibleOutgoingVertexCollection.builder.ctxMenuAllowedEdge==possibleOutgoingEdgeCollection.name){
+                  cxtmenuCommands.push({
+                    fillColor: possibleOutgoingVertexCollection.builder.color,
+                    content: possibleOutgoingEdgeCollection.builder.label+' '+possibleOutgoingVertexCollection.builder.label,
+                    select: function(vertex){
+                      vertex.trigger('append', {
+                        vertexCollectionName: possibleOutgoingVertexCollection.name,
+                        edgeCollectionName: possibleOutgoingEdgeCollection.name
+                      })
+                    }
+                  });
+                }
               }
 
             })(possibleOutgoingCollections[i].to, possibleOutgoingCollections[i].through[t]);

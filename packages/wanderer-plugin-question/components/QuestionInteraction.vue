@@ -1,7 +1,9 @@
 <template>
-  <div v-if="!answered">
+  <div v-if="">
 
-    {{question}}
+    <span :class="(smallButtons? 'h6':'')">
+      {{question}}
+    </span>
 
     <div v-for="suggestion in suggestions" :key="suggestion._id">
 
@@ -24,9 +26,9 @@
 
     </div>
 
-    <div class="btn-group has-wrap shake">
+    <div :class="'btn-group has-wrap '+(drawAttention? 'shake':'')">
 
-      <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" class="btn btn-secondary" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
+      <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" :disabled="answered" :class="'btn btn-success rounded-0 '+(smallButtons? 'btn-sm':'')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
 
     </div>
 
@@ -61,15 +63,20 @@ export default {
     //   return WandererStoreSingleton.store.state.wanderer.collectedValues
     // },
     question: function () {
-      if(this.vertexId != undefined){
+      if(this.vertexId != undefined) {
         return WandererSingleton.getTranslatableVertexValue(this.vertexId,'question')
       }
     },
-    // button: function () {
-    //   if(this.vertexId != undefined){
-    //     return WandererSingleton.getTranslatableVertexValue(this.vertexId,'button')
-    //   }
-    // },
+    drawAttention: function () {
+      if(this.vertexId != undefined) {
+        return WandererSingleton.getVertexValue(this.vertexId,'drawAttention')
+      }
+    },
+    smallButtons: function () {
+      if(this.vertexId != undefined) {
+        return WandererSingleton.getVertexValue(this.vertexId,'smallButtons')
+      }
+    },
     suggestions: function () {
 
       let returnData = []
@@ -110,9 +117,6 @@ export default {
 
     answer (suggestionVertexId) {
 
-      // Mark component (this question) as answered
-      // this.answered = true
-
       // Mark question as answered in store
       // WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.vertexId)
       WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
@@ -120,11 +124,6 @@ export default {
         key: 'answered',
         value: true
       })
-
-      // console.log('setting lifecycle value for '+this.vertexId);
-
-      // Store the answered suggestions inside this object
-      // var answerObject = {}
 
       // For each suggestion
       for(var s in this.suggestions) {
@@ -141,11 +140,8 @@ export default {
               key: 'answered',
               value: true
             })
-            // answerObject[suggestionVertexId] = true;
 
           } else {
-
-            // console.log(this.suggestions[s]._id)
 
             // Answer the other suggestions
             // Check the values
@@ -186,24 +182,26 @@ export default {
         }
       }
 
+      // Create question and suggestion messages
+      if(!WandererSingleton.getVertexValue(this.vertexId, 'hideMessages')) {
 
-      // Create suggestion message
-      WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-        // id: this.vertexId+'_suggestion',
-        component: 'wanderer-suggestion-message',
-        from: 'local',
-        backgroundColor: '#28A745',
-        delay: 0,
-        vertexId: this.vertexId,
-        // data: {
-        //   answers: answerObject
-        // }
-      })
+        WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+          component: 'wanderer-question-message',
+          from: 'remote',
+          backgroundColor: '#6C757D',
+          vertexId: this.vertexId
+        })
 
-      // Start next traversal tick
-      // WandererSingleton.traverse()
+        WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+          component: 'wanderer-suggestion-message',
+          from: 'local',
+          backgroundColor: '#28A745',
+          vertexId: this.vertexId
+        })
 
-    },
+      }
+
+    }
 
   }
 }

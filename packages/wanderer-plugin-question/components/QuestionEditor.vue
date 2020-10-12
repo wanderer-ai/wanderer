@@ -2,14 +2,30 @@
   <div>
 
     <div class="form-group">
-      <label for="label">Question</label>
-      <input v-model="question" type="text" class="form-control" id="label" placeholder="Enter your question">
+      <label for="question">Question</label>
+      <textarea v-model="question" type="text" class="form-control" id="question" placeholder="Enter your question"></textarea>
     </div>
 
-    <!-- <div class="form-group">
-      <label for="button">Button</label>
-      <input v-model="button" type="text" class="form-control" id="button" placeholder="The button text">
-    </div> -->
+    <div class="form-group">
+      <div class="form-check">
+        <label class="form-check-label">
+          <input class="form-check-input" type="checkbox" v-model="hideMessages">
+          Hide suggestion messages in chat
+        </label>
+      </div>
+      <div class="form-check">
+        <label class="form-check-label">
+          <input class="form-check-input" type="checkbox" v-model="drawAttention">
+          Draw attention (Shake buttons)
+        </label>
+      </div>
+      <div class="form-check">
+        <label class="form-check-label">
+          <input class="form-check-input" type="checkbox" v-model="smallButtons">
+          Use small buttons
+        </label>
+      </div>
+    </div>
 
   </div>
 </template>
@@ -22,8 +38,9 @@ import WandererBuilder from 'wanderer-builder-singleton'
 export default {
   computed: {
     question: WandererBuilder.getTranslatableVertexModel('question'),
-    // button: WandererBuilder.getTranslatableVertexModel('button'),
-    // id: WandererBuilder.getVertexModel('_id'),
+    hideMessages: WandererBuilder.getVertexModel('hideMessages'),
+    drawAttention: WandererBuilder.getVertexModel('drawAttention'),
+    smallButtons: WandererBuilder.getVertexModel('smallButtons')
   }
 }
 </script>

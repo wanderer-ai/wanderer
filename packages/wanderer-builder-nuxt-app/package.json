@@ -24,7 +24,8 @@
     "wanderer-plugin-question": "^1.0.0",
     "wanderer-plugin-conclusion": "^1.0.0",
     "wanderer-plugin-api": "^1.0.0",
-    "wanderer-plugin-action": "^1.0.0"
+    "wanderer-plugin-action": "^1.0.0",
+    "wanderer-plugin-time": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"

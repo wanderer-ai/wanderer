@@ -25,39 +25,35 @@ export default {
         messages: [],
         messageIds: [],
         typing: false,
-        interactions: []
+        interactions: [],
+        interactionVertexIds : []
       },
       mutations: {
         setTyping (state, typing) {
           state.typing = typing
         },
         addMessage (state, message) {
+
+          // Generate unique id for this message
           if (message.id === undefined) {
-            // console.log(message)
-            // throw Error('Every message needs an unique id!')
             message.id = uuidv4()
           }
+
           if (message.component === undefined) { throw Error('Every message needs a Vue component!') }
-          // if (message.delay === undefined) { message.delay = 0 }
-
-          // Delay the messages and delay every message longer than the message before
-          // message.delay = 1000+1000*messageDelay
-          // messageDelay++
-          // // Reset the delay counter after one second
-          // messageDelayResetTimeout = setTimeout( function ( ) {
-          //   messageDelay = 0
-          // }, 1000);
-
 
           // Add the message to stack if it does not exist already
-          // if (state.messageIds.indexOf(message.id) === -1) {
           state.messageIds.push(message.id)
           state.messages.push(message)
-          // }
+
+          // Remove old messages if there are too many in the stack
+          // The browser can't render unlimited messages
+          if(state.messages.length>100) {
+            state.messages.splice(0,1)
+            state.messageIds.splice(0,1)
+          }
+
         },
-        // showMessage (state, key) {
-        //   this._vm.$set(state.messages[key], 'show', true)
-        // },
+
         cleanMessages (state) {
           state.messages = []
           state.messageIds = []
@@ -65,12 +61,15 @@ export default {
         addInteraction (state, interaction) {
 
           if (interaction.component === undefined) { throw Error('Every interaction needs a Vue component!') }
+          if (interaction.vertexId === undefined) { throw Error('Every interaction needs a vertex id!') }
 
           state.interactions.push(interaction)
+          state.interactionVertexIds.push(interaction.vertexId)
 
         },
         cleanInteractions (state) {
           state.interactions = []
+          state.interactionVertexIds = []
         },
       },
       actions: {
