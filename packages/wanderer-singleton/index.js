@@ -3,6 +3,12 @@ import WandererCytoscapeSingleton from 'wanderer-cytoscape-singleton'
 import Mustache from 'mustache'
 import Axios from 'axios'
 
+var md = require('markdown-it')({
+  html:         false,        // Enable HTML tags in source
+  breaks:       true,        // Convert '\n' in paragraphs into <br>
+  linkify:      false        // Autoconvert URL-like text to links
+});
+
 const uuidv4 = require('uuid/v4');
 
 export default (function () {
@@ -383,14 +389,8 @@ export default (function () {
       // Clean cy
       WandererCytoscapeSingleton.cy.remove( '*' )
 
-      // Clean store
-      WandererStoreSingleton.store.commit('wanderer/truncate')
-
-      // Emit the truncate event
-      trigger('truncate')
-
-      // Reset the chat
-      // trigger('truncate')
+      // Reset the whole wanderer
+      truncate()
 
       // Load vertices
       for (var key in data.vertices) {
@@ -537,6 +537,10 @@ export default (function () {
 
     return value;
 
+  }
+
+  function markdown2html (template) {
+    return md.render(template)
   }
 
   function getVertexValue (vertexId, key) {
@@ -721,7 +725,9 @@ export default (function () {
   var traversedEdgeIds = []
   var traversedVerticeIds = []
   var animateIn = false
-  var traversing = false;
+  var traversing = false
+  var reachableVerticeIds = []
+  var lastReachableVerticeIds = []
 
   function startTraversal () {
     // Initiate the traversal only once!
@@ -733,6 +739,17 @@ export default (function () {
 
   function stopTraversal () {
     traversing = false
+  }
+
+  function truncate () {
+    // Clean store
+    WandererStoreSingleton.store.commit('wanderer/truncate')
+
+    // Emit the truncate event
+    trigger('truncate')
+
+    // Reset traversal variables
+    lastReachableVerticeIds = []
   }
 
   async function traverse (nodeId, recursiveCall, test) {
@@ -752,7 +769,7 @@ export default (function () {
       recursiveCall = false;
     }
 
-    // Always do a test trip through the graph!
+    // This is an test call if undefined
     if (test == undefined) {
       test = true;
     }
@@ -760,11 +777,9 @@ export default (function () {
     // This is the first call of the recursive stack
     if (!recursiveCall) {
 
-      // This is not a test traversal
-      if(!test) {
+      if (!test) {
         trigger('traversalStart')
       }
-      // console.log('tick');
 
       traversedEdges = WandererCytoscapeSingleton.cy.collection()
       traversedVertices = WandererCytoscapeSingleton.cy.collection()
@@ -783,13 +798,26 @@ export default (function () {
         let currentVertexCollection = getVertexCollection(currentVertexData._collection)
 
         if (isVertexTraversable(currentCytoscapeVertex, currentVertexData)) {
+
+          // Is the vertex reachable?
+          // Remember this vertex as reachable in the current traversal
+          reachableVerticeIds.push(currentCytoscapeVertex.id())
+
+          // Check if the node was also reachable within the last traversal
+          if(lastReachableVerticeIds.indexOf(currentCytoscapeVertex.id())==-1) {
+            // If this node was not reachable during the last traversal...
+            if (currentVertexCollection.becomeReachable) {
+              currentVertexCollection.becomeReachable(currentCytoscapeVertex, currentVertexData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
+            }
+          }
+
           // Remember this vertex as visited
           traversedVertices = traversedVertices.union(currentCytoscapeVertex);
           traversedVerticeIds.push(currentCytoscapeVertex.id())
 
           // Is there a visitor available for this kind of node?
           // Only execute the visitor if we are not in test mode
-          if(!test) {
+          if (!test) {
             if (currentVertexCollection.visitor) {
               currentVertexCollection.visitor(currentCytoscapeVertex, currentVertexData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
             }
@@ -878,7 +906,6 @@ export default (function () {
                   let currentCytoscapeEdgeCollection = getEdgeCollection(currentCytoscapeEdgeData._collection)
 
                   // Call the visitor for this edge if present
-                  // But only if we are not in test mode
                   if(test) {
                     if (currentCytoscapeEdgeCollection.testVisitor) {
                       currentCytoscapeEdgeCollection.testVisitor(expandEdges[i], currentCytoscapeEdgeData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
@@ -890,7 +917,8 @@ export default (function () {
                   }
 
                   // Call the selected target node edge method
-                  if(test) {
+                  // Do this for the test track too. So both ways would be the same if the further way depends on this methods
+                  if (test) {
                     if(currentCytoscapeEdgeData.method != undefined) {
                       invokeVertexMethod(expandEdges[i].target().id(), currentCytoscapeEdgeData.method)
                     }
@@ -918,7 +946,7 @@ export default (function () {
 
 
 
-        }
+        } // vertex traversable
 
       }
 
@@ -934,6 +962,12 @@ export default (function () {
         await wait(5)
         await traverse(nodeId, false, false)
       } else {
+
+        // Update the last reachable vertices
+        lastReachableVerticeIds = [...reachableVerticeIds]
+        reachableVerticeIds = []
+
+        // console.log(lastReachableVerticeIds)
 
         // Finish the current traversal by emittig the event
         trigger('traversalFinished')
@@ -1196,7 +1230,9 @@ export default (function () {
     getLanguages: getLanguages,
     setLanguage: setLanguage,
     startTraversal: startTraversal,
-    stopTraversal: stopTraversal
+    stopTraversal: stopTraversal,
+    markdown2html: markdown2html,
+    replaceWithLifecycleData: replaceWithLifecycleData
   }
 
 }())

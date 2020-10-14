@@ -1,9 +1,7 @@
 <template>
   <div v-if="">
 
-    <span :class="(smallButtons? 'h6':'')">
-      {{question}}
-    </span>
+    <span :class="(smallButtons? 'h6':'')+' question-interaction'" v-html="question"></span>
 
     <div v-for="suggestion in suggestions" :key="suggestion._id">
 
@@ -64,12 +62,38 @@ export default {
     // },
     question: function () {
       if(this.vertexId != undefined) {
-        return WandererSingleton.getTranslatableVertexValue(this.vertexId,'question')
+        return WandererSingleton.markdown2html(WandererSingleton.getTranslatableVertexValue(this.vertexId,'question'))
       }
     },
     drawAttention: function () {
       if(this.vertexId != undefined) {
         return WandererSingleton.getVertexValue(this.vertexId,'drawAttention')
+      }
+    },
+    hideMessages: function () {
+      if(this.vertexId != undefined) {
+        return WandererSingleton.getVertexValue(this.vertexId, 'hideMessages')
+      }
+    },
+    answered: function () {
+      return WandererSingleton.getLifecycleValue(this.vertexId, 'answered')
+    },
+    hide: function () {
+      // Wenn die Frage beantwortet ist ...
+      if(this.answered) {
+        // Wenn die Frage keine eigenen Messages generiert ...
+        if(this.hideMessages) {
+          return true
+        // Wenn die Frage eigene Messages generiert ...
+        } else {
+          // Hide the question
+          // Die Messages sollen dann optisch den Platz der Frage einnehmen
+          return false
+        }
+      // Wenn die Frage noch nicht beantwortet ist ...
+      } else {
+        // immer anzeigen
+        return true
       }
     },
     smallButtons: function () {
@@ -106,11 +130,7 @@ export default {
         }
       }
       return returnData
-    },
-
-    answered: function () {
-      return WandererSingleton.getLifecycleValue(this.vertexId, 'answered')
-    },
+    }
 
   },
   methods: {
@@ -183,7 +203,7 @@ export default {
       }
 
       // Create question and suggestion messages
-      if(!WandererSingleton.getVertexValue(this.vertexId, 'hideMessages')) {
+      if(!this.hideMessages) {
 
         WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
           component: 'wanderer-question-message',
@@ -211,6 +231,14 @@ export default {
 /* .button-again {
   cursor:pointer;
 } */
+
+.question-interaction p:last-of-type {
+  margin: 0;
+}
+
+.question-interaction a {
+  color:white;
+}
 
 .btn-group.has-wrap {
   flex-wrap: wrap;

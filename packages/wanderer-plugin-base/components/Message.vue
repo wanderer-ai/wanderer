@@ -1,9 +1,5 @@
 <template>
-  <div>
-
-    {{ message }}
-
-  </div>
+  <div class="message" v-html="message"></div>
 </template>
 
 <script>
@@ -19,7 +15,7 @@ export default {
   computed: {
     message: function () {
       if(this.vertexId != undefined){
-        return WandererSingleton.getTranslatableVertexValue(this.vertexId,'message')
+        return WandererSingleton.markdown2html(WandererSingleton.getTranslatableVertexValue(this.vertexId,'message'))
       }
     }
   }
@@ -27,5 +23,13 @@ export default {
 </script>
 
 <style>
+
+.message p:last-of-type {
+  margin: 0;
+}
+
+.message a {
+  color:white;
+}
 
 </style>

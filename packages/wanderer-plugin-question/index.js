@@ -45,7 +45,7 @@ export default {
 
     // Define some variables for collecting some data while traversing
     var foundQuestions = {}
-    var resetQuestions = []
+    // var resetQuestions = []
 
     // Register the question vertex
     WandererSingleton.registerVertexCollection({
@@ -138,6 +138,16 @@ export default {
             return false;
           }
         },
+        notAnswered: {
+          default: false,
+          label: 'not answered',
+          condition: function (vertexLifecycleData) {
+            if(vertexLifecycleData!=undefined && vertexLifecycleData.answered) {
+              return false;
+            }
+            return true;
+          }
+        },
         // sent: {
         //   default: false,
         //   label: 'sent',
@@ -149,20 +159,43 @@ export default {
         //   }
         // }
       },
-      edgeMethods: {
-        reset: {
-          label: 'Reset question',
-          method: (cytoscapeVertex, vertexData) => {
+      // edgeMethods: {
+      //   reset: {
+      //     label: 'Reset question',
+      //     method: (cytoscapeVertex, vertexData) => {
+      //
+      //
+      //
+      //     }
+      //   }
+      // },
+      // lifecycleData: {
+      //   value: {
+      //     label: 'Values',
+      //     exposeDefault: true
+      //   }
+      // },
+      becomeReachable: function (cytoscapeVertex) {
 
-            // Its not a good Idea to reset the question directly inside the flow
-            // We should store this reset request for later and should execute it if the traversal has finished
-            // The reason is, that the question will start to blink if it resets itself for example
-            // This can happen, if other questions leads to this question
-            // This is ok because the interactions will be pushed to the interface at traversal end too
-            resetQuestions.push(cytoscapeVertex)
+        // console.log('become reachable')
 
-          }
-        }
+        // Its not a good Idea to reset the question directly inside the flow
+        // We should store this reset request for later and should execute it if the traversal has finished
+        // The reason is, that the question will start to blink if it resets itself for example
+        // This can happen, if other questions leads to this question
+        // This is ok because the interactions will be pushed to the interface at traversal end too
+        // resetQuestions.push(cytoscapeVertex)
+
+        // Reset the lifecycle data
+        // WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
+        WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
+
+        // Reset all suggestions
+        var children = cytoscapeVertex.children('.suggestion');
+        children.forEach(function(child) {
+          WandererSingleton.setLifecycleValue(child.id(), 'answered', false)
+        })
+
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
 
@@ -279,12 +312,12 @@ export default {
       // childExpander: function (cytoscapeVertex, vertexData, children) {
       //   return children
       // },
-      sectionFinisher: function (vertexLifecycleData) {
-        if(vertexLifecycleData!=undefined && vertexLifecycleData.answered) {
-          return true;
-        }
-        return false;
-      }
+      // sectionFinisher: function (vertexLifecycleData) {
+      //   if(vertexLifecycleData!=undefined && vertexLifecycleData.answered) {
+      //     return true;
+      //   }
+      //   return false;
+      // }
     })
 
     // Register the suggestion vertex
@@ -362,15 +395,20 @@ export default {
           exposeDefault: true
         }
       },
-      edgeMethods: {
-        reset: {
-          label: 'Reset suggestion',
-          method: (cytoscapeVertex, vertexData) => {
+      // edgeMethods: {
+      //   reset: {
+      //     label: 'Reset suggestion',
+      //     method: (cytoscapeVertex, vertexData) => {
+      //
+      //       WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
+      //
+      //     }
+      //   }
+      // },
+      becomeReachable: function (cytoscapeVertex, vertexData) {
 
-            WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
+        WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
 
-          }
-        }
       },
       toCytoscape: function(data, language) {
         var varname = '';
@@ -492,21 +530,21 @@ export default {
       // Reset the result object
       foundQuestions = {}
 
-      // Reset questions
-      for(var cytoscapeVertex of resetQuestions) {
-        // Reset the lifecycle data
-        // WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
-        WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
-
-        // Reset all suggestions
-        var children = cytoscapeVertex.children('.suggestion');
-        children.forEach(function(child) {
-          WandererSingleton.setLifecycleValue(child.id(), 'answered', false)
-        })
-      }
+      // // Reset questions
+      // for(var cytoscapeVertex of resetQuestions) {
+      //   // Reset the lifecycle data
+      //   // WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
+      //   WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'answered', false)
+      //
+      //   // Reset all suggestions
+      //   var children = cytoscapeVertex.children('.suggestion');
+      //   children.forEach(function(child) {
+      //     WandererSingleton.setLifecycleValue(child.id(), 'answered', false)
+      //   })
+      // }
 
       // Reset the reset questions
-      resetQuestions = []
+      // resetQuestions = []
 
     })
 
@@ -515,7 +553,7 @@ export default {
       // Truncate the question store
       WandererStoreSingleton.store.commit('wanderer/question/truncate')
       // Reset the reset questions
-      resetQuestions = []
+      // resetQuestions = []
       // Reset the result object
       foundQuestions = {}
     })

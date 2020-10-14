@@ -1,9 +1,5 @@
 <template>
-  <div>
-
-    {{question}}
-
-  </div>
+  <div class="question-message" v-html="question"></div>
 </template>
 
 <script>
@@ -25,7 +21,7 @@ export default {
   computed: {
     question: function () {
       if(this.vertexId != undefined) {
-        return WandererSingleton.getTranslatableVertexValue(this.vertexId,'question')
+        return WandererSingleton.markdown2html(WandererSingleton.getTranslatableVertexValue(this.vertexId,'question'))
       }
     }
   }
@@ -34,5 +30,13 @@ export default {
 </script>
 
 <style>
+
+.question-message p:last-of-type {
+  margin: 0;
+}
+
+.question-message a {
+  color:white;
+}
 
 </style>
