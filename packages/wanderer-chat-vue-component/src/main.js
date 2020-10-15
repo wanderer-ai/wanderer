@@ -12,6 +12,7 @@ import WandererPluginQuestion from 'wanderer-plugin-question'
 import WandererPluginConclusion from 'wanderer-plugin-conclusion'
 import WandererPluginApi from 'wanderer-plugin-api'
 import WandererPluginTime from 'wanderer-plugin-time'
+import WandererPluginReport from 'wanderer-plugin-report'
 
 import StoreSingleton from 'wanderer-store-singleton'
 
@@ -43,7 +44,8 @@ Vue.use(WandererVuePlugin, {plugins: [
   WandererPluginConclusion,
   WandererPluginQuestion,
   WandererPluginApi,
-  WandererPluginTime
+  WandererPluginTime,
+  WandererPluginReport
 ]})
 
 /* eslint-disable no-new */

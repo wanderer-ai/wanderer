@@ -1,7 +1,5 @@
 import ConclusionEditor from './components/ConclusionEditor.vue'
-// import ReportEditor from './components/ReportEditor.vue'
-// import ConclusionMessage from './components/ConclusionMessage.vue'
-// import ReportMessage from './components/ReportMessage.vue'
+import ExpressionEditor from './components/ExpressionEditor.vue'
 
 import WandererSingleton from 'wanderer-singleton'
 import WandererStoreSingleton from 'wanderer-store-singleton'
@@ -11,12 +9,9 @@ export default {
   install (Vue) {
 
     Vue.component('wanderer-conclusion-editor', ConclusionEditor)
-    // Vue.component('wanderer-report-editor', ReportEditor)
-    // Vue.component('wanderer-conclusion-message', ConclusionMessage)
-    // Vue.component('wanderer-report-message', ReportMessage)
+    Vue.component('wanderer-expression-editor', ExpressionEditor)
 
-    // var transferedConclusions = [];
-    // var transferedReports = [];
+    var debug = false
 
     // Register the conclusion vertex
     WandererSingleton.registerVertexCollection({
@@ -63,70 +58,84 @@ export default {
       }
     })
 
-    // WandererSingleton.registerVertexCollection({
-    //   name: 'report',
-    //   builder: {
-    //     label: 'Report',
-    //     color: '#FEC106',
-    //     cytoscapeClasses: 'report',
-    //     cytoscapeCxtMenuSelector: '.report',
-    //     creatable: true,
-    //     defaultFields: {
-    //       title: {
-    //         en: 'New report',
-    //         de: 'Neuer Report'
-    //       },
-    //       report: {
-    //         en: '',
-    //         de: ''
-    //       }
-    //     },
-    //     cytoscapeStyles: [{
-    //       selector: '.report',
-    //       style: {
-    //         'height': '100px',
-    //         'width': '100px',
-    //         'font-size': '20px',
-    //         'background-color': '#FEC106',
-    //         'label': 'data(label)'
-    //       }
-    //     }],
-    //     component: 'wanderer-report-editor'
-    //   },
-    //   toCytoscape: function(data, language){
-    //     if(data.title != undefined && data.title[language] != undefined){
-    //       return {
-    //         label: data.title[language]
-    //       }
-    //     }
-    //     return {
-    //       label: 'Report'
-    //     }
-    //   },
-    //   visitor: function (cytoscapeVertex, vertexData, language) {
-    //
-    //     if(transferedReports.indexOf(cytoscapeVertex.id())==-1){
-    //
-    //       transferedReports.push(cytoscapeVertex.id())
-    //
-    //       // Add the conclusion message
-    //       WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-    //         // id: traversalResult.lastFoundConclusionIds[i],
-    //         component: 'wanderer-report-message',
-    //         backgroundColor: '#FEC106',
-    //         vertexId: cytoscapeVertex.id(),
-    //         delay: 1000
-    //       })
-    //
-    //     }
-    //
-    //   }
-    // })
+    WandererSingleton.registerVertexCollection({
+      name: 'expression',
+      builder: {
+        label: 'Expression',
+        color: '#FEC106',
+        cytoscapeClasses: 'expression',
+        cytoscapeCxtMenuSelector: '.expression',
+        creatable: true,
+        canBeChild: true,
+        defaultFields: {
+          expression: ''
+        },
+        cytoscapeStyles: [{
+          selector: '.expression',
+          style: {
+            'height': '100px',
+            'width': '100px',
+            'font-size': '20px',
+            'background-color': '#FEC106',
+            'background-color': '#FEC106',
+            'border-color': '#FEC106',
+            'label': 'data(label)'
+          }
+        }],
+        component: 'wanderer-expression-editor'
+      },
+      toCytoscape: function(data, language){
 
-    WandererSingleton.on('truncate', function() {
-      // console.log('resetting conclusion messages')
-      // transferedConclusions = []
-      // transferedReports = []
+        var label = 'Expression'
+
+        if(data.expression) {
+          label = data.expression
+        }
+
+        return {
+          label: label+(debug? ' ('+data._id+')':''),
+        }
+
+      },
+      lifecycleData: {
+        result: {
+          label: 'result',
+          exposeDefault: true
+        }
+      },
+      edgeConditions: {
+        true: {
+          default: true,
+          label: 'is true',
+          condition: function (vertexLifecycleData) {
+            if(vertexLifecycleData!=undefined && vertexLifecycleData.result) {
+              return true;
+            }
+            return false;
+          }
+        },
+        false: {
+          default: false,
+          label: 'is false',
+          condition: function (vertexLifecycleData) {
+            if(vertexLifecycleData!=undefined && vertexLifecycleData.result) {
+              return false;
+            }
+            return true;
+          }
+        },
+      },
+      visitor: function (cytoscapeVertex, vertexData, language) {
+
+        // Get the evaluated expression
+        WandererSingleton.evaluateVertexExpression(WandererSingleton.getVertexValue(cytoscapeVertex.id(), 'expression'), cytoscapeVertex.id()).then((result) => {
+
+          // Set the evaluated expression as a lifecycle value
+          WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'result', result)
+
+        })
+
+      }
     })
 
   }

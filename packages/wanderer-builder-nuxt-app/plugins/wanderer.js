@@ -17,6 +17,7 @@ import WandererPluginConclusion from 'wanderer-plugin-conclusion'
 import WandererPluginApi from 'wanderer-plugin-api'
 import WandererPluginAction from 'wanderer-plugin-action'
 import WandererPluginTime from 'wanderer-plugin-time'
+import WandererPluginReport from 'wanderer-plugin-report'
 
 import StoreSingeton from 'wanderer-store-singleton'
 
@@ -39,7 +40,8 @@ export default ({ app, store }) => {
     WandererPluginTime,
     WandererPluginConclusion,
     WandererPluginQuestion,
-    WandererPluginAction
+    WandererPluginAction,
+    WandererPluginReport
 
     // WandererPluginApi
   ]})

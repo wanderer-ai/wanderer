@@ -450,7 +450,7 @@ export default {
         var label = ''
 
         if (data.name) {
-          label = label+'{'+data.name+'}'
+          label = label+'{{'+data.name+'}}'
         }
 
         if (data.condition) {

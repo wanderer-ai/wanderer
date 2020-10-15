@@ -15,7 +15,7 @@ export default {
   computed: {
     message: function () {
       if(this.vertexId != undefined){
-        return WandererSingleton.markdown2html(WandererSingleton.getTranslatableVertexValue(this.vertexId,'message'))
+        return WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(this.vertexId,'message'), this.vertexId))
       }
     }
   }

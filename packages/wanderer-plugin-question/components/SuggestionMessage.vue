@@ -1,15 +1,18 @@
 <template>
   <div>
 
-    <span v-for="answer in answers" :key="answer._id">
+    <span v-for="(answer, index) in answers" :key="answer._id" >
 
       <span v-if="answer.type=='button' || answer.type=='checkbox'">
         {{answer.suggestion}}
       </span>
 
       <span v-if="answer.type=='text' || answer.type=='textarea'">
-        <span v-if="answer.suggestion">{{answer.suggestion}}:</span> {{answer.value}}
+        <!-- <span v-if="answer.suggestion">{{answer.suggestion}}:</span> -->
+        {{answer.value}}
       </span>
+
+      <span v-if="index != Object.keys(answers).length - 1">, </span>
 
     </span>
 
@@ -58,9 +61,10 @@ export default {
 
                 this.answers.push({
                   _id: suggestionIds[suggestionId],
-                  suggestion: WandererSingleton.getTranslatableVertexValue(suggestionIds[suggestionId],'suggestion'),
-                  type: WandererSingleton.getEvaluatedVertexValue(suggestionIds[suggestionId],'type'),
-                  priority: WandererSingleton.getEvaluatedVertexValue(suggestionIds[suggestionId],'priority')
+                  suggestion: WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(suggestionIds[suggestionId],'suggestion'), suggestionId),
+                  type: WandererSingleton.getVertexValue(suggestionIds[suggestionId],'type'),
+                  // priority: WandererSingleton.getVertexValue(suggestionIds[suggestionId],'priority'),
+                  value: WandererSingleton.getLifecycleValue(suggestionIds[suggestionId],'value')
                 })
 
               }

@@ -62,7 +62,7 @@ export default {
     // },
     question: function () {
       if(this.vertexId != undefined) {
-        return WandererSingleton.markdown2html(WandererSingleton.getTranslatableVertexValue(this.vertexId,'question'))
+        return WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(this.vertexId,'question'), this.vertexId))
       }
     },
     drawAttention: function () {
@@ -119,9 +119,9 @@ export default {
 
               returnData.push({
                 _id: suggestionIds[suggestionId],
-                suggestion: WandererSingleton.getTranslatableVertexValue(suggestionIds[suggestionId],'suggestion'),
-                type: WandererSingleton.getEvaluatedVertexValue(suggestionIds[suggestionId],'type'),
-                priority: WandererSingleton.getEvaluatedVertexValue(suggestionIds[suggestionId],'priority')
+                suggestion: WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(suggestionIds[suggestionId],'suggestion'), suggestionId),
+                type: WandererSingleton.getVertexValue(suggestionIds[suggestionId],'type'),
+                priority: WandererSingleton.getVertexValue(suggestionIds[suggestionId],'priority')
               })
 
             }

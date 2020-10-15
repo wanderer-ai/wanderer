@@ -9,6 +9,8 @@ var md = require('markdown-it')({
   linkify:      false        // Autoconvert URL-like text to links
 });
 
+const jexl = require('jexl')
+
 const uuidv4 = require('uuid/v4');
 
 export default (function () {
@@ -488,11 +490,7 @@ export default (function () {
     })
   }
 
-  function replaceWithLifecycleData (value, contextVertexId) {
-
-    if(typeof value !== 'string') {
-      return value
-    }
+  function getIncommingLifecycleData (contextVertexId) {
 
     // Get all incomming edges that was already traversed from the contextVertexId
     let cytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(contextVertexId)
@@ -502,45 +500,82 @@ export default (function () {
 
     // Collect the template data from the inbound edges and their source vertices
     let templateData = {}
+
     cytoscapeEdges.forEach(function(currentCytoscapeEdge) {
       // Filter inbound edges
       if(cytoscapeVertex.id()==currentCytoscapeEdge.data('target')) {
         // Check if these edges had been traversed
-        if(WandererStoreSingleton.store.state.wanderer.traversedEdges.indexOf(currentCytoscapeEdge.id())!=-1) {
-          // Check if these edges have a name
+        if(traversedEdgeIds.indexOf(currentCytoscapeEdge.id())!=-1) {
+
+          // If this edge exists in the data store
           if(WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()] != undefined) {
-            if(WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].name) {
+            // Check if these edges have a name
+            // if(WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].name) {
 
               // If this edge exposes data from the source vertex
               if(WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].expose) {
                 // Get the data from the vertex
                 if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[currentCytoscapeEdge.data('source')] != undefined) {
+
+                  // the name of the expose is the default name for the variable
+                  var exposeAs = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].expose;
+
+                  // If there is a name defined take the name as the variable name
+                  if(WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].name) {
+                    exposeAs = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].name
+                  }
+
                   var data = WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[currentCytoscapeEdge.data('source')][WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].expose]
-                  templateData[WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].name] = data
+                  templateData[exposeAs] = data
                 }
-              } else {
-                // We have no exposed variable but we have a name
-                // So lets set this data to true
-                templateData[WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].name] = true
               }
-            }
+
           }
         }
       }
     })
 
-    try {
-      value = Mustache.render(value, templateData);
-    } catch {
-
-    }
-
-    return value;
+    return templateData;
 
   }
 
+  function evaluateVertexTemplate (template, vertexId) {
+    if(typeof template !== 'string') {
+      return template
+    }
+
+    var data = getIncommingLifecycleData(vertexId)
+
+    console.log('template')
+    console.log(data)
+
+    try {
+      return Mustache.render(template, data);
+    } catch {
+
+    }
+  }
+
+  async function evaluateVertexExpression (expression, vertexId) {
+
+    var data = getIncommingLifecycleData(vertexId)
+
+    console.log('expression')
+    console.log(data)
+
+    try {
+      return await jexl.eval(expression, data)
+    } catch {
+
+    }
+  }
+
   function markdown2html (template) {
-    return md.render(template)
+    try {
+      return md.render(template)
+    } catch {
+
+    }
   }
 
   function getVertexValue (vertexId, key) {
@@ -557,17 +592,10 @@ export default (function () {
     return undefined
   }
 
-  function getEvaluatedVertexValue (vertexId, key) {
-    if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
-      return replaceWithLifecycleData(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key], vertexId)
-    }
-    return undefined
-  }
-
   function getTranslatableVertexValue (vertexId, key) {
     if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId] !== undefined){
       if(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key] !== undefined){
-        return replaceWithLifecycleData(WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][WandererStoreSingleton.store.state.wanderer.currentLanguage], vertexId)
+        return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[vertexId][key][WandererStoreSingleton.store.state.wanderer.currentLanguage]
       }
     }
   }
@@ -930,6 +958,7 @@ export default (function () {
                   if(traversedVerticeIds.indexOf(expandEdges[i].target().id()) == -1) {
                     // Give the browser some time to react
                     await wait(5)
+                    // Traverse into deep
                     await traverse(expandEdges[i].target().id(), true, test)
                   }
 
@@ -1216,7 +1245,6 @@ export default (function () {
     removeEdge: removeEdge,
     getVertexValue: getVertexValue,
     getEdgeValue: getEdgeValue,
-    getEvaluatedVertexValue: getEvaluatedVertexValue,
     getTranslatableVertexValue: getTranslatableVertexValue,
     vertexToCytoscape: vertexToCytoscape,
     edgeToCytoscape: edgeToCytoscape,
@@ -1232,7 +1260,8 @@ export default (function () {
     startTraversal: startTraversal,
     stopTraversal: stopTraversal,
     markdown2html: markdown2html,
-    replaceWithLifecycleData: replaceWithLifecycleData
+    evaluateVertexExpression: evaluateVertexExpression,
+    evaluateVertexTemplate: evaluateVertexTemplate,
   }
 
 }())
