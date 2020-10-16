@@ -9,7 +9,7 @@
         :id="message.id"
         :from="message.from"
         :backgroundColor="message.backgroundColor">
-        <component v-bind:is="message.component" :vertexId="message.vertexId" :lastOfType="lastOfType[message.component] == message.id" :last="key == messages.length - 1"></component>
+        <component v-bind:is="message.component" :text="message.text" :vertexId="message.vertexId" :lastOfType="lastOfType[message.component] == message.id" :last="key == messages.length - 1"></component>
       </message>
     </div>
 

@@ -39,7 +39,15 @@ export default {
             message.id = uuidv4()
           }
 
+          // Messages should have also a static message string
+          if (message.text === undefined) {
+            message.text = ''
+          }
+
           if (message.component === undefined) { throw Error('Every message needs a Vue component!') }
+
+          // Freeze the message object to improve performance
+          Object.freeze(message);
 
           // Add the message to stack if it does not exist already
           state.messageIds.push(message.id)

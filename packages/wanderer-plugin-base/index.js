@@ -305,12 +305,6 @@ export default {
       // },
       becomeReachable: function (cytoscapeVertex, vertexData) {
 
-        // Its not a good Idea to reset the node directly inside the flow
-        // We should store this reset request for later and should execute it if the traversal has finished
-        // The reason is, that the node will start to blink if it resets itself for example
-        // This can happen, if other nodes leads to this node
-        // resetMessages.push(cytoscapeVertex)
-
         WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
 
       },
@@ -339,11 +333,15 @@ export default {
             // And set the timeout
             typingTimeouts[cytoscapeVertex.id()] = setTimeout(()=>{
 
+              // Get the message text
+              var text = WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(cytoscapeVertex.id(), 'message'), cytoscapeVertex.id()))
+
               // Push the message to the chat
               WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
                 component: 'wanderer-message',
                 backgroundColor: '#6C757D',
-                vertexId: cytoscapeVertex.id()
+                vertexId: cytoscapeVertex.id(),
+                text: text
               })
 
               // Remember the message now as sent
@@ -487,6 +485,16 @@ export default {
         }
       },
       testVisitor: function (cytoscapeEdge, edgeData, language) {
+        // Just remember this edges
+        if (edgeData.type == 'and') {
+          traversedRequiredEdgeIds.push(cytoscapeEdge.id())
+        }
+        // Use the testVisitor to get a List of all the NOT edges
+        if (edgeData.type == 'not') {
+          traversedForbiddenEdgeIds.push(cytoscapeEdge.id())
+        }
+      },
+      visitor: function (cytoscapeEdge, edgeData, language) {
         // Just remember this edges
         if (edgeData.type == 'and') {
           traversedRequiredEdgeIds.push(cytoscapeEdge.id())
@@ -692,14 +700,16 @@ export default {
     //   }
     // })
 
+    WandererSingleton.on('traversalStart', function() {
+      // Reset the edge information
+      traversedRequiredEdgeIds = []
+      traversedForbiddenEdgeIds = []
+    })
+
     WandererSingleton.on('traversalFinished', function() {
 
       // Remember the forbidden Edges for one more cycle
       lastTraversedForbiddenEdgeIds = [...traversedForbiddenEdgeIds]
-
-      // Reset the edge information
-      traversedRequiredEdgeIds = []
-      traversedForbiddenEdgeIds = []
 
       // // Reset sections
       // for(var cytoscapeVertex of resetSections) {

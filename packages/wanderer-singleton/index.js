@@ -493,13 +493,13 @@ export default (function () {
   function getIncommingLifecycleData (contextVertexId) {
 
     // Get all incomming edges that was already traversed from the contextVertexId
-    let cytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(contextVertexId)
+    var cytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(contextVertexId)
 
     // Get all edges from this vertex
-    let cytoscapeEdges = cytoscapeVertex.connectedEdges()
+    var cytoscapeEdges = cytoscapeVertex.connectedEdges()
 
     // Collect the template data from the inbound edges and their source vertices
-    let templateData = {}
+    var templateData = {}
 
     cytoscapeEdges.forEach(function(currentCytoscapeEdge) {
       // Filter inbound edges
@@ -526,6 +526,13 @@ export default (function () {
                   }
 
                   var data = WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[currentCytoscapeEdge.data('source')][WandererStoreSingleton.store.state.wanderer.edgeDocumentData[currentCytoscapeEdge.id()].expose]
+
+                  // If the data is numeric
+                  if(!isNaN(data)) {
+                    // Convert it to int
+                    data = parseInt(data)
+                  }
+
                   templateData[exposeAs] = data
                 }
               }
@@ -546,9 +553,6 @@ export default (function () {
 
     var data = getIncommingLifecycleData(vertexId)
 
-    console.log('template')
-    console.log(data)
-
     try {
       return Mustache.render(template, data);
     } catch {
@@ -559,9 +563,6 @@ export default (function () {
   async function evaluateVertexExpression (expression, vertexId) {
 
     var data = getIncommingLifecycleData(vertexId)
-
-    console.log('expression')
-    console.log(data)
 
     try {
       return await jexl.eval(expression, data)
@@ -805,9 +806,7 @@ export default (function () {
     // This is the first call of the recursive stack
     if (!recursiveCall) {
 
-      if (!test) {
-        trigger('traversalStart')
-      }
+      trigger('traversalStart')
 
       traversedEdges = WandererCytoscapeSingleton.cy.collection()
       traversedVertices = WandererCytoscapeSingleton.cy.collection()
@@ -1013,7 +1012,7 @@ export default (function () {
 
         // Restart the traversal tick
         // Give the browser some time to react
-        await wait(200)
+        await wait(500)
         await traverse()
 
       }

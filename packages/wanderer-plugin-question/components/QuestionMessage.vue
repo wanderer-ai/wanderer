@@ -11,6 +11,9 @@ export default {
   props: {
     vertexId: {
       type: String
+    },
+    text: {
+      type: String
     }
   },
   data: function () {
@@ -20,9 +23,19 @@ export default {
   },
   computed: {
     question: function () {
-      if(this.vertexId != undefined) {
-        return WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(this.vertexId,'question'), this.vertexId))
+      var dynamicMode = false
+
+      // By default this is the message string
+      var message = this.text
+
+      // Override with reactive value if we have enabled the dynamic mode
+      if(dynamicMode) {
+        if(this.vertexId != undefined) {
+          message = WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(this.vertexId,'question'), this.vertexId))
+        }
       }
+
+      return message
     }
   }
 

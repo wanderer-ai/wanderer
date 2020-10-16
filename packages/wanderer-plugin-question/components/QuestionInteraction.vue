@@ -205,11 +205,14 @@ export default {
       // Create question and suggestion messages
       if(!this.hideMessages) {
 
+        var questionText = WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(this.vertexId,'question'), this.vertexId))
+
         WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
           component: 'wanderer-question-message',
           from: 'remote',
           backgroundColor: '#6C757D',
-          vertexId: this.vertexId
+          vertexId: this.vertexId,
+          text: questionText
         })
 
         WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
