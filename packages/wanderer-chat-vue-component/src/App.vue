@@ -1,36 +1,47 @@
 
 <template>
-  <div class="chat" ref="messages">
+  <div class="chat">
+    <div class="chat--messages" ref="messages">
 
-    <div class="chat--messages">
-      <message
-        v-for="(message,key) of messages"
-        :key="message.id"
-        :id="message.id"
-        :from="message.from"
-        :backgroundColor="message.backgroundColor">
-        <component v-bind:is="message.component" :text="message.text" :vertexId="message.vertexId" :lastOfType="lastOfType[message.component] == message.id" :last="key == messages.length - 1"></component>
-      </message>
+      <div>
+        <message
+          v-for="(message,key) of messages"
+          :key="message.id"
+          :id="message.id"
+          :from="message.from"
+          :backgroundColor="message.backgroundColor">
+          <component v-bind:is="message.component" :text="message.text" :vertexId="message.vertexId" :lastOfType="lastOfType[message.component] == message.id" :last="key == messages.length - 1"></component>
+        </message>
+      </div>
+
+      <div class="typing" v-if="typing">
+        <span class="circle bouncing"></span>
+        <span class="circle bouncing"></span>
+        <span class="circle bouncing"></span>
+      </div>
+
+      <div>
+        <message
+          v-if="interactions.length && !interaction.showInNavigation"
+          v-for="(interaction,key) of interactions"
+          :key="interaction.vertexId"
+          :id="interaction.vertexId"
+          from="remote"
+          backgroundColor="#6C757D">
+          <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
+        </message>
+      </div>
+
     </div>
-
-    <div class="typing" v-if="typing">
-      <span class="circle bouncing"></span>
-      <span class="circle bouncing"></span>
-      <span class="circle bouncing"></span>
-    </div>
-
-    <div class="chat--interactions">
-      <message
-        v-if="interactions.length"
+    <div class="chat--navigation">
+      <div
+        v-if="interactions.length && interaction.showInNavigation"
         v-for="(interaction,key) of interactions"
         :key="interaction.vertexId"
-        :id="interaction.vertexId"
-        from="remote"
-        backgroundColor="#6C757D">
+        :id="interaction.vertexId">
         <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
-      </message>
+      </div>
     </div>
-
   </div>
 </template>
 
@@ -137,13 +148,23 @@ export default {
 
 <style>
 .chat {
+  display: flex;
+  flex-direction: column;
   height:100%;
+}
+
+.chat--messages {
+  flex-shrink: 1;
+  flex-grow: 1;
   padding-top:25px;
   overflow-y: scroll;
 }
 
-.chat--messages {
-
+.chat--navigation {
+  flex-shrink: 1;
+  flex-grow: 1;
+  padding:25px;
+  background-color: #F8F9FA;
 }
 
 .typing {

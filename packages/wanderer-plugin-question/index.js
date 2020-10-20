@@ -11,12 +11,63 @@ export default {
 
   install (Vue) {
 
+    // Register vue components
     Vue.component('wanderer-question-editor', QuestionEditor)
     Vue.component('wanderer-suggestion-editor', SuggestionEditor)
     Vue.component('wanderer-question-interaction', QuestionInteraction)
     Vue.component('wanderer-suggestion-message', SuggestionMessage)
     Vue.component('wanderer-question-message', QuestionMessage)
     Vue.component('wanderer-is-answerable-by-editor', IsAnswerableByEditor)
+
+    // Add method for rendering suggestion messages
+    function getChatSuggestionMessage (vertexId) {
+      var message = ''
+
+      // Get all suggestions
+      if(WandererStoreSingleton.store.state.wanderer.question.suggestions[vertexId] != undefined) {
+        var suggestionIds = WandererStoreSingleton.store.state.wanderer.question.suggestions[vertexId]
+        if (suggestionIds != undefined) {
+
+          // Sort by priority
+          suggestionIds = suggestionIds.sort(function(a, b) {
+            return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[b]['priority']-WandererStoreSingleton.store.state.wanderer.vertexDocumentData[a]['priority']
+          })
+
+          // Find answered suggestions
+          var answeredSuggestionIds = []
+          for(let suggestionId in suggestionIds) {
+            var answered = WandererSingleton.getLifecycleValue(suggestionIds[suggestionId], 'answered')
+            if(answered) {
+              answeredSuggestionIds.push(suggestionIds[suggestionId])
+            }
+          }
+
+          // Foreach answered suggestion
+          for(let suggestionId in answeredSuggestionIds) {
+
+            var type = WandererSingleton.getVertexValue(answeredSuggestionIds[suggestionId],'type')
+            var suggestion = WandererSingleton.getTranslatableVertexValue(answeredSuggestionIds[suggestionId],'suggestion')
+            var value = WandererSingleton.getLifecycleValue(answeredSuggestionIds[suggestionId],'value')
+
+            if(type=='button' || type=='checkbox') {
+              message = message+suggestion
+            }
+
+            if(type=='text' || type=='textarea') {
+              message = message+value
+            }
+
+            if(suggestionId != Object.keys(answeredSuggestionIds).length - 1) {
+              message = message + ', '
+            }
+
+          }
+        }
+
+      }
+      return message
+    }
+    Vue.prototype.$getChatSuggestionMessage = getChatSuggestionMessage
 
     // Add a separate store module
     WandererStoreSingleton.store.registerModule(['wanderer', 'question'], {
@@ -68,8 +119,7 @@ export default {
             de: 'Neue Frage'
           },
           hideMessages: false,
-          drawAttention: true,
-          smallButtons: false
+          showInNavigation: false
         },
         cytoscapeStyles: [
           {
@@ -513,7 +563,8 @@ export default {
             // Push the question to the chat
             WandererStoreSingleton.store.commit('wanderer/chat/addInteraction', {
               component: 'wanderer-question-interaction',
-              vertexId: q
+              vertexId: q,
+              showInNavigation: WandererSingleton.getVertexValue(q, 'showInNavigation')
             })
 
             // Add the vertexId to the question/suggestions store

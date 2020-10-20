@@ -15,14 +15,8 @@
       </div>
       <div class="form-check">
         <label class="form-check-label">
-          <input class="form-check-input" type="checkbox" v-model="drawAttention">
-          Draw attention (Shake buttons)
-        </label>
-      </div>
-      <div class="form-check">
-        <label class="form-check-label">
-          <input class="form-check-input" type="checkbox" v-model="smallButtons">
-          Use small buttons
+          <input class="form-check-input" type="checkbox" v-model="showInNavigation">
+          Show in navigation
         </label>
       </div>
     </div>
@@ -39,8 +33,7 @@ export default {
   computed: {
     question: WandererBuilder.getTranslatableVertexModel('question'),
     hideMessages: WandererBuilder.getVertexModel('hideMessages'),
-    drawAttention: WandererBuilder.getVertexModel('drawAttention'),
-    smallButtons: WandererBuilder.getVertexModel('smallButtons')
+    showInNavigation: WandererBuilder.getVertexModel('showInNavigation')
   }
 }
 </script>

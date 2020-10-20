@@ -128,12 +128,10 @@ export default {
       visitor: function (cytoscapeVertex, vertexData, language) {
 
         // Get the evaluated expression
-        WandererSingleton.evaluateVertexExpression(WandererSingleton.getVertexValue(cytoscapeVertex.id(), 'expression'), cytoscapeVertex.id()).then((result) => {
+        var result = WandererSingleton.evaluateVertexExpression(WandererSingleton.getVertexValue(cytoscapeVertex.id(), 'expression'), cytoscapeVertex.id())
 
-          // Set the evaluated expression as a lifecycle value
-          WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'result', result)
-
-        })
+        // Set the evaluated expression as a lifecycle value
+        WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'result', result)
 
       }
     })

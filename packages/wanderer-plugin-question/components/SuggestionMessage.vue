@@ -1,22 +1,9 @@
 <template>
   <div>
 
-    <span v-for="(answer, index) in answers" :key="answer._id" >
+    <span>{{answers}}</span>
 
-      <span v-if="answer.type=='button' || answer.type=='checkbox'">
-        {{answer.suggestion}}
-      </span>
-
-      <span v-if="answer.type=='text' || answer.type=='textarea'">
-        <!-- <span v-if="answer.suggestion">{{answer.suggestion}}:</span> -->
-        {{answer.value}}
-      </span>
-
-      <span v-if="index != Object.keys(answers).length - 1">, </span>
-
-    </span>
-
-    <span class="button--repeat" v-if="repeatable" v-on:click="askAgain()">↺</span>
+    <span :class="(repeatable?'button--pointer':'button--disabled')" v-on:click="askAgain()">↺</span>
 
   </div>
 </template>
@@ -30,56 +17,27 @@ export default {
   props: {
     vertexId: {
       type: String
+    },
+    text: {
+      type: String
     }
   },
-  data: function () {
-    return {
-      answers: []
-    }
-  },
-  mounted: function () {
+  computed: {
+    answers: function () {
 
-    // Do not use answers as a computed property in here because we dont want to update it.
-    // It would be a bad idea to change the chat message history if a user changes the answer.
+      var dynamicMode = false
 
-    this.$nextTick(function () {
+      // By default this is the message string
+      var message = this.text
 
-      if(this.vertexId != undefined) {
-
-        if(WandererStoreSingleton.store.state.wanderer.question.suggestions[this.vertexId] != undefined) {
-          var suggestionIds = WandererStoreSingleton.store.state.wanderer.question.suggestions[this.vertexId]
-          if (suggestionIds != undefined) {
-
-            suggestionIds = suggestionIds.sort(function(a, b) {
-                return WandererStoreSingleton.store.state.wanderer.vertexDocumentData[b]['priority']-WandererStoreSingleton.store.state.wanderer.vertexDocumentData[a]['priority']
-            })
-
-            for(let suggestionId in suggestionIds) {
-
-              var data = WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[suggestionIds[suggestionId]]
-              if(data.answered != undefined && data.answered) {
-
-                this.answers.push({
-                  _id: suggestionIds[suggestionId],
-                  suggestion: WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(suggestionIds[suggestionId],'suggestion'), suggestionId),
-                  type: WandererSingleton.getVertexValue(suggestionIds[suggestionId],'type'),
-                  // priority: WandererSingleton.getVertexValue(suggestionIds[suggestionId],'priority'),
-                  value: WandererSingleton.getLifecycleValue(suggestionIds[suggestionId],'value')
-                })
-
-              }
-
-            }
-          }
-
+      // Override with reactive value if we have enabled the dynamic mode
+      if(dynamicMode) {
+        if(this.vertexId != undefined) {
+          message = this.$getChatSuggestionMessage(this.vertexId)
         }
       }
 
-    })
-  },
-  computed: {
-    answered: function () {
-      return WandererSingleton.getLifecycleValue(this.vertexId, 'answered')
+      return message
     },
     repeatable: function () {
       return WandererSingleton.isVertexInTraversal(this.vertexId)
@@ -88,29 +46,29 @@ export default {
   methods: {
     askAgain () {
 
-      // this.answered = false;
+      if(this.repeatable) {
+        // Mark this question as not answered
+        WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+          id: this.vertexId,
+          key: 'answered',
+          value: false
+        })
 
-      // Mark this question as not answered
-      WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-        id: this.vertexId,
-        key: 'answered',
-        value: false
-      })
+        WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+          id: this.vertexId,
+          key: 'sent',
+          value: false
+        })
 
-      WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-        id: this.vertexId,
-        key: 'sent',
-        value: false
-      })
-
-      // Mark the suggestions as not answered
-      for(var s in this.suggestions) {
-        if (this.suggestions.hasOwnProperty(s)) {
-          WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-            id: this.suggestions[s]._id,
-            key: 'answered',
-            value: false
-          })
+        // Mark the suggestions as not answered
+        for(var s in this.suggestions) {
+          if (this.suggestions.hasOwnProperty(s)) {
+            WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
+              id: this.suggestions[s]._id,
+              key: 'answered',
+              value: false
+            })
+          }
         }
       }
 
@@ -120,7 +78,11 @@ export default {
 </script>
 
 <style>
-.button--repeat {
+.button--pointer {
   cursor:pointer;
+}
+
+.button--disabled {
+  color:#ccc;
 }
 </style>

@@ -1,6 +1,6 @@
 {
   "name": "wanderer-builder-singleton",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,8 +8,8 @@
   },
   "author": "",
   "dependencies": {
-    "wanderer-singleton": "^1.0.0",
-    "wanderer-store-singleton": "^1.0.0",
-    "wanderer-cytoscape-singleton": "^1.0.0"
+    "wanderer-singleton": "^0.0.1",
+    "wanderer-store-singleton": "^0.0.1",
+    "wanderer-cytoscape-singleton": "^0.0.1"
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div v-if="">
 
-    <span :class="(smallButtons? 'h6':'')+' question-interaction'" v-html="question"></span>
+    <span :class="(showInNavigation? 'h6':'')+' question-interaction'" v-html="question"></span>
 
     <div v-for="suggestion in suggestions" :key="suggestion._id">
 
@@ -24,9 +24,9 @@
 
     </div>
 
-    <div :class="'btn-group has-wrap '+(drawAttention? 'shake':'')">
+    <div :class="'btn-group has-wrap '+(showInNavigation? '':'shake')">
 
-      <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" :disabled="answered" :class="'btn btn-success rounded-0 '+(smallButtons? 'btn-sm':'')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
+      <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" :disabled="answered" :class="'btn btn-success rounded-0 '+(showInNavigation? 'btn-sm':'')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
 
     </div>
 
@@ -65,9 +65,9 @@ export default {
         return WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(this.vertexId,'question'), this.vertexId))
       }
     },
-    drawAttention: function () {
+    showInNavigation: function () {
       if(this.vertexId != undefined) {
-        return WandererSingleton.getVertexValue(this.vertexId,'drawAttention')
+        return WandererSingleton.getVertexValue(this.vertexId,'showInNavigation')
       }
     },
     hideMessages: function () {
@@ -94,11 +94,6 @@ export default {
       } else {
         // immer anzeigen
         return true
-      }
-    },
-    smallButtons: function () {
-      if(this.vertexId != undefined) {
-        return WandererSingleton.getVertexValue(this.vertexId,'smallButtons')
       }
     },
     suggestions: function () {
@@ -219,7 +214,8 @@ export default {
           component: 'wanderer-suggestion-message',
           from: 'local',
           backgroundColor: '#28A745',
-          vertexId: this.vertexId
+          vertexId: this.vertexId,
+          text: this.$getChatSuggestionMessage(this.vertexId)
         })
 
       }

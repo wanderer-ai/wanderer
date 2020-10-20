@@ -70,6 +70,10 @@ export default {
 
           if (interaction.component === undefined) { throw Error('Every interaction needs a Vue component!') }
           if (interaction.vertexId === undefined) { throw Error('Every interaction needs a vertex id!') }
+          if (interaction.showInNavigation === undefined) { interaction.showInNavigation = false }
+
+          // Freeze the message object to improve performance
+          Object.freeze(interaction);
 
           state.interactions.push(interaction)
           state.interactionVertexIds.push(interaction.vertexId)

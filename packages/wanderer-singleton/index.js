@@ -560,12 +560,12 @@ export default (function () {
     }
   }
 
-  async function evaluateVertexExpression (expression, vertexId) {
+  function evaluateVertexExpression (expression, vertexId) {
 
     var data = getIncommingLifecycleData(vertexId)
 
     try {
-      return await jexl.eval(expression, data)
+      return jexl.evalSync(expression, data)
     } catch {
 
     }
@@ -956,7 +956,7 @@ export default (function () {
                   // We dont want to build a unlimited recursion!
                   if(traversedVerticeIds.indexOf(expandEdges[i].target().id()) == -1) {
                     // Give the browser some time to react
-                    await wait(5)
+                    await wait(1)
                     // Traverse into deep
                     await traverse(expandEdges[i].target().id(), true, test)
                   }
@@ -987,7 +987,7 @@ export default (function () {
         // Now start the real traversal.
         // Without testing the track
         // Give the browser some time to react
-        await wait(5)
+        await wait(1)
         await traverse(nodeId, false, false)
       } else {
 
@@ -1012,7 +1012,7 @@ export default (function () {
 
         // Restart the traversal tick
         // Give the browser some time to react
-        await wait(500)
+        await wait(1000)
         await traverse()
 
       }

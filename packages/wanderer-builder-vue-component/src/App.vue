@@ -28,9 +28,10 @@
     <remove-tool />
     <unlink-tool />
     <connect-tool />
-    <file-tool :show="showFileTool" v-on:startTutorial="startTutorial()"/>
+    <file-tool :show="showFileTool" v-on:startTutorial="startTutorial()" v-on:viewExamples="viewExamples()"/>
     <language-tool />
     <chat-tool v-on:toggle="toggleChatPanel()"/>
+    <restart-tool v-on:toggle="toggleChatPanel()" v-if="showChatPanel"/>
     <add-vertex-tool />
     <!-- <welcome-tool v-on:startTutorial="startTutorial()" v-on:openFileTool="openFileTool()" /> -->
 
@@ -54,6 +55,7 @@ import FileTool from './components/tools/File.vue'
 import LanguageTool from './components/tools/Language.vue'
 import ChatTool from './components/tools/Chat.vue'
 import AddVertexTool from './components/tools/AddVertex.vue'
+import RestartTool from './components/tools/Restart.vue'
 // import WelcomeTool from './components/tools/Welcome.vue'
 
 import WandererSingleton from 'wanderer-singleton'
@@ -75,6 +77,7 @@ export default {
     LanguageTool,
     ChatTool,
     AddVertexTool,
+    RestartTool
     // WelcomeTool
   },
   data: function () {
@@ -97,6 +100,11 @@ export default {
     async startTutorial () {
       this.showChatPanel = true
       await WandererSingleton.loadJsonRemote('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json')
+      // WandererSingleton.traverse()
+    },
+    async viewExamples () {
+      this.showChatPanel = true
+      await WandererSingleton.loadJsonRemote('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/examples/examples.json')
       // WandererSingleton.traverse()
     }
   }

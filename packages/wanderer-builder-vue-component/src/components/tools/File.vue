@@ -28,6 +28,16 @@
             or
           </span>
 
+          <span class="btn btn-primary upload-btn-wrapper">
+            <icon name="upload"></icon>
+            Restore from file
+            <input class="btn" type="file" @change="loadJsonFile">
+          </span>
+
+        </div>
+
+        <div class="mb-4">
+
           <span class="btn btn-warning" v-on:click="startTutorial()">
             <icon name="book"></icon>
             Start a tutorial now
@@ -37,10 +47,9 @@
             or
           </span>
 
-          <span class="btn btn-primary upload-btn-wrapper">
-            <icon name="upload"></icon>
-            Restore from file
-            <input class="btn" type="file" @change="loadJsonFile">
+          <span class="btn btn-warning" v-on:click="viewExamples()">
+            <icon name="lightbulb"></icon>
+            View some examples
           </span>
 
         </div>
@@ -96,6 +105,7 @@ import 'vue-awesome/icons/book'
 import 'vue-awesome/icons/file'
 import 'vue-awesome/icons/upload'
 import 'vue-awesome/icons/globe'
+import 'vue-awesome/icons/lightbulb'
 
 import {version} from '../../../package.json'
 
@@ -140,6 +150,10 @@ export default {
     startTutorial (url) {
       this.showModal = false
       this.$emit('startTutorial')
+    },
+    viewExamples (url) {
+      this.showModal = false
+      this.$emit('viewExamples')
     },
     startEmptyProject () {
       WandererSingleton.load(this.resetIds({
