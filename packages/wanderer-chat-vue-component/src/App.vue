@@ -20,9 +20,9 @@
         <span class="circle bouncing"></span>
       </div>
 
-      <div>
+      <div v-if="interactions.length">
         <message
-          v-if="interactions.length && !interaction.showInNavigation"
+          v-if="!interaction.showInNavigation"
           v-for="(interaction,key) of interactions"
           :key="interaction.vertexId"
           :id="interaction.vertexId"
@@ -33,9 +33,9 @@
       </div>
 
     </div>
-    <div class="chat--navigation">
+    <div v-if="interactions.length" class="chat--navigation">
       <div
-        v-if="interactions.length && interaction.showInNavigation"
+        v-if="interaction.showInNavigation"
         v-for="(interaction,key) of interactions"
         :key="interaction.vertexId"
         :id="interaction.vertexId">
@@ -154,6 +154,7 @@ export default {
 }
 
 .chat--messages {
+  height:100%; /* Take the whole space. The navigation can get the rest of it */
   flex-shrink: 1;
   flex-grow: 1;
   padding-top:25px;

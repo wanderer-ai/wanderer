@@ -12,9 +12,22 @@
     <portal to="modals" :order="1">
       <modal :showHeader="true" title="Save and Restore" :showFooter="true" :showClose="vertexCount>0" :show="showModal"  v-on:closeButton="showModal=false">
 
-        <div class="alert alert-warning" role="alert">
-          <strong>Important information:</strong> This software is experimental! Currently you should not use Wanderer.ai for production projects!
-          The project is in a early stage of development. So your conversation flows could break in the future.
+        <div class="mb-4">
+
+          <span class="btn btn-success" v-on:click="startTutorial()">
+            <icon name="book"></icon>
+            Start a tutorial now
+          </span>
+
+          <span>
+            or
+          </span>
+
+          <span class="btn btn-success" v-on:click="viewExamples()">
+            <icon name="lightbulb"></icon>
+            View some examples
+          </span>
+
         </div>
 
         <div class="mb-4">
@@ -32,24 +45,6 @@
             <icon name="upload"></icon>
             Restore from file
             <input class="btn" type="file" @change="loadJsonFile">
-          </span>
-
-        </div>
-
-        <div class="mb-4">
-
-          <span class="btn btn-warning" v-on:click="startTutorial()">
-            <icon name="book"></icon>
-            Start a tutorial now
-          </span>
-
-          <span>
-            or
-          </span>
-
-          <span class="btn btn-warning" v-on:click="viewExamples()">
-            <icon name="lightbulb"></icon>
-            View some examples
           </span>
 
         </div>
@@ -77,10 +72,9 @@
 
         </div>
 
-        <div>
-
-
-
+        <div class="alert alert-warning" role="alert">
+          <strong>Important information:</strong> This software is experimental! Currently you should not use Wanderer.ai for production projects!
+          The project is in a early stage of development. So your conversation flows could break in the future.
         </div>
 
       </modal>

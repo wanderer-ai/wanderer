@@ -18,6 +18,7 @@
     "bootstrap-vue": "^2.0.0-rc.11",
     "vue": "^2.5.2",
     "wanderer-builder-singleton": "^0.0.1",
+    "wanderer-cytoscape-singleton": "^0.0.1",
     "wanderer-store-singleton": "^0.0.1",
     "wanderer-singleton": "^0.0.1"
   },

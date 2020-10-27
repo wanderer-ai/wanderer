@@ -4,7 +4,7 @@
   <div>
 
     <portal to="actionbar" :order="1">
-      <button class="btn btn-secondary navbar-btn" title="Chat" v-on:click="$emit('toggle')">
+      <button class="btn btn-secondary navbar-btn" title="Toggle Chat" v-on:click="$emit('toggle')">
         <icon name="comments"></icon>
       </button>
     </portal>

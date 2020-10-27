@@ -4,7 +4,7 @@
   <div>
 
     <portal to="actionbar" :order="1">
-      <button class="btn btn-secondary navbar-btn" title="Info" v-on:click="showModal=true">
+      <button class="btn btn-secondary navbar-btn" title="Show Info" v-on:click="showModal=true">
         <icon name="info"></icon>
       </button>
     </portal>

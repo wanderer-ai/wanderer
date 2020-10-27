@@ -125,12 +125,12 @@ export default {
           {
             selector: '.question',
             style: {
-              'shape': 'round-rectangle',
-              'height': '150px',
-              'width': '150px',
+              // 'shape': 'round-rectangle',
+              'height': '100px',
+              'width': '100px',
               'font-size': '30px',
-              'background-opacity': 0,
-              'background-color': '#fff',
+              // 'background-opacity': 0,
+              'background-color': '#28A745',
               'border-color': '#28A745',
               'border-width': '20px',
               'label': 'data(label)'
@@ -509,7 +509,7 @@ export default {
         cytoscapeStyles: [{
           selector: '.isAnswerableBy',
           style: {
-            'display': 'none',
+            // 'display': 'none',
             'line-color': '#28A745',
             'target-arrow-color': '#28A745',
             'source-arrow-color': '#28A745',
@@ -529,16 +529,16 @@ export default {
       // },
       afterCreate: (cytoscapeEdge, data) => {
         // Move the target to the source node
-        cytoscapeEdge.target().move({
-          parent: cytoscapeEdge.source().id()
-        });
+        // cytoscapeEdge.target().move({
+        //   parent: cytoscapeEdge.source().id()
+        // });
       },
       beforeRemove: (cytoscapeEdge) => {
         // Move the node out of its parent
         // console.log('unlink')
-        cytoscapeEdge.target().move({
-          parent: null
-        });
+        // cytoscapeEdge.target().move({
+        //   parent: null
+        // });
       }
     })
 
@@ -558,8 +558,7 @@ export default {
 
           // If suggestions was found for this interaction
           if(foundQuestions[q].length) {
-
-
+            
             // Push the question to the chat
             WandererStoreSingleton.store.commit('wanderer/chat/addInteraction', {
               component: 'wanderer-question-interaction',

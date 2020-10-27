@@ -439,8 +439,8 @@ export default class WandererBuilder {
         selector: 'node',
         style: {
           'label': 'data(label)',
-          'text-wrap': 'wrap',
-          'text-max-width': '300px',
+          'text-wrap': 'ellipsis',
+          'text-max-width': '500px',
           'border-width': 5,
           'transition-property': 'border-color',
           'transition-duration': '0.5s',

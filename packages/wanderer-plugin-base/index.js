@@ -258,9 +258,9 @@ export default {
         cytoscapeStyles: [{
           selector: '.message',
           style: {
-            'shape': 'round-rectangle',
+            // 'shape': 'round-rectangle',
             'height': '50px',
-            'width': '150px',
+            'width': '50px',
             'font-size': '20px',
             'background-color': '#007BFF',
             'border-color': '#007BFF',

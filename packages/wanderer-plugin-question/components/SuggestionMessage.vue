@@ -12,6 +12,7 @@
 
 import WandererSingleton from 'wanderer-singleton'
 import WandererStoreSingleton from 'wanderer-store-singleton'
+import CytoscapeSingleton from 'wanderer-cytoscape-singleton'
 
 export default {
   props: {
@@ -41,12 +42,20 @@ export default {
     },
     repeatable: function () {
       return WandererSingleton.isVertexInTraversal(this.vertexId)
+    },
+    suggestionIds: function () {
+      if(this.vertexId != undefined) {
+        if(WandererStoreSingleton.store.state.wanderer.question.suggestions[this.vertexId] != undefined) {
+          return WandererStoreSingleton.store.state.wanderer.question.suggestions[this.vertexId]
+        }
+      }
     }
   },
   methods: {
     askAgain () {
 
       if(this.repeatable) {
+
         // Mark this question as not answered
         WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
           id: this.vertexId,
@@ -54,22 +63,13 @@ export default {
           value: false
         })
 
-        WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-          id: this.vertexId,
-          key: 'sent',
-          value: false
+        // Reset all suggestions
+        var cytoscapeVertex = CytoscapeSingleton.cy.getElementById(this.vertexId);
+        var children = cytoscapeVertex.children('.suggestion');
+        children.forEach(function(child) {
+          WandererSingleton.setLifecycleValue(child.id(), 'answered', false)
         })
 
-        // Mark the suggestions as not answered
-        for(var s in this.suggestions) {
-          if (this.suggestions.hasOwnProperty(s)) {
-            WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-              id: this.suggestions[s]._id,
-              key: 'answered',
-              value: false
-            })
-          }
-        }
       }
 
     }

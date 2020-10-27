@@ -87,10 +87,10 @@ export default {
     display: inline-block;
     width:auto;
     position: relative;
-    padding:15px;
+    padding:10px;
     color:#fff;
-    font-size:20px;
-    margin-bottom:25px;
+    font-size:18px;
+    margin-bottom:15px;
     margin-left: 20px;
     margin-right: 20px;
   }
