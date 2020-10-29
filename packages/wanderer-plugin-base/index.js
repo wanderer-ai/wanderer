@@ -33,7 +33,7 @@ export default {
       name: 'flow',
       builder: {
         label: 'Flow',
-        color: '#6C757D',
+        color: '#FEC106',
         cytoscapeClasses: 'flow',
         cytoscapeCxtMenuSelector: '.flow',
         creatable: false,
@@ -46,8 +46,8 @@ export default {
             'height': '200px',
             'width': '200px',
             'font-size': '30px',
-            'background-color': '#6C757D',
-            'border-color': '#6C757D',
+            'background-color': '#FEC106',
+            'border-color': '#FEC106',
             'border-width': '5px',
             'label': 'data(label)'
           }
@@ -57,11 +57,11 @@ export default {
       toCytoscape: function(data, language) {
         if(data.topic[language]){
           return {
-            label: data.topic[language]
+            label: data.topic[language]+(debug?' '+data._id:'')
           }
         }
         return {
-          label: 'Flow'
+          label: 'Flow'+(debug?' '+data._id:'')
         }
       },
       // edgeMethods: {
@@ -311,11 +311,11 @@ export default {
       toCytoscape: function(data, language){
         if(data.message[language]){
           return {
-            label: data.message[language]
+            label: data.message[language]+(debug?' '+data._id:'')
           }
         }
         return {
-          label: 'Message'
+          label: 'Message'+(debug?' '+data._id:'')
         }
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
@@ -484,22 +484,22 @@ export default {
           priority: priority
         }
       },
-      testVisitor: function (cytoscapeEdge, edgeData, language) {
-        // Just remember this edges
-        if (edgeData.type == 'and') {
-          traversedRequiredEdgeIds.push(cytoscapeEdge.id())
-        }
-        // Use the testVisitor to get a List of all the NOT edges
-        if (edgeData.type == 'not') {
-          traversedForbiddenEdgeIds.push(cytoscapeEdge.id())
-        }
-      },
+      // testVisitor: function (cytoscapeEdge, edgeData, language) {
+      //   // Just remember this edges
+      //   if (edgeData.type == 'and') {
+      //     traversedRequiredEdgeIds.push(cytoscapeEdge.id())
+      //   }
+      //   // Use the testVisitor to get a List of all the NOT edges
+      //   if (edgeData.type == 'not') {
+      //     traversedForbiddenEdgeIds.push(cytoscapeEdge.id())
+      //   }
+      // },
       visitor: function (cytoscapeEdge, edgeData, language) {
         // Just remember this edges
         if (edgeData.type == 'and') {
           traversedRequiredEdgeIds.push(cytoscapeEdge.id())
         }
-        // Use the testVisitor to get a List of all the NOT edges
+        // Use the visitor to get a List of all the NOT edges
         if (edgeData.type == 'not') {
           traversedForbiddenEdgeIds.push(cytoscapeEdge.id())
         }

@@ -558,7 +558,7 @@ export default {
 
           // If suggestions was found for this interaction
           if(foundQuestions[q].length) {
-            
+
             // Push the question to the chat
             WandererStoreSingleton.store.commit('wanderer/chat/addInteraction', {
               component: 'wanderer-question-interaction',

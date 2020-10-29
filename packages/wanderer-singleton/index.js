@@ -781,7 +781,7 @@ export default (function () {
     lastReachableVerticeIds = []
   }
 
-  async function traverse (nodeId, recursiveCall, test) {
+  async function traverse (currentCytoscapeVertex, recursiveCall, test) {
 
     // Break the current traversal if it was stopped
     if(!traversing) {
@@ -789,8 +789,9 @@ export default (function () {
     }
 
     // Get the root node
-    if (nodeId == undefined) {
+    if (currentCytoscapeVertex == undefined) {
       var nodeId = WandererStoreSingleton.store.state.wanderer.vertexDocumentIds[0]
+      currentCytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(nodeId)
     }
 
     // This is not an recursive call if undefined
@@ -815,11 +816,10 @@ export default (function () {
 
     }
 
-    if (nodeId) {
+    if (currentCytoscapeVertex) {
 
       // Get node data
-      let currentCytoscapeVertex = WandererCytoscapeSingleton.cy.getElementById(nodeId)
-      let currentVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[nodeId]
+      let currentVertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[currentCytoscapeVertex.id()]
       if(currentVertexData) {
 
         let currentVertexCollection = getVertexCollection(currentVertexData._collection)
@@ -958,7 +958,7 @@ export default (function () {
                     // Give the browser some time to react
                     await wait(1)
                     // Traverse into deep
-                    await traverse(expandEdges[i].target().id(), true, test)
+                    await traverse(expandEdges[i].target(), true, test)
                   }
 
                   // Store this into the vuex store
@@ -988,7 +988,7 @@ export default (function () {
         // Without testing the track
         // Give the browser some time to react
         await wait(1)
-        await traverse(nodeId, false, false)
+        await traverse(currentCytoscapeVertex, false, false)
       } else {
 
         // Update the last reachable vertices

@@ -44,11 +44,11 @@ export default {
       toCytoscape: function(data, language){
         if(data.label){
           return {
-            label: data.label
+            label: data.label+(debug?' '+data._id:'')
           }
         }
         return {
-          label: 'Conclusion'
+          label: 'Conclusion'+(debug?' '+data._id:'')
         }
       },
       visitor: function (cytoscapeVertex, vertexData, language) {
