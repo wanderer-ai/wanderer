@@ -45,7 +45,7 @@ export default {
               state.selectedVertexIds.push(verticeIds[i])
             }
           }
-          // Than delete the the rest
+          // Then delete the the rest
           for (let i in state.selectedVertexIds) {
             if(verticeIds.indexOf(state.selectedVertexIds[i])==-1){
               state.selectedVertexIds.splice(state.selectedVertexIds.indexOf(state.selectedVertexIds[i]), 1)
