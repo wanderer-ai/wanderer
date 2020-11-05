@@ -1,0 +1,25 @@
+{
+  "name": "wanderer-builder-nuxt",
+  "version": "0.0.1",
+  "description": "Wanderer.ai Builder Nuxt.js App",
+  "author": "",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "nuxt": "latest",
+    "worker-loader": "latest",
+    "vuex": "latest",
+    "wanderer": "^0.0.1",
+    "wanderer-builder": "^0.0.1",
+    "wanderer-webworker": "^0.0.1",
+    "wanderer-plugin-base": "^0.0.1"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^3.1.0"
+  }
+}

@@ -11,12 +11,9 @@
 
 <script>
 
-import WandererBuilderSingleton from 'wanderer-builder-singleton'
-// import StoreSingleton from 'wanderer-store-singleton'
-
 export default {
   computed: {
-    message: WandererBuilderSingleton.getTranslatableVertexModel('message')
+    // message: WandererBuilderSingleton.getTranslatableVertexModel('message')
   }
 }
 </script>

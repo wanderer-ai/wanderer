@@ -95,58 +95,52 @@
 
 <script>
 
-import WandererSingleton from 'wanderer-singleton'
-import WandererBuilder from 'wanderer-builder-singleton'
-import WandererCytoscapeSingleton from 'wanderer-cytoscape-singleton'
-
 export default {
-  computed: {
-    type: WandererBuilder.getEdgeModel('type'),
-    name: WandererBuilder.getEdgeModel('name'),
-    expose: WandererBuilder.getEdgeModel('expose'),
-    method: WandererBuilder.getEdgeModel('method'),
-    priority: WandererBuilder.getEdgeModel('priority'),
-    condition: WandererBuilder.getEdgeModel('condition'),
-    // compareVariable: WandererBuilder.getEdgeModel('compareVariable'),
-    // compareCondition: WandererBuilder.getEdgeModel('compareCondition'),
-    // compareValue: WandererBuilder.getEdgeModel('compareValue'),
-    lifecycleData () {
-      if (this.$store.state.wanderer.builder.editEdge !== 0) {
-        let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(this.$store.state.wanderer.builder.editEdge)
-        let cytoscapeSourceNode = cytoscapeEdge.source()
-        let cytoscapeSourceNodeId = cytoscapeSourceNode.id()
-        let cytoscapeSourceNodeData = this.$store.state.wanderer.vertexDocumentData[cytoscapeSourceNodeId]
-        let sourceNodeCollection = WandererSingleton.getVertexCollection(cytoscapeSourceNodeData._collection)
-        if(sourceNodeCollection.lifecycleData != undefined) {
-          return sourceNodeCollection.lifecycleData
-        }
-      }
-    },
-    edgeConditions () {
-      if (this.$store.state.wanderer.builder.editEdge !== 0) {
-        let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(this.$store.state.wanderer.builder.editEdge)
-        let cytoscapeSourceNode = cytoscapeEdge.source()
-        let cytoscapeSourceNodeId = cytoscapeSourceNode.id()
-        let cytoscapeSourceNodeData = this.$store.state.wanderer.vertexDocumentData[cytoscapeSourceNodeId]
-        let sourceNodeCollection = WandererSingleton.getVertexCollection(cytoscapeSourceNodeData._collection)
-        if(sourceNodeCollection.edgeConditions != undefined) {
-          return sourceNodeCollection.edgeConditions
-        }
-      }
-    },
-    edgeMethods () {
-      if (this.$store.state.wanderer.builder.editEdge !== 0) {
-        let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(this.$store.state.wanderer.builder.editEdge)
-        let cytoscapeTargetNode = cytoscapeEdge.target()
-        let cytoscapeTargetNodeId = cytoscapeTargetNode.id()
-        let cytoscapeTargetNodeData = this.$store.state.wanderer.vertexDocumentData[cytoscapeTargetNodeId]
-        let targetNodeCollection = WandererSingleton.getVertexCollection(cytoscapeTargetNodeData._collection)
-        if(targetNodeCollection.edgeMethods != undefined) {
-          return targetNodeCollection.edgeMethods
-        }
-      }
-    }
-  }
+  // computed: {
+  //   type: WandererBuilder.getEdgeModel('type'),
+  //   name: WandererBuilder.getEdgeModel('name'),
+  //   expose: WandererBuilder.getEdgeModel('expose'),
+  //   method: WandererBuilder.getEdgeModel('method'),
+  //   priority: WandererBuilder.getEdgeModel('priority'),
+  //   condition: WandererBuilder.getEdgeModel('condition'),
+  //
+  //   lifecycleData () {
+  //     if (this.$store.state.wanderer.builder.editEdge !== 0) {
+  //       let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(this.$store.state.wanderer.builder.editEdge)
+  //       let cytoscapeSourceNode = cytoscapeEdge.source()
+  //       let cytoscapeSourceNodeId = cytoscapeSourceNode.id()
+  //       let cytoscapeSourceNodeData = this.$store.state.wanderer.vertexDocumentData[cytoscapeSourceNodeId]
+  //       let sourceNodeCollection = WandererSingleton.getVertexCollection(cytoscapeSourceNodeData._collection)
+  //       if(sourceNodeCollection.lifecycleData != undefined) {
+  //         return sourceNodeCollection.lifecycleData
+  //       }
+  //     }
+  //   },
+  //   edgeConditions () {
+  //     if (this.$store.state.wanderer.builder.editEdge !== 0) {
+  //       let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(this.$store.state.wanderer.builder.editEdge)
+  //       let cytoscapeSourceNode = cytoscapeEdge.source()
+  //       let cytoscapeSourceNodeId = cytoscapeSourceNode.id()
+  //       let cytoscapeSourceNodeData = this.$store.state.wanderer.vertexDocumentData[cytoscapeSourceNodeId]
+  //       let sourceNodeCollection = WandererSingleton.getVertexCollection(cytoscapeSourceNodeData._collection)
+  //       if(sourceNodeCollection.edgeConditions != undefined) {
+  //         return sourceNodeCollection.edgeConditions
+  //       }
+  //     }
+  //   },
+  //   edgeMethods () {
+  //     if (this.$store.state.wanderer.builder.editEdge !== 0) {
+  //       let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(this.$store.state.wanderer.builder.editEdge)
+  //       let cytoscapeTargetNode = cytoscapeEdge.target()
+  //       let cytoscapeTargetNodeId = cytoscapeTargetNode.id()
+  //       let cytoscapeTargetNodeData = this.$store.state.wanderer.vertexDocumentData[cytoscapeTargetNodeId]
+  //       let targetNodeCollection = WandererSingleton.getVertexCollection(cytoscapeTargetNodeData._collection)
+  //       if(targetNodeCollection.edgeMethods != undefined) {
+  //         return targetNodeCollection.edgeMethods
+  //       }
+  //     }
+  //   }
+  // }
 }
 </script>
 

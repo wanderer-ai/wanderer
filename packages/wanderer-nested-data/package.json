@@ -1,0 +1,10 @@
+{
+  "name": "wanderer-nested-data",
+  "version": "0.0.1",
+  "description": "Wanderer.ai Nested Data",
+  "main": "index.js",
+  "author": "",
+  "dependencies": {
+
+  }
+}

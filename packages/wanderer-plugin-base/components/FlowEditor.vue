@@ -31,16 +31,13 @@
 
 <script>
 
-import WandererBuilderSingleton from 'wanderer-builder-singleton'
-// import StoreSingleton from 'wanderer-store-singleton'
-
 export default {
   computed: {
-    topic: WandererBuilderSingleton.getTranslatableVertexModel('topic'),
-    // onboarding: WandererBuilderSingleton.getTranslatableVertexModel('onboarding'),
-    // offboarding: WandererBuilderSingleton.getTranslatableVertexModel('offboarding'),
-    author: WandererBuilderSingleton.getVertexModel('author'),
-    license: WandererBuilderSingleton.getVertexModel('license'),
+    // topic: WandererBuilderSingleton.getTranslatableVertexModel('topic'),
+    //
+    // author: WandererBuilderSingleton.getVertexModel('author'),
+    // license: WandererBuilderSingleton.getVertexModel('license'),
+
   }
 }
 </script>
