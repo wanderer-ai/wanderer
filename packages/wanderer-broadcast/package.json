@@ -1,0 +1,10 @@
+{
+  "name": "wanderer-broadcast",
+  "version": "0.0.1",
+  "description": "Wanderer.ai Broadcast",
+  "main": "index.js",
+  "author": "",
+  "dependencies": {
+    
+  }
+}

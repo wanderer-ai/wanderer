@@ -7,6 +7,8 @@ import Wanderer from 'wanderer'
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+import VueGraphPlugin from 'wanderer-vue-graph'
+
 import BuilderPlugin from 'wanderer-builder'
 
 // import WandererBuilderComponent from 'wanderer-builder-vue-component'
@@ -40,6 +42,9 @@ export default ({ app, store }) => {
   wanderer.provide('store', store)
   wanderer.provide('vue', Vue)
   wanderer.provide('worker', worker)
+
+  // Initiate the Vue graph plugin
+  wanderer.use(VueGraphPlugin)
 
   // Load the builder plugin
   wanderer.use(BuilderPlugin)

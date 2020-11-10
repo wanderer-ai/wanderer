@@ -20,7 +20,7 @@ var client = {
     var debug = false
 
     // Register some vertices for the builder
-    wanderer.addVertexCollectionProps('flow', {
+    wanderer.subscriber.addVertexCollectionProps('flow', {
       builder: {
         label: 'Flow',
         color: '#FEC106',
@@ -56,7 +56,7 @@ var client = {
       }
     })
 
-    wanderer.addVertexCollectionProps('message', {
+    wanderer.subscriber.addVertexCollectionProps('message', {
       builder: {
         label: 'Message',
         color: '#007BFF',

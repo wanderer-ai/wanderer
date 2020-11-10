@@ -12,6 +12,7 @@ export default {
     // Require some plugins
     var Vue = wanderer.require('vue')
     var store = wanderer.require('store')
+    var vueGraph = wanderer.require('vueGraph')
 
     // Register some ui components
     Vue.component('builder-modal', UiModal)
@@ -88,31 +89,13 @@ export default {
     Vue.component('wanderer-builder', BuilderComponent)
 
     // Create the builder instance
-    var builder = new Builder(wanderer, Vue, store)
+    var builder = new Builder(wanderer, Vue, store, vueGraph)
 
     // Push it to Wanderer
     wanderer.provide('builder', builder)
 
     // Push it to vue
     Vue.prototype.$builder = builder
-
-    Vue.prototype.$wanderer = wanderer
-
-    
-
-    // // Add wanderer builder events
-    // Wanderer.on('afterRemoveVertex',function() {
-    //   // Rebuild the selection
-    //   let lastSelectedVerticesIds = builder.getSelectedVertexIds()
-    //   Vue.$store.commit('wanderer/builder/setSelectedVertexIds',lastSelectedVerticesIds);
-    // })
-    //
-    // Wanderer.on('afterRemoveEdge',function() {
-    //   // Rebuild the selection
-    //   let lastSelectedEdgesIds = builder.getSelectedEdgeIds()
-    //   Vue.$store.commit('wanderer/builder/setSelectedEdgeIds',lastSelectedEdgesIds);
-    // })
-
 
   }
 

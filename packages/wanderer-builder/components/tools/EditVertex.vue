@@ -10,7 +10,7 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <modal :title="editVertexCollection.label" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
+      <builder-modal :title="editVertexCollection.label" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
 
         <div v-if="isImmutable" class="alert alert-warning" role="alert">
           Warning! This vertex is not part of the current flow! Maybe it was dynamically imported. You can edit this node. But it will not be saved into your flow!
@@ -20,7 +20,7 @@
 
         <language-switcher />
 
-      </modal>
+      </builder-modal>
     </portal>
 
   </div>
@@ -29,18 +29,17 @@
 
 <script>
 
-import Modal from '../Modal.vue'
 import 'vue-awesome/icons/edit'
 import Icon from 'vue-awesome/components/Icon'
 import LanguageSwitcher from '../LanguageSwitcher.vue'
 
 export default {
   components: {
-    Modal, Icon, LanguageSwitcher
+    Icon, LanguageSwitcher
   },
   computed: {
     showVertexEditorModal () {
-      if (this.$store.state.wanderer.builder.editVertex !== 0) {
+      if (this.$store.state.wandererBuilder.editVertex !== 0) {
         return true
       }
       return false

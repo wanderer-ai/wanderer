@@ -30,7 +30,7 @@
 
   export default {
     computed: {
-      alerts () { return this.$store.state.wanderer.builder.alerts },
+      alerts () { return this.$store.state.wandererBuilder.alerts },
     },
   }
 

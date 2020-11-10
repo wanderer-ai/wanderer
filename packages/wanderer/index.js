@@ -1,6 +1,7 @@
 // import {WandererGraph} from 'wanderer-graph'
 const uuidv4 = require('uuid/v4')
-import WandererNestedData from 'wanderer-nested-data'
+// import WandererNestedData from 'wanderer-nested-data'
+import WandererBroadcast from 'wanderer-broadcast'
 // import Mustache from 'mustache'
 // import Axios from 'axios'
 //
@@ -15,8 +16,65 @@ import WandererNestedData from 'wanderer-nested-data'
 export default class Wanderer {
 
   constructor() {
-    this.events = {}
     this.dependencies = {}
+    this.broadcast = new WandererBroadcast ({
+
+      addVertexCollectionProps: function (collectionName, props) {
+        this.emit('addVertexCollectionProps', {
+          collectionName: collectionName,
+          props: props
+        })
+      },
+
+      addEdgeCollectionProps: function (collectionName, props) {
+        this.emit('addEdgeCollectionProps', {
+          collectionName: collectionName,
+          props: props
+        })
+      },
+
+      truncate: function () {
+        this.emit('truncate')
+      },
+
+      addVertexFromData: function (vertexData) {
+        this.emit('addVertex', vertexData)
+      },
+
+      addEdgeFromData: function (edgeData) {
+        this.emit('addEdge', edgeData)
+      },
+
+      removeVertex: function (vertexId) {
+        this.emit('removeVertex', vertexId)
+      },
+
+      removeEdge: function (edgeId) {
+        this.emit('removeEdge', edgeId)
+      },
+
+      setVertexDataValue: function (id, key, value, language) {
+        this.emit('setVertexDataValue', {
+          id: id,
+          key: key,
+          value: value,
+          language: language
+        })
+      },
+
+      setEdgeDataValue: function (id, key, value, language) {
+        this.emit('setEdgeDataValue', {
+          id: id,
+          key: key,
+          value: value,
+          language: language
+        })
+      }
+
+    })
+
+    this.subscriber = this.broadcast.subscribe('wanderer')
+
   }
 
   use(plugin) {
@@ -34,37 +92,6 @@ export default class Wanderer {
       return this.dependencies[key]
     }
     throw 'The dependency "'+key+'" is required! Please provide it first!';
-  }
-
-  on(name, method) {
-    if(this.events[name] === undefined) {
-      this.events[name] = []
-    }
-    this.events[name].push(method)
-  }
-
-  emit(name, payload) {
-    if(this.events[name] !== undefined) {
-      for(const i in this.events[name]) {
-        this.events[name][i](payload)
-      }
-    }
-  }
-
-  addVertexCollectionProps (collectionName, props) {
-    props = new WandererNestedData(props)
-    this.emit('addVertexCollectionProps', {
-      collectionName: collectionName,
-      props: props
-    })
-  }
-
-  addEdgeCollectionProps (collectionName, props) {
-    props = new WandererNestedData(props)
-    this.emit('addEdgeCollectionProps', {
-      collectionName: collectionName,
-      props: props
-    })
   }
 
   regenerateJsonDataIds (data) {
@@ -88,32 +115,6 @@ export default class Wanderer {
     return JSON.parse(dataString)
   }
 
-  addVertexFromData (vertexData) {
-
-    vertexData = new WandererNestedData(vertexData)
-
-    // var vertex = this.graph.addVertexFromData(vertexData)
-
-    this.emit('addVertex', vertexData)
-
-    if (vertexData._origin) {
-
-      this.emit('addOriginVertex', vertexData)
-
-    }
-
-  }
-
-  addEdgeFromData (edgeData) {
-
-    edgeData = new WandererNestedData(edgeData)
-
-    // var edge = this.graph.addEdgeFromData(edgeData)
-
-    this.emit('addEdge', edgeData)
-
-  }
-
   checkImportData (data) {
     // Search for the origin node
     for (var key in data.vertices) {
@@ -123,60 +124,51 @@ export default class Wanderer {
         }
       }
     }
-    throw('This data does not look like a wanderer flow :-(')
+    // throw('This data does not look like a wanderer flow :-(')
   }
 
   loadFromData (data) {
 
+    // Check the import data
     this.checkImportData(data)
 
-    // Clean cy
-    // WandererCytoscapeSingleton.cy.remove( '*' )
-
-    // Reset the whole wanderer
-    // truncate()
+    // Emit truncate event
+    this.subscriber.truncate()
 
     // Load vertices
     for (var key in data.vertices) {
-      this.addVertexFromData(data.vertices[key])
+      this.subscriber.addVertexFromData(data.vertices[key])
     }
 
-    // // Load edges
-    // for (var key in data.edges) {
-    //   addEdge(data.edges[key])    //   try {
-        //
-        //     // Add vertex to Cytoscape
-        //     let newCyVertex = WandererCytoscapeSingleton.cy.add({
-        //       data: data,
-        //       position: position,
-        //       classes: collection.builder.cytoscapeClasses
-        //     })
-        //
-        //     // Convert data to Cytoscape if needed
-        //     vertexToCytoscape(vertexData)
-        //
-        //     // Add data to store
-        //     // WandererStoreSingleton.store.commit('wanderer/addVertex', {vertexData: vertexData, lifecycleData: lifecycleData})
-        //     WandererStoreSingleton.store.commit('wanderer/addVertex', {vertexData: vertexData})
-        //
-        //     trigger('afterAddVertex');
-        //
-        //     return newCyVertex
-        //
-        //   } catch (e) {
-        //
-        //     console.log(e);
-        //
-        //   }
-    // }
+    // Load edges
+    for (var key in data.edges) {
+      this.subscriber.addEdgeFromData(data.edges[key])
+    }
 
-    // Center cytoscape to the flow vertex
-    // This should be the first vertex in list
-    // WandererCytoscapeSingleton.cy.center(WandererCytoscapeSingleton.cy.$id(data.vertices[0]._id))
-    // WandererCytoscapeSingleton.cy.zoom(1)
+  }
 
-    // Start the traversal
-    // traverse()
+  async loadFromFile (file) {
+
+    return new Promise((resolve, reject) => {
+
+      const reader = new FileReader()
+
+      reader.onload = e => {
+
+        // try {
+          var data = JSON.parse(e.target.result)
+          this.loadFromData(data)
+          resolve()
+
+        // } catch (e) {
+          reject('This file is not a wanderer .json file! '+e)
+        // }
+
+      }
+
+      reader.readAsText(file)
+
+    })
 
   }
 
@@ -229,48 +221,7 @@ export default class Wanderer {
   //
   // }
   //
-  // removeVertex (vertexId) {
-  //
-  //   let vertex = WandererCytoscapeSingleton.cy.getElementById(vertexId)
-  //
-  //   // Unlink possible children bevor removing the node
-  //   let childrens = vertex.children();
-  //   childrens.forEach((child) => {
-  //     // Remove compound from cytoscape child
-  //     child.move({
-  //       parent: null
-  //     });
-  //   })
-  //
-  //   // Remove from cy
-  //   vertex.remove()
-  //
-  //   // Remove from store
-  //   WandererStoreSingleton.store.commit('wanderer/removeVertex', vertexId)
-  //
-  //   trigger('afterRemoveVertex');
-  // }
-  //
-  // removeEdge (edgeId) {
-  //   let cytoscapeEdge = WandererCytoscapeSingleton.cy.getElementById(edgeId)
-  //
-  //   // Call the collections afterCreate Hook
-  //   let edgeCollection = getEdgeCollectionById(edgeId)
-  //
-  //   if(edgeCollection) {
-  //     if(edgeCollection.beforeRemove) {
-  //       edgeCollection.beforeRemove(cytoscapeEdge);
-  //     }
-  //   }
-  //
-  //   // Remove from cy
-  //   cytoscapeEdge.remove();
-  //
-  //   // Remove from store
-  //   WandererStoreSingleton.store.commit('wanderer/removeEdge', edgeId)
-  //
-  //   trigger('afterRemoveEdge');
-  // }
+
 
 }
 //
@@ -495,30 +446,7 @@ export default class Wanderer {
 //     })
 //   }
 //
-//   async function loadJsonFile (file) {
-//
-//     return new Promise((resolve, reject) => {
-//
-//       const reader = new FileReader()
-//
-//       reader.onload = e => {
-//
-//         try {
-//           var data = JSON.parse(e.target.result)
-//           load(data)
-//           resolve()
-//
-//         } catch (e) {
-//           reject('This file is not a wanderer .json file! '+e)
-//         }
-//
-//       }
-//
-//       reader.readAsText(file)
-//
-//     })
-//
-//   }
+
 //
 //   function findNodeIdByName (name) {
 //     for (var key in WandererStoreSingleton.store.state.wanderer.vertexDocumentData) {

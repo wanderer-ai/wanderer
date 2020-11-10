@@ -186,12 +186,12 @@ export default {
 
       const file = ev.target.files[0]
 
-      try {
-        await WandererSingleton.loadJsonFile(file)
+      // try {
+        await this.$wanderer.loadFromFile(file)
         this.showModal = false
-      } catch (e) {
-        WandererStoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e, type: 'danger'})
-      }
+      //} catch (e) {
+        // this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'danger'})
+      //}
 
     },
     generateExportData () {

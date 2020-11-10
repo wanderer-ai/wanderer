@@ -20,7 +20,7 @@
 
     <portal-target class="relative z-50" name="modals" multiple />
 
-    <!-- <alerts /> -->
+    <alerts />
 
     <file-tool :show="showFileTool" v-on:startTutorial="startTutorial()" v-on:viewExamples="viewExamples()"/>
 
@@ -43,10 +43,10 @@
 import Toolbar from './Toolbar.vue'
 import Cytoscape from './Cytoscape.vue'
 // import ChatPanel from './ChatPanel.vue'
-// import Alerts from './Alerts.vue'
+import Alerts from './Alerts.vue'
 //
 // import InfoTool from './tools/Info.vue'
-// import EditVertexTool from './tools/EditVertex.vue'
+import EditVertexTool from './tools/EditVertex.vue'
 // import EditEdgeTool from './tools/EditEdge.vue'
 // import RemoveTool from './tools/Remove.vue'
 // import UnlinkTool from './tools/Unlink.vue'
@@ -63,9 +63,9 @@ export default {
     Toolbar,
     Cytoscape,
     // ChatPanel,
-    // Alerts,
+    Alerts,
     // InfoTool,
-    // EditVertexTool,
+    EditVertexTool,
     // EditEdgeTool,
     // RemoveTool,
     // UnlinkTool,

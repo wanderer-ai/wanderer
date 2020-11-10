@@ -15,6 +15,7 @@
     "worker-loader": "latest",
     "vuex": "latest",
     "wanderer": "^0.0.1",
+    "wanderer-vue-graph": "^0.0.1",
     "wanderer-builder": "^0.0.1",
     "wanderer-webworker": "^0.0.1",
     "wanderer-plugin-base": "^0.0.1"

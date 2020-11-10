@@ -4,103 +4,99 @@ import WandererNestedData from 'wanderer-nested-data'
 
 export default class Builder {
 
-  constructor (wanderer, vue, store) {
+  constructor (wanderer, vue, store, vueGraph) {
     this.wanderer = wanderer
     this.vue = vue
     this.store = store
+    this.vueGraph = vueGraph
     this.cytoscape = undefined
 
     this.vertexCollectionProps = new WandererNestedData()
     this.edgeCollectionProps = new WandererNestedData()
 
+    this.subscriber = this.wanderer.broadcast.subscribe('builder')
+
     // Listen for new vertex collection props
-    this.wanderer.on('addVertexCollectionProps', ({collectionName, props}) => {
+    this.subscriber.on('addVertexCollectionProps', ({collectionName, props}) => {
+      props = new WandererNestedData(props)
       props.with('builder', (builderProps) => {
         this.vertexCollectionProps.set(collectionName, builderProps)
       })
     })
 
     // Listen for new edge collection props
-    this.wanderer.on('addEdgeCollectionProps', ({collectionName, props}) => {
+    this.subscriber.on('addEdgeCollectionProps', ({collectionName, props}) => {
+      props = new WandererNestedData(props)
       props.with('builder', (builderProps) => {
         this.edgeCollectionProps.set(collectionName, builderProps)
       })
     })
 
+    // Truncate
+    this.subscriber.on('truncate', (vertexData) => {
+      this.cytoscape.remove( '*' )
+      this.store.commit('wandererBuilder/truncate')
+    })
+
     // Listen for new vertices
-    this.wanderer.on('addVertex', (vertexData) => {
+    this.subscriber.on('addVertex', (vertexData) => {
+      vertexData = new WandererNestedData(vertexData)
       this.addVertexListener(vertexData)
+    })
+
+    // Listen for new edges
+    this.subscriber.on('addEdge', (edgeData) => {
+      edgeData = new WandererNestedData(edgeData)
+      this.addEdgeListener(edgeData)
+    })
+
+    // Listen for vertex deletions
+    this.subscriber.on('removeVertex', (vertexId) => {
+      let vertex = this.cytoscape.getElementById(vertexId)
+      vertex.remove()
+    })
+
+    // Listen for edge deletions
+    this.subscriber.on('removeEdge', (edgeId) => {
+      let cytoscapeEdge = this.cytoscape.getElementById(edgeId)
+      cytoscapeEdge.remove();
+    })
+
+    // Listen for vertex data changes
+    this.subscriber.on('setVertexDataValue', ({id, key, value, language}) => {
+
+    })
+
+    // Listen for edge data changes
+    this.subscriber.on('setEdgeDataValue', ({id, key, value, language}) => {
+
     })
 
   }
 
-  getVertexModel (key) {
-    return {
-      get() {
-        if(StoreSingleton.store.state.wanderer.builder.editVertex) {
-          if(StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex] !== undefined) {
-            return StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex][key]
-          }
-        }
-      },
-      set(data) {
-        if(data != undefined) {
-          StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-            id: StoreSingleton.store.state.wanderer.builder.editVertex,
-            key: key,
-            value: data
-          })
-        }
-      }
-    }
+  getVertexDataValueModel (key) {
+    var editVertexId = this.store.state.wandererBuilder.editVertex
+    return this.vueGraph.getVertexDataValueModel(editVertexId, key)
   }
 
   getTranslatableVertexModel(key) {
-    return {
-      get(){
-        if(StoreSingleton.store.state.wanderer.builder.editVertex){
-          if(StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex] !== undefined){
-            if(StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex][key] !== undefined){
-              return StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex][key][StoreSingleton.store.state.wanderer.currentLanguage]
-            }
-          }
-        }
-      },
-      set(data){
-        if(data != undefined){
-          StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-            id: StoreSingleton.store.state.wanderer.builder.editVertex,
-            key: key,
-            value: data,
-            language: StoreSingleton.store.state.wanderer.currentLanguage
-          })
-        }
-      }
-    }
+    var currentLanguage = this.store.state.wandererBuilder.currentLanguage
+    var editVertexId = this.store.state.wandererBuilder.editVertex
+    return this.vueGraph.getVertexDataValueModel(editVertexId, key, currentLanguage)
   }
 
-  getEdgeModel(key) {
-    return {
-      get(){
-        if(StoreSingleton.store.state.wanderer.builder.editEdge){
-          if(StoreSingleton.store.state.wanderer.edgeDocumentData[StoreSingleton.store.state.wanderer.builder.editEdge] !== undefined){
-            return StoreSingleton.store.state.wanderer.edgeDocumentData[StoreSingleton.store.state.wanderer.builder.editEdge][key]
-          }
-        }
-      },
-      set(data){
-        if(data != undefined){
-          StoreSingleton.store.commit('wanderer/setEdgeDataValue', {
-            id: StoreSingleton.store.state.wanderer.builder.editEdge,
-            key: key,
-            value: data
-          })
-        }
-      }
-    }
+  getEdgeDataValueModel (key) {
+    var editEdgeId = this.store.state.wandererBuilder.editEdge
+    return this.vueGraph.getEdgeDataValueModel(editEdgeId, key)
   }
 
-  getSelectedVertexIds () {
+  getTranslateableEdgeDataValueModel (key) {
+    var currentLanguage = this.store.state.wandererBuilder.currentLanguage
+    var editEdgeId = this.store.state.wandererBuilder.editEdge
+    return this.vueGraph.getEdgeDataValueModel(editEdgeId, key, currentLanguage)
+  }
+
+  getSelectedCytoscapeVertexIds () {
     let selectedVertices = this.cytoscape.$('node:selected')
     let selectedVertexIds = []
     selectedVertices.each(function(vertex){
@@ -109,7 +105,7 @@ export default class Builder {
     return selectedVertexIds
   }
 
-  getSelectedEdgeIds() {
+  getSelectedCytoscapeEdgeIds() {
     let selectedEdges = this.cytoscape.$('edge:selected')
     let selectedEdgeIds = []
     selectedEdges.each(function(edge){
@@ -120,16 +116,22 @@ export default class Builder {
 
   vertexDataToCytoscape (vertexData) {
     var cytoscapeData = {}
-
     this.vertexCollectionProps.with(vertexData.get('_collection')+'.toCytoscape', (toCytoscape) => {
       cytoscapeData = toCytoscape(vertexData, this.store.state.wandererBuilder.currentLanguage)
     })
-
     // You cannot override the id
     cytoscapeData.id = vertexData.get('_id')
-
     this.cytoscape.getElementById(vertexData.get('_id')).data(cytoscapeData)
+  }
 
+  edgeDataToCytoscape (edgeData) {
+    var cytoscapeData = {}
+    this.edgeCollectionProps.with(edgeData.get('_collection')+'.toCytoscape', (toCytoscape) => {
+      cytoscapeData = toCytoscape(edgeData, this.store.state.wandererBuilder.currentLanguage)
+    })
+    // You cannot override the id
+    cytoscapeData.id = edgeData.get('_id')
+    this.cytoscape.getElementById(edgeData.get('_id')).data(cytoscapeData)
   }
 
   addVertexListener (vertexData) {
@@ -158,6 +160,12 @@ export default class Builder {
       // Convert data to Cytoscape if needed
       this.vertexDataToCytoscape(vertexData)
 
+      // Center cytoscape to origin
+      vertexData.with('_origin', () => {
+        this.cytoscape.center(vertexData.get('_id'))
+        this.cytoscape.zoom(1)
+      })
+
     } catch (e) {
 
     }
@@ -180,33 +188,26 @@ export default class Builder {
     // return newVertexData._id
   }
 
-  addEdgeListener (edge) {
+  addEdgeListener (edgeData) {
 
     var cyData = {
       data: {
-        id: vertex.data.get('_id'),
-        source: vertex.data.get('_from'),
-        target: vertex.data.get('_to')
+        id: edgeData.get('_id'),
+        source: edgeData.get('_from'),
+        target: edgeData.get('_to')
       }
     }
 
     // Add styles from props
-    edge.collection.with('builder.cytoscapeClasses', (cytoscapeClasses) => {
+    this.edgeCollectionProps.with(edgeData.get('_collection')+'.cytoscapeClasses', (cytoscapeClasses) => {
       cyData.classes = cytoscapeClasses
     })
 
     // Convert data to Cytoscape if needed
-    this.edgeToCytoscape(edge)
+    this.edgeDataToCytoscape(edgeData)
 
     try {
-      let cytoscapeEdge = WandererCytoscapeSingleton.cy.add(cyData)
-
-      // Add vertex to cyVertex
-      cytoscapeEdge.wandererVertex = edge
-
-      // Store the cytoscape handel inside the vertex
-      edge.cytoscapeEdge = cytoscapeEdge
-
+      let cytoscapeEdge = this.cytoscape.add(cyData)
     } catch (e) {
 
     }
@@ -403,19 +404,19 @@ export default class Builder {
     return possibleEdgeCollections
   }
 
-  updateVertexStorePosition (cyVertex) {
-    let position = cyVertex.position(); // get position
-    StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-      id: cyVertex.id(),
-      key: '_x',
-      value: position.x
-    })
-    StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-      id: cyVertex.id(),
-      key: '_y',
-      value: position.y
-    })
-  }
+  // updateVertexStorePosition (cyVertex) {
+  //   let position = cyVertex.position(); // get position
+  //   StoreSingleton.store.commit('wanderer/setVertexDataValue', {
+  //     id: cyVertex.id(),
+  //     key: '_x',
+  //     value: position.x
+  //   })
+  //   StoreSingleton.store.commit('wanderer/setVertexDataValue', {
+  //     id: cyVertex.id(),
+  //     key: '_y',
+  //     value: position.y
+  //   })
+  // }
 
   initCytoscape (config) {
 
@@ -569,7 +570,7 @@ export default class Builder {
 
     // Select vertices
     this.cytoscape.on('select', 'node', function(evt){
-      let lastSelectedVerticesIds = builder.getSelectedVertexIds()
+      let lastSelectedVerticesIds = builder.getSelectedCytoscapeVertexIds()
       builder.store.commit('wandererBuilder/setSelectedVertexIds',lastSelectedVerticesIds);
     });
 
@@ -580,13 +581,13 @@ export default class Builder {
 
     // Unselect vertices
     this.cytoscape.on('unselect', 'node', function(evt){
-      let lastSelectedVerticesIds = builder.getSelectedVertexIds()
+      let lastSelectedVerticesIds = builder.getSelectedCytoscapeVertexIds()
       builder.store.commit('wandererBuilder/setSelectedVertexIds',lastSelectedVerticesIds);
     });
 
     // Select edge(s)
     this.cytoscape.on('select', 'edge', function(evt) {
-      let lastSelectedEdgesIds = builder.getSelectedEdgeIds()
+      let lastSelectedEdgesIds = builder.getSelectedCytoscapeEdgeIds()
       builder.store.commit('wandererBuilder/setSelectedEdgeIds',lastSelectedEdgesIds)
     })
 
@@ -597,7 +598,7 @@ export default class Builder {
 
     // Unselect edge(s)
     this.cytoscape.on('unselect', 'edge', function(evt) {
-      let lastSelectedEdgesIds = builder.getSelectedEdgeIds()
+      let lastSelectedEdgesIds = builder.getSelectedCytoscapeEdgeIds()
       builder.store.commit('wandererBuilder/setSelectedEdgeIds',lastSelectedEdgesIds)
     })
 
@@ -611,37 +612,25 @@ export default class Builder {
     this.cytoscape.on('drag', 'node', function(event) {
       if(dropTimer){clearTimeout(dropTimer);} // Clear the timeout if set
       // get all grabbed nodes
-      var lastGrabbedNodes = this.cytoscape.$('node:grabbed');
+      var lastGrabbedNodes = builder.cytoscape.$('node:grabbed');
       // Set new timeout
-      dropTimer = setTimeout(function(){
-        lastGrabbedNodes.forEach(function(vertex){
+      dropTimer = setTimeout(function() {
+        lastGrabbedNodes.forEach(function(vertex) {
           vertex.trigger('drop');
         });
-      },500);
+      }, 500);
     });
 
     // On drop
     this.cytoscape.on('drop','node', function(evt) {
-
       // Check if this is a origin vertex
       // We cannot disable drag for this vertex but we can set it back to coordinates 0,0
-      if(this.wandererVertex.data.get('_origin')) {
+      if(builder.vueGraph.getVertexDataValue(this.id(), '_origin') == true) {
         this.position({x: 0, y: 0});
-        this.store.dispatch('wandererBuilder/addAlert', {
+        builder.store.dispatch('wandererBuilder/addAlert', {
           message:'You cannot move the origin node',
           type:'warning'
         })
-      } else {
-
-        // Update the vertex position in store
-        // builder.updateVertexStorePosition(this)
-
-        // // Also find all compound children and their child childs and update the positions
-        // let childrens = this.descendants();
-        // childrens.forEach((child) => {
-        //   builder.updateVertexStorePosition(child)
-        // })
-
       }
     });
 
