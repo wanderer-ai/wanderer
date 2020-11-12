@@ -10,7 +10,7 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <modal title="Wanderer.ai Conversation Builder" :show="showModal"  v-on:closeButton="showModal=false">
+      <builder-modal title="Wanderer.ai Conversation Builder" :show="showModal"  v-on:closeButton="showModal=false">
 
         <p>
           <strong>
@@ -32,7 +32,7 @@
           Check out the <a target="_blank" href="https://github.com/wanderer-ai">repositories</a> or open a new issue on <a target="_blank" href="https://github.com/wanderer-ai">GitHub</a>.
         </p>
 
-      </modal>
+      </builder-modal>
     </portal>
 
   </div>
@@ -41,7 +41,6 @@
 
 <script>
 
-import Modal from '../Modal.vue'
 import 'vue-awesome/icons/info'
 import Icon from 'vue-awesome/components/Icon'
 
@@ -49,7 +48,7 @@ import {version} from '../../package.json';
 
 export default {
   components: {
-    Modal, Icon
+    Icon
   },
   data: function () {
     return {

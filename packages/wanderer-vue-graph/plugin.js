@@ -69,15 +69,15 @@ export default {
         cleanVertexLifecycleData (state) {
           this._vm.$set(state, 'vertexLifecycleData', {})
         },
-        // enableLanguage (state, language) {
-        //   //state.enabledLanguages.push(language)
-        //   // Store the new language into the origin node
-        //   state.vertexDocumentData[state.originVertexId].languages.push(language);
-        // },
-        // disableLanguage (state, language) {
-        //   //state.enabledLanguages.splice(state.enabledLanguages.indexOf(language), 1)
-        //   state.vertexDocumentData[state.originVertexId].languages.splice(state.vertexDocumentData[state.originVertexId].languages.indexOf(language), 1);
-        // },
+        enableLanguage (state, language) {
+          //state.enabledLanguages.push(language)
+          // Store the new language into the origin node
+          state.vertexDocumentData[state.originVertexId].languages.push(language);
+        },
+        disableLanguage (state, language) {
+          //state.enabledLanguages.splice(state.enabledLanguages.indexOf(language), 1)
+          state.vertexDocumentData[state.originVertexId].languages.splice(state.vertexDocumentData[state.originVertexId].languages.indexOf(language), 1);
+        },
         // setCurrentLanguage (state, language) {
         //   state.currentLanguage = language
         // },

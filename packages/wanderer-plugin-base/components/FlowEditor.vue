@@ -1,30 +1,11 @@
 <template>
   <div>
 
-    <div class="form-group">
-      <label for="topic">Topic</label>
-      <input v-model="topic" type="text" class="form-control" id="topic" placeholder="Enter your topic name">
-    </div>
+    <builder-text-input label="Topic" placeholder="Topic" v-model="topic" />
 
-    <!-- <div class="form-group">
-      <label for="onboarding">Onboarding</label>
-      <input v-model="onboarding" type="text" class="form-control" id="onboarding" placeholder="Onboarding">
-    </div>
+    <builder-text-input label="Author" placeholder="Author" v-model="author" />
 
-    <div class="form-group">
-      <label for="offboarding">Offboarding</label>
-      <input v-model="offboarding" type="text" class="form-control" id="offboarding" placeholder="Offboarding">
-    </div> -->
-
-    <div class="form-group">
-      <label for="author">Author</label>
-      <input v-model="author" type="text" class="form-control" id="author" placeholder="Author">
-    </div>
-
-    <div class="form-group">
-      <label for="license">License</label>
-      <input v-model="license" type="text" class="form-control" id="license" placeholder="License">
-    </div>
+    <builder-text-input label="License" placeholder="License" v-model="license" />
 
   </div>
 </template>
@@ -32,11 +13,36 @@
 <script>
 
 export default {
+  data: function () {
+    return {
+      toast: 'foo'
+    }
+  },
   computed: {
-    // topic: WandererBuilderSingleton.getTranslatableVertexModel('topic'),
-    //
-    // author: WandererBuilderSingleton.getVertexModel('author'),
-    // license: WandererBuilderSingleton.getVertexModel('license'),
+    topic: {
+      get: function () {
+        return this.$builder.getTranslatableVertexDataValue('topic')
+      },
+      set: function (value) {
+        this.$builder.setTranslatableVertexDataValue('topic', value)
+      }
+    },
+    author: {
+      get: function () {
+        return this.$builder.getVertexDataValue('author')
+      },
+      set: function (value) {
+        this.$builder.setVertexDataValue('author', value)
+      }
+    },
+    license: {
+      get: function () {
+        return this.$builder.getVertexDataValue('license')
+      },
+      set: function (value) {
+        this.$builder.setVertexDataValue('license', value)
+      }
+    },
 
   }
 }

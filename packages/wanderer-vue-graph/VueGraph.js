@@ -20,6 +20,9 @@ export default class VueGraph {
     // Listen for new vertices
     this.subscriber.on('addVertex', (vertexData) => {
       this.store.commit('wandererGraph/addVertex', vertexData)
+      if(vertexData._origin !== undefined && vertexData._origin) {
+        this.store.commit('wandererGraph/setOriginVertex', vertexData._id)
+      }
     })
 
     // Listen for new edges
@@ -59,6 +62,18 @@ export default class VueGraph {
 
   }
 
+  enableLanguage (language) {
+    this.store.commit('wandererGraph/enableLanguage', language)
+  }
+
+  disableLanguage (language) {
+    this.store.commit('wandererGraph/disableLanguage', language)
+  }
+
+  getOriginVertexId () {
+    return this.store.state.wandererGraph.originVertexId
+  }
+
   removeVertex (vertexId) {
     this.store.commit('wandererGraph/removeVertex', vertexId)
     subscriber.removeVertex(vertexId)
@@ -67,6 +82,18 @@ export default class VueGraph {
   removeEdge (edgeId) {
     this.store.commit('wandererGraph/removeEdge', edgeId)
     subscriber.removeEdge(edgeId)
+  }
+
+  getAllVertexData () {
+    return this.store.state.wandererGraph.vertexDocumentData
+  }
+
+  getAllEdgeData () {
+    return this.store.state.wandererGraph.vertexDocumentData
+  }
+
+  getOriginDataValue (key, language) {
+    return this.getVertexDataValue(this.getOriginVertexId(), key, language)
   }
 
   getVertexDataValue (id, key, language) {
@@ -84,6 +111,23 @@ export default class VueGraph {
     return undefined
   }
 
+  setVertexDataValue (id, key, value, language) {
+    if(value !== undefined) {
+      this.store.commit('wandererGraph/setVertexDataValue', {
+        id: id,
+        key: key,
+        value: value,
+        language: language
+      })
+      this.subscriber.setVertexDataValue({
+        id: id,
+        key: key,
+        value: value,
+        language: language
+      })
+    }
+  }
+
   getEdgeDataValue (id, key) {
     if(this.store.state.wandererGraph.edgeDocumentData[id] !== undefined) {
       if(this.store.state.wandererGraph.edgeDocumentData[id][key] !== undefined) {
@@ -99,67 +143,86 @@ export default class VueGraph {
     return undefined
   }
 
-  getVertexDataValueModel (vertexId, key, language) {
-    return {
-      get() {
-        if(this.store.state.wandererGraph.vertexDocumentData[vertexId] !== undefined) {
-          if(language !== undefined) {
-            if(this.store.state.wandererGraph.vertexDocumentData[vertexId][language] !== undefined) {
-              return this.store.state.wandererGraph.vertexDocumentData[vertexId][key][language]
-            }
-          }
-          return this.store.state.wandererGraph.vertexDocumentData[vertexId][key]
-        }
-      },
-      set(data) {
-        if(data !== undefined) {
-          this.store.commit('wandererGraph/setVertexDataValue', {
-            id: vertexId,
-            key: key,
-            value: data,
-            language: language
-          })
-          subscriber.setVertexDataValue({
-            id: vertexId,
-            key: key,
-            value: data,
-            language: language
-          })
-        }
-      }
+  setEdgeDataValue (id, key, value, language) {
+    if(value !== undefined) {
+      this.store.commit('wandererGraph/setEdgeDataValue', {
+        id: id,
+        key: key,
+        value: value,
+        language: language
+      })
+      this.subscriber.setEdgeDataValue({
+        id: id,
+        key: key,
+        value: value,
+        language: language
+      })
     }
   }
 
-  getEdgeDataValueModel (edgeId, key, language) {
-    return {
-      get() {
-        if(this.store.state.wandererGraph.edgeDocumentData[edgeId] !== undefined) {
-          if(language !== undefined) {
-            if(this.store.state.wandererGraph.edgeDocumentData[edgeId][language] !== undefined) {
-              return this.store.state.wandererGraph.edgeDocumentData[edgeId][key][language]
-            }
-          }
-          return this.store.state.wandererGraph.edgeDocumentData[edgeId][key]
-        }
-      },
-      set(data) {
-        if(data !== undefined) {
-          this.store.commit('wandererGraph/setEdgeDataValue', {
-            id: edgeId,
-            key: key,
-            value: data,
-            language: language
-          })
-          subscriber.setEdgeDataValue({
-            id: edgeId,
-            key: key,
-            value: data,
-            language: language
-          })
-        }
-      }
-    }
-  }
+  // getVertexDataValueModel (vertexId, key, language) {
+  //   var graph = this
+  //   return {
+  //     get() {
+  //       if(graph.store.state.wandererGraph.vertexDocumentData[vertexId] !== undefined) {
+  //         if(language !== undefined) {
+  //           if(graph.store.state.wandererGraph.vertexDocumentData[vertexId][key] !== undefined) {
+  //             return graph.store.state.wandererGraph.vertexDocumentData[vertexId][key][language]
+  //           }
+  //         }
+  //         return graph.store.state.wandererGraph.vertexDocumentData[vertexId][key]
+  //       }
+  //     },
+  //     set(data) {
+  //       if(data !== undefined) {
+  //         graph.store.commit('wandererGraph/setVertexDataValue', {
+  //           id: vertexId,
+  //           key: key,
+  //           value: data,
+  //           language: language
+  //         })
+  //         graph.subscriber.setVertexDataValue({
+  //           id: vertexId,
+  //           key: key,
+  //           value: data,
+  //           language: language
+  //         })
+  //       }
+  //     }
+  //   }
+  // }
+  //
+  // getEdgeDataValueModel (edgeId, key, language) {
+  //   var graph = this
+  //   return {
+  //     get() {
+  //       if(graph.store.state.wandererGraph.edgeDocumentData[edgeId] !== undefined) {
+  //         if(language !== undefined) {
+  //           if(graph.store.state.wandererGraph.edgeDocumentData[edgeId][key] !== undefined) {
+  //             return graph.store.state.wandererGraph.edgeDocumentData[edgeId][key][language]
+  //           }
+  //         }
+  //         return graph.store.state.wandererGraph.edgeDocumentData[edgeId][key]
+  //       }
+  //     },
+  //     set(data) {
+  //       if(data !== undefined) {
+  //         graph.store.commit('wandererGraph/setEdgeDataValue', {
+  //           id: edgeId,
+  //           key: key,
+  //           value: data,
+  //           language: language
+  //         })
+  //         graph.subscriber.setEdgeDataValue({
+  //           id: edgeId,
+  //           key: key,
+  //           value: data,
+  //           language: language
+  //         })
+  //       }
+  //     }
+  //   }
+  // }
 
   // getVertexModel (key) {
   //   return {

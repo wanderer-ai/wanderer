@@ -5,7 +5,7 @@
 
     <portal to="actionbar" :order="1">
       <button class="btn btn-secondary navbar-btn" title="Save or restore a project" v-on:click="showModal=true">
-        <icon name="save"></icon>{{showModal}}
+        <icon name="save"></icon>
       </button>
     </portal>
 
@@ -14,7 +14,7 @@
 
         <div class="mb-4">
 
-          <builder-button v-on:click="startTutorial()">
+          <builder-button color="green" v-on:click="startTutorial()">
             <icon name="book"></icon>
             Start a tutorial now
           </builder-button>
@@ -23,7 +23,7 @@
             or
           </span>
 
-          <builder-button v-on:click="viewExamples()">
+          <builder-button color="green" v-on:click="viewExamples()">
             <icon name="lightbulb"></icon>
             View some examples
           </builder-button>

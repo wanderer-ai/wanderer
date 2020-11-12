@@ -10,7 +10,7 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <modal title="Switch and manage languages" :show="showModal"  v-on:closeButton="showModal=false">
+      <builder-modal title="Switch and manage languages" :show="showModal"  v-on:closeButton="showModal=false">
 
         <language-switcher v-on:localized="showModal=false"/>
 
@@ -31,7 +31,7 @@
 
         </div>
 
-      </modal>
+      </builder-modal>
     </portal>
 
   </div>
@@ -40,7 +40,6 @@
 
 <script>
 
-import Modal from '../Modal.vue'
 import 'vue-awesome/icons/flag'
 import Icon from 'vue-awesome/components/Icon'
 
@@ -48,7 +47,7 @@ import LanguageSwitcher from '../LanguageSwitcher.vue'
 
 export default {
   components: {
-    Modal, Icon, LanguageSwitcher
+    Icon, LanguageSwitcher
   },
   data: function () {
     return {
@@ -58,31 +57,32 @@ export default {
   },
   computed: {
     languages () {
-      return WandererSingleton.getLanguages()
+      return this.$wanderer.getLanguages()
     },
     currentLanguage () {
-      return this.$store.state.wanderer.currentLanguage;
+      return this.$builder.getCurrentLanguage()
     },
     enabledLanguages () {
-      if (this.$store.state.wanderer.originVertexId) {
-        return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.originVertexId].languages;
+      var languages = this.$vueGraph.getOriginDataValue('languages')
+      if(!languages) {
+        languages = []
       }
-      return [];
+      return languages
     }
   },
   methods: {
     toggleMore(){
-      if(this.showMore){
-        this.showMore = false;
-      }else{
-        this.showMore = true;
+      if(this.showMore) {
+        this.showMore = false
+      }else {
+        this.showMore = true
       }
     },
     toggle(language,e){
       if (e.target.checked) {
-        this.$store.commit('wanderer/enableLanguage',language)
+        this.$vueGraph.enableLanguage(language)
       }else{
-        this.$store.commit('wanderer/disableLanguage',language)
+        this.$vueGraph.disableLanguage(language)
       }
     }
   }

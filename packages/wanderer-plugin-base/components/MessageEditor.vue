@@ -13,7 +13,14 @@
 
 export default {
   computed: {
-    // message: WandererBuilderSingleton.getTranslatableVertexModel('message')
+    message: {
+      get: function () {
+        return this.$builder.getTranslatableVertexDataValue('message')
+      },
+      set: function (value) {
+        this.$builder.setTranslatableVertexDataValue('message', value)
+      }
+    }
   }
 }
 </script>

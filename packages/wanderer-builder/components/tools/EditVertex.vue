@@ -45,42 +45,35 @@ export default {
       return false
     },
     editVertexCollection () {
-      if (this.$store.state.wanderer.builder.editVertex !== 0) {
-        var collection = this.$wanderer.getVertexCollection(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.builder.editVertex]._collection).builder
-        if (collection) {
-          return collection
-        }
+      if (this.$store.state.wandererBuilder.editVertex !== 0) {
+        return this.$builder.getVertexCollectionPropsById(this.$store.state.wandererBuilder.editVertex).plain()
       }
       return false
     },
     selectedVertices () {
-      return this.$store.state.wanderer.builder.selectedVertexIds.length
+      return this.$store.state.wandererBuilder.selectedVertexIds.length
     },
     isImmutable () {
-      if (this.$store.state.wanderer.builder.editVertex !== 0) {
-        return this.$wanderer.getVertexValue(this.$store.state.wanderer.builder.editVertex, '_immutable')
+      if (this.$store.state.wandererBuilder.editVertex !== 0) {
+        return this.$vueGraph.getVertexDataValue(this.$store.state.wandererBuilder.editVertex, '_immutable')
       }
     },
     currentLanguage () {
-      return this.$store.state.wanderer.currentLanguage;
+      return this.$store.state.wandererBuilder.currentLanguage;
     }
   },
   methods: {
     closeVertexEditorModal () {
-      this.$store.commit('wanderer/builder/setEditVertex', 0)
+      this.$store.commit('wandererBuilder/setEditVertex', 0)
 
       // Rebuild cytoscape data
-      for(let i in this.$store.state.wanderer.vertexDocumentIds){
-        WandererSingleton.vertexToCytoscape(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
-      }
-      for(let i in this.$store.state.wanderer.edgeDocumentIds){
-        WandererSingleton.edgeToCytoscape(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
-      }
+      this.$builder.rebuildCytoscape()
+
     },
     openVertexEditorModal () {
-      let selectedVertexIds = this.$wandererBuilder.getSelectedVertexIds()
+      let selectedVertexIds = this.$builder.getSelectedCytoscapeVertexIds()
       if (selectedVertexIds.length === 1) {
-        this.$store.commit('wanderer/builder/setEditVertex', selectedVertexIds[0])
+        this.$store.commit('wandererBuilder/setEditVertex', selectedVertexIds[0])
       }
     }
 

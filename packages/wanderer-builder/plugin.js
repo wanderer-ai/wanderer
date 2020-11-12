@@ -4,6 +4,7 @@ import Builder from './Builder'
 
 import UiModal from './components/ui/Modal.vue'
 import UiButton from './components/ui/Button.vue'
+import UiTextInput from './components/ui/TextInput.vue'
 
 export default {
 
@@ -17,6 +18,7 @@ export default {
     // Register some ui components
     Vue.component('builder-modal', UiModal)
     Vue.component('builder-button', UiButton)
+    Vue.component('builder-text-input', UiTextInput)
 
     // Extend vuex with new namespace
     store.registerModule('wandererBuilder', {
@@ -30,6 +32,9 @@ export default {
         selectedEdgeIds: []
       },
       mutations: {
+        setCurrentLanguage (state, language) {
+          state.currentLanguage = language
+        },
         setEditVertex (state, id) {
           state.editVertex = id
         },

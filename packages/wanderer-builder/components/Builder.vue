@@ -24,14 +24,14 @@
 
     <file-tool :show="showFileTool" v-on:startTutorial="startTutorial()" v-on:viewExamples="viewExamples()"/>
 
-    <!-- <info-tool /> -->
+    <info-tool />
      <edit-vertex-tool />
     <!-- <edit-edge-tool />
     <remove-tool />
     <unlink-tool />
-    <connect-tool />
+    <connect-tool />-->
     <language-tool />
-    <chat-tool v-on:toggle="toggleChatPanel()"/>
+    <!-- <chat-tool v-on:toggle="toggleChatPanel()"/>
     <restart-tool v-on:toggle="toggleChatPanel()" v-if="showChatPanel"/>
     <add-vertex-tool /> -->
 
@@ -45,14 +45,14 @@ import Cytoscape from './Cytoscape.vue'
 // import ChatPanel from './ChatPanel.vue'
 import Alerts from './Alerts.vue'
 //
-// import InfoTool from './tools/Info.vue'
+import InfoTool from './tools/Info.vue'
 import EditVertexTool from './tools/EditVertex.vue'
 // import EditEdgeTool from './tools/EditEdge.vue'
 // import RemoveTool from './tools/Remove.vue'
 // import UnlinkTool from './tools/Unlink.vue'
 // import ConnectTool from './tools/Connect.vue'
 import FileTool from './tools/File.vue'
-// import LanguageTool from './tools/Language.vue'
+import LanguageTool from './tools/Language.vue'
 // import ChatTool from './tools/Chat.vue'
 // import AddVertexTool from './tools/AddVertex.vue'
 // import RestartTool from './tools/Restart.vue'
@@ -64,14 +64,14 @@ export default {
     Cytoscape,
     // ChatPanel,
     Alerts,
-    // InfoTool,
+    InfoTool,
     EditVertexTool,
     // EditEdgeTool,
     // RemoveTool,
     // UnlinkTool,
     // ConnectTool,
     FileTool,
-    // LanguageTool,
+    LanguageTool,
     // ChatTool,
     // AddVertexTool,
     // RestartTool

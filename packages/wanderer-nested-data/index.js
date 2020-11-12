@@ -38,19 +38,23 @@ class WandererNestedData {
 	}
 
   has (name) {
-    return this.get(name, false) !== undefined
+    return this.get(name) !== undefined
+  }
+
+  is (name) {
+    return this.get(name) === true
   }
 
   with (name, method) {
-    if(this.get(name, false) !== undefined) {
-      method(this.get(name, false))
+    if(this.get(name) !== undefined) {
+      method(this.get(name))
     }
   }
 
   each (method) {
     for (var key in this.data) {
       if(this.data.hasOwnProperty(key)) {
-        method(this.get(key))
+        method(this.get(key), key)
       }
     }
   }

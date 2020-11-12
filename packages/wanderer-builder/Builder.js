@@ -32,6 +32,12 @@ export default class Builder {
       })
     })
 
+    // Set language
+    this.subscriber.on('setLanguage', (language) => {
+      this.store.commit('wandererBuilder/setCurrentLanguage', language)
+      this.rebuildCytoscape()
+    })
+
     // Truncate
     this.subscriber.on('truncate', (vertexData) => {
       this.cytoscape.remove( '*' )
@@ -74,27 +80,67 @@ export default class Builder {
 
   }
 
-  getVertexDataValueModel (key) {
-    var editVertexId = this.store.state.wandererBuilder.editVertex
-    return this.vueGraph.getVertexDataValueModel(editVertexId, key)
+  setCurrentLanguage (language) {
+    this.store.commit('wandererBuilder/setCurrentLanguage', language)
+    this.rebuildCytoscape()
+    this.subscriber.setLanguage(language);
   }
 
-  getTranslatableVertexModel(key) {
+  getCurrentLanguage () {
+    return this.store.state.wandererBuilder.currentLanguage;
+  }
+
+  getVertexCollectionPropsById (vertexId) {
+    var collection = this.vueGraph.getVertexDataValue(vertexId, '_collection')
+    if(this.vertexCollectionProps.has(collection) ) {
+      return this.vertexCollectionProps.get(collection)
+    }
+  }
+
+  getVertexDataValue (key) {
+    var editVertexId = this.store.state.wandererBuilder.editVertex
+    return this.vueGraph.getVertexDataValue(editVertexId, key)
+  }
+
+  getTranslatableVertexDataValue (key) {
     var currentLanguage = this.store.state.wandererBuilder.currentLanguage
     var editVertexId = this.store.state.wandererBuilder.editVertex
-    return this.vueGraph.getVertexDataValueModel(editVertexId, key, currentLanguage)
+    return this.vueGraph.getVertexDataValue(editVertexId, key, currentLanguage)
   }
 
-  getEdgeDataValueModel (key) {
-    var editEdgeId = this.store.state.wandererBuilder.editEdge
-    return this.vueGraph.getEdgeDataValueModel(editEdgeId, key)
+  setVertexDataValue (key, value) {
+    var editVertexId = this.store.state.wandererBuilder.editVertex
+    this.vueGraph.setVertexDataValue(editVertexId, key, value)
   }
 
-  getTranslateableEdgeDataValueModel (key) {
+  setTranslatableVertexDataValue (key, value) {
     var currentLanguage = this.store.state.wandererBuilder.currentLanguage
-    var editEdgeId = this.store.state.wandererBuilder.editEdge
-    return this.vueGraph.getEdgeDataValueModel(editEdgeId, key, currentLanguage)
+    var editVertexId = this.store.state.wandererBuilder.editVertex
+    this.vueGraph.setVertexDataValue(editVertexId, key, value, currentLanguage)
   }
+
+  // getVertexDataValueModel (key) {
+  //   var currentLanguage = this.store.state.wandererBuilder.currentLanguage
+  //   var editVertexId = this.store.state.wandererBuilder.editVertex
+  //   return this.vueGraph.getVertexDataValueModel(editVertexId, key, currentLanguage)
+  // }
+
+  // getTranslatableVertexDataValueModel(key) {
+  //   var currentLanguage = this.store.state.wandererBuilder.currentLanguage
+  //   var editVertexId = this.store.state.wandererBuilder.editVertex
+  //   return this.vueGraph.getVertexDataValueModel(editVertexId, key, currentLanguage)
+  // }
+  //
+  // getEdgeDataValueModel (key) {
+  //   var editEdgeId = this.store.state.wandererBuilder.editEdge
+  //   return this.vueGraph.getEdgeDataValueModel(editEdgeId, key)
+  // }
+  //
+  // getTranslateableEdgeDataValueModel (key) {
+  //   var currentLanguage = this.store.state.wandererBuilder.currentLanguage
+  //   var editEdgeId = this.store.state.wandererBuilder.editEdge
+  //   return this.vueGraph.getEdgeDataValueModel(editEdgeId, key, currentLanguage)
+  // }
 
   getSelectedCytoscapeVertexIds () {
     let selectedVertices = this.cytoscape.$('node:selected')
@@ -132,6 +178,20 @@ export default class Builder {
     // You cannot override the id
     cytoscapeData.id = edgeData.get('_id')
     this.cytoscape.getElementById(edgeData.get('_id')).data(cytoscapeData)
+  }
+
+  rebuildCytoscape () {
+    var vertices = this.vueGraph.getAllVertexData()
+    vertices = new WandererNestedData(vertices)
+    vertices.each((vertex) => {
+      this.vertexDataToCytoscape(vertex)
+    })
+
+    var edges = this.vueGraph.getAllEdgeData()
+    edges = new WandererNestedData(edges)
+    edges.each((edge) => {
+      this.edgeDataToCytoscape(edge)
+    })
   }
 
   addVertexListener (vertexData) {
@@ -249,33 +309,32 @@ export default class Builder {
 
   // Check if an edge is allowed between two vertices
   isAllowedConnection (fromCollectionName, toCollectionName, throughCollectionName) {
-    let edgeCollections = WandererSingleton.getEdgeCollections()
 
     // Without any restrictions the from and to collections will be accepted
     var fromCollectionNameAllowed = true
     var toCollectionNameAllowed = true
 
     // Are there any from-restrictions?
-    if (edgeCollections[throughCollectionName].builder.restrictSourceVertices !== undefined) {
+    this.edgeCollectionProps.with(throughCollectionName+'.restrictSourceVertices', (restrictSourceVertices) => {
       // Ok. We have to check if the fromCollection is allowed
       fromCollectionNameAllowed = false
-      for (var i in edgeCollections[throughCollectionName].builder.restrictSourceVertices) {
-        if (edgeCollections[throughCollectionName].builder.restrictSourceVertices[i] == fromCollectionName) {
+      restrictSourceVertices.each((restrictSourceVertex) => {
+        if (restrictSourceVertex == fromCollectionName) {
           fromCollectionNameAllowed = true
         }
-      }
-    }
+      })
+    })
 
     // Are there any to-restrictions?
-    if (edgeCollections[throughCollectionName].builder.restrictTargetVertices !== undefined) {
+    this.edgeCollectionProps.with(throughCollectionName+'.restrictTargetVertices', (restrictTargetVertices) => {
       // Ok. We have to check if the toCollection is allowed
       toCollectionNameAllowed = false
-      for (var i in edgeCollections[throughCollectionName].builder.restrictTargetVertices) {
-        if (edgeCollections[throughCollectionName].builder.restrictTargetVertices[i] == toCollectionName) {
+      restrictTargetVertices.each((restrictTargetVertex) => {
+        if (restrictTargetVertex == toCollectionName) {
           toCollectionNameAllowed = true
         }
-      }
-    }
+      })
+    })
 
     if (fromCollectionNameAllowed && toCollectionNameAllowed) {
       return true
@@ -286,137 +345,145 @@ export default class Builder {
 
   // Check if a node can be connected to a given vertex collection throug an outgoing edge
   isAllowedOutgoingConnection (fromCollectionName, toCollectionName, throughCollectionName = false) {
-    let vertexCollections = WandererSingleton.getVertexCollections()
 
-    // If the from collection restricts the outgoing connections
-    if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections !== undefined) {
-      // Search for the requested connection in the allowed connections of the collection
-      for(var i in vertexCollections[fromCollectionName].builder.restrictOutgoingConnections) {
-        if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections[i].to == toCollectionName) {
-          // Check the edge too
-          if(throughCollectionName){
-            if(vertexCollections[fromCollectionName].builder.restrictOutgoingConnections[i].through == throughCollectionName) {
-              // Return true if the to collection and the edge are allowed
-              return true
+    this.vertexCollectionProps.with(fromCollectionName+'.restrictOutgoingConnections', (restrictOutgoingConnections) => {
+
+      restrictOutgoingConnections.each((restrictOutgoingConnection) => {
+
+        restrictOutgoingConnection.with('to', (to) => {
+          if(to == toCollectionName) {
+
+            // Check the edge too
+            if(throughCollectionName) {
+
+              restrictOutgoingConnection.with('through', (through) => {
+                if(through == throughCollectionName) {
+                  // Return true if the to collection and the edge are allowed
+                  return true
+                }
+              })
+
+            // Drop the edge check
+            }else{
+              // Return true if the target collection is allowed
+              return true;
             }
-          // Drop the edge check
-          }else{
-            // Return true if the target collection is allowed
-            return true;
           }
-        }
-      }
+        })
+
+      })
+
       // Always return false if the outgoing connections are restricted and no rule matches
       return false;
-    }
+
+    })
+
     // Always return true if the outgoing connections are not restricted
     return true;
+
   }
 
   // Check if a node can be connected to a given collection name through an incomming edge
   isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName = false) {
-    let vertexCollections = WandererSingleton.getVertexCollections()
 
-    // If the to collection restricts the incomming connections
-    if(vertexCollections[toCollectionName].builder.restrictIncommingConnections !== undefined) {
-      // Search for the requested connection in the allowed connections of the collection
-      for(var i in vertexCollections[toCollectionName].builder.restrictIncommingConnections) {
-        if(vertexCollections[toCollectionName].builder.restrictIncommingConnections[i].from == fromCollectionName) {
-          // Check the edge too
-          if(throughCollectionName){
-            if(vertexCollections[toCollectionName].builder.restrictIncommingConnections[i].through == throughCollectionName) {
-              // Return true if the from collection and the edge are allowed
+    this.vertexCollectionProps.with(toCollectionName+'.restrictIncommingConnections', (restrictIncommingConnections) => {
+
+      restrictIncommingConnections.each((restrictIncommingConnection) => {
+
+        restrictIncommingConnection.with('from', (from) => {
+          if(from == fromCollectionName) {
+
+            // Check the edge too
+            if(throughCollectionName) {
+
+              restrictIncommingConnection.with('through', (through) => {
+                if(through == throughCollectionName) {
+                  // Return true if the to collection and the edge are allowed
+                  return true
+                }
+              })
+
+            // Drop the edge check
+            }else{
+              // Return true if the target collection is allowed
               return true;
             }
-          // Drop the edge check
-          }else{
-            // Return true if the from collection is allowed
-            return true;
           }
-        }
-      }
+        })
+
+      })
+
       // Always return false if the incomming connections are restricted and no rule matches
       return false;
-    }
+
+    })
+
     // Always return true if the incomming connections are not restricted
     return true;
+
   }
 
   // This method collects all possible outgoing edge and vertex combinations for a given vertex collection type
   // This is usefull for example to draw the circular menu in the editor
   getPossibleOutgoingCollections (fromCollectionName) {
-    let vertexCollections = WandererSingleton.getVertexCollections()
-    let edgeCollections = WandererSingleton.getEdgeCollections()
 
     var possibleOutgoingCollections = []
-    // For each possible target node
-    for(var toCollectionName in vertexCollections) {
-      if (vertexCollections.hasOwnProperty(toCollectionName)) {
-        if(vertexCollections[toCollectionName].builder.creatable) {
 
-          var possibleOutgoingCollection = {
-            to: vertexCollections[toCollectionName],
-            through: []
-          }
+    // For each vertex collection
+    this.vertexCollectionProps.each((vertexCollection, toCollectionName) => {
+      if(vertexCollection.is('creatable')) {
 
-          for(var throughCollectionName in edgeCollections) {
-            if (edgeCollections.hasOwnProperty(throughCollectionName)) {
-              if(edgeCollections[throughCollectionName].builder.creatable) {
-                if(
-                  this.isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName) &&
-                  this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName) &&
-                  this.isAllowedConnection(fromCollectionName, toCollectionName, throughCollectionName)
-                ){
-                  possibleOutgoingCollection.through.push(edgeCollections[throughCollectionName])
-                }
-              }
+        var possibleOutgoingCollection = {
+          to: vertexCollection,
+          through: []
+        }
+
+        // For each edge collection
+        this.edgeCollectionProps.each((edgeCollection, throughCollectionName) => {
+
+          if(edgeCollection.is('creatable')) {
+            if(
+              this.isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName) &&
+              this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName) &&
+              this.isAllowedConnection(fromCollectionName, toCollectionName, throughCollectionName)
+            ){
+              possibleOutgoingCollection.through.push(edgeCollection)
             }
           }
 
-          // If this possible outgoing connection has possible edge
-          if(possibleOutgoingCollection.through.length){
-            possibleOutgoingCollections.push(possibleOutgoingCollection)
-          }
+        })
+
+        // If this possible outgoing connection has a possible edge
+        if(possibleOutgoingCollection.through.length){
+          possibleOutgoingCollections.push(possibleOutgoingCollection)
         }
+
       }
-    }
-    return possibleOutgoingCollections
+    })
+
+    return new WandererNestedData(possibleOutgoingCollections)
+
   }
 
   // This method will return all possible edges between two vertex collections
-  getPossibleEdgeCollections (fromCollectionName, toCollectionName) {
-    let edgeCollections = WandererSingleton.getEdgeCollections()
+  getPossibleEdgeCollectionNames (fromCollectionName, toCollectionName) {
+
     var possibleEdgeCollections = []
 
-    for(var throughCollectionName in edgeCollections) {
-      if (edgeCollections.hasOwnProperty(throughCollectionName)) {
-        if(edgeCollections[throughCollectionName].builder.creatable) {
-          if(
-            this.isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName) &&
-            this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName) &&
-            this.isAllowedConnection(fromCollectionName, toCollectionName, throughCollectionName)
-          ){
-            possibleEdgeCollections.push(throughCollectionName)
-          }
+    this.edgeCollectionProps.each((edgeCollection, throughCollectionName) => {
+      if(edgeCollection.is('creatable')) {
+        if(
+          this.isAllowedOutgoingConnection(fromCollectionName, toCollectionName, throughCollectionName) &&
+          this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName) &&
+          this.isAllowedConnection(fromCollectionName, toCollectionName, throughCollectionName)
+        ){
+          possibleEdgeCollections.push(throughCollectionName)
         }
       }
-    }
+    })
+
     return possibleEdgeCollections
   }
-
-  // updateVertexStorePosition (cyVertex) {
-  //   let position = cyVertex.position(); // get position
-  //   StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-  //     id: cyVertex.id(),
-  //     key: '_x',
-  //     value: position.x
-  //   })
-  //   StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-  //     id: cyVertex.id(),
-  //     key: '_y',
-  //     value: position.y
-  //   })
-  // }
 
   initCytoscape (config) {
 
@@ -489,67 +556,73 @@ export default class Builder {
     this.vertexCollectionProps.each((item) => {
       // console.log(item.data.data)
       item.with('cytoscapeStyles', (cytoscapeStyles) => {
-        cytoscapeStylesheets = cytoscapeStylesheets.concat(cytoscapeStyles.plain())
+        cytoscapeStylesheets = cytoscapeStyles.plain().concat(cytoscapeStylesheets)
       })
     })
 
     this.cytoscape.style().fromJson(cytoscapeStylesheets).update();
 
-    // // Init ctx menus for the different types of vertices
-    // // For each vertex collection
-    // for(var fromCollectionName in vertexCollections) {
-    //   if (vertexCollections.hasOwnProperty(fromCollectionName)) {
-    //
-    //     let cxtmenuCommands = []; // an array of commands to list in the menu or a function that returns the array
-    //
-    //     let possibleOutgoingCollections = this.getPossibleOutgoingCollections(fromCollectionName)
-    //     for(let i in possibleOutgoingCollections) {
-    //       for(let t in possibleOutgoingCollections[i].through) {
-    //         (function(possibleOutgoingVertexCollection, possibleOutgoingEdgeCollection) {
-    //
-    //           if(possibleOutgoingVertexCollection.builder.appendableViaCxtMenu) {
-    //
-    //             if(possibleOutgoingVertexCollection.builder.ctxMenuAllowedEdge&&possibleOutgoingVertexCollection.builder.ctxMenuAllowedEdge==possibleOutgoingEdgeCollection.name){
-    //               cxtmenuCommands.push({
-    //                 fillColor: possibleOutgoingVertexCollection.builder.color,
-    //                 content: possibleOutgoingEdgeCollection.builder.label+' '+possibleOutgoingVertexCollection.builder.label,
-    //                 select: function(vertex){
-    //                   vertex.trigger('append', {
-    //                     vertexCollectionName: possibleOutgoingVertexCollection.name,
-    //                     edgeCollectionName: possibleOutgoingEdgeCollection.name
-    //                   })
-    //                 }
-    //               });
-    //             }
-    //           }
-    //
-    //         })(possibleOutgoingCollections[i].to, possibleOutgoingCollections[i].through[t]);
-    //       }
-    //     }
-    //
-    //     // Add new context menu
-    //     CytoscapeSingleton.cy.cxtmenu( {
-    //       menuRadius: 150, // the radius of the circular menu in pixels
-    //       selector: vertexCollections[fromCollectionName].builder.cytoscapeCxtMenuSelector, // elements matching this Cytoscape.js selector will trigger cxtmenus
-    //       commands: cxtmenuCommands, // function( ele ){ return [ /*...*/ ] }, // example function for commands
-    //       fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
-    //       activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
-    //       activePadding: 20, // additional size in pixels for the active command
-    //       indicatorSize: 24, // the size in pixels of the pointer to the active command
-    //       separatorWidth: 3, // the empty spacing in pixels between successive commands
-    //       spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
-    //       minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
-    //       maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
-    //       openMenuEvents: 'cxttapstart', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
-    //       //openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
-    //       itemColor: 'black', // the colour of text in the command's content
-    //       //itemTextShadowColor: 'black', // the text shadow colour of the command's content
-    //       zIndex: 9999, // the z-index of the ui div
-    //       atMouse: false // draw menu at mouse position
-    //     });
-    //
-    //   }
-    // }
+    // Init ctx menus for the different types of vertices
+    // For each vertex collection
+    this.vertexCollectionProps.each((fromCollection, fromCollectionName) => {
+
+      let cxtmenuCommands = []; // an array of commands to list in the menu or a function that returns the array
+      let possibleOutgoingCollections = this.getPossibleOutgoingCollections(fromCollectionName)
+
+      possibleOutgoingCollections.each((possibleOutgoingCollection) => {
+
+        possibleOutgoingCollection.with('to', (possibleOutgoingVertexCollection) => {
+
+          possibleOutgoingCollection.with('through', (possibleOutgoingEdgeCollections) => {
+
+            possibleOutgoingEdgeCollections.each((possibleOutgoingEdgeCollection) => {
+
+              if(possibleOutgoingVertexCollection.appendableViaCxtMenu) {
+
+                if(possibleOutgoingVertexCollection.ctxMenuAllowedEdge&&possibleOutgoingVertexCollection.ctxMenuAllowedEdge==possibleOutgoingEdgeCollection.name) {
+                  cxtmenuCommands.push({
+                    fillColor: possibleOutgoingVertexCollection.color,
+                    content: possibleOutgoingEdgeCollection.label+' '+possibleOutgoingVertexCollection.label,
+                    select: function(vertex){
+                      vertex.trigger('append', {
+                        vertexCollectionName: possibleOutgoingVertexCollection.name,
+                        edgeCollectionName: possibleOutgoingEdgeCollection.name
+                      })
+                    }
+                  })
+                }
+              }
+
+            })
+
+          })
+
+        })
+
+      })
+
+      // Add new context menu
+      this.cytoscape.cxtmenu( {
+        menuRadius: 150, // the radius of the circular menu in pixels
+        selector: fromCollection.get('cytoscapeCxtMenuSelector'), // elements matching this Cytoscape.js selector will trigger cxtmenus
+        commands: cxtmenuCommands, // function( ele ){ return [ /*...*/ ] }, // example function for commands
+        fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
+        activeFillColor: 'rgba(92, 194, 237, 0.75)', // the colour used to indicate the selected command
+        activePadding: 20, // additional size in pixels for the active command
+        indicatorSize: 24, // the size in pixels of the pointer to the active command
+        separatorWidth: 3, // the empty spacing in pixels between successive commands
+        spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
+        minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
+        maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
+        openMenuEvents: 'cxttapstart', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
+        //openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
+        itemColor: 'black', // the colour of text in the command's content
+        //itemTextShadowColor: 'black', // the text shadow colour of the command's content
+        zIndex: 9999, // the z-index of the ui div
+        atMouse: false // draw menu at mouse position
+      });
+
+    })
 
     // Implement dbl click
     var clickedBefore;

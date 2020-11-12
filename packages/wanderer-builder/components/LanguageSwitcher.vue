@@ -1,7 +1,7 @@
 <template>
 
   <div class="btn-group" >
-    <div class="btn btn-sm" v-bind:class="{'btn-primary': currentLanguage==enabledLanguage,'btn-secondary': currentLanguage!=enabledLanguage}" v-for="(enabledLanguage) in enabledLanguages" v-bind:key="enabledLanguage" v-on:click="localize(enabledLanguage)">{{languages[enabledLanguage]['name']}}</div>
+    <builder-button v-bind:class="{'btn-primary': currentLanguage==enabledLanguage,'btn-secondary': currentLanguage!=enabledLanguage}" v-for="(enabledLanguage) in enabledLanguages" v-bind:key="enabledLanguage" v-on:click="localize(enabledLanguage)">{{languages[enabledLanguage]['name']}}</builder-button>
   </div>
 
 </template>
@@ -11,26 +11,24 @@
   export default {
     computed: {
       languages () {
-        return WandererSingleton.getLanguages()
+        return this.$wanderer.getLanguages()
       },
       currentLanguage () {
-        return this.$store.state.wanderer.currentLanguage;
+        return this.$builder.getCurrentLanguage()
       },
       enabledLanguages () {
-        if (this.$store.state.wanderer.originVertexId) {
-          return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.originVertexId].languages;
+        var languages = this.$vueGraph.getOriginDataValue('languages')
+        if(!languages) {
+          languages = []
         }
-        return [];
+        return languages
       }
     },
     methods: {
-      localize(language){
-
-        WandererSingleton.setLanguage(language);
-
+      localize(language) {
+        this.$builder.setCurrentLanguage(language);
         this.$emit('localized')
-
-      },
+      }
     }
   }
 

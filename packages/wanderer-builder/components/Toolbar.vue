@@ -1,5 +1,5 @@
 <template>
-  <nav class="flex p-4 justify-between bg-grey">
+  <nav class="flex p-4 justify-between bg-gray">
 
     <a class="" href="#">Wanderer.ai <small>Conversation Builder</small></a>
 
