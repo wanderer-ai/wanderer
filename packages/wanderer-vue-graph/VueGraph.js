@@ -89,7 +89,15 @@ export default class VueGraph {
   }
 
   getAllEdgeData () {
-    return this.store.state.wandererGraph.vertexDocumentData
+    return this.store.state.wandererGraph.edgeDocumentData
+  }
+
+  getVertexDataById (id) {
+    return this.store.state.wandererGraph.vertexDocumentData[id]
+  }
+
+  getEdgeDataById (id) {
+    return this.store.state.wandererGraph.edgeDocumentData[id]
   }
 
   getOriginDataValue (key, language) {
@@ -128,7 +136,7 @@ export default class VueGraph {
     }
   }
 
-  getEdgeDataValue (id, key) {
+  getEdgeDataValue (id, key, language) {
     if(this.store.state.wandererGraph.edgeDocumentData[id] !== undefined) {
       if(this.store.state.wandererGraph.edgeDocumentData[id][key] !== undefined) {
         if(language === undefined) {

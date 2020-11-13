@@ -7,7 +7,9 @@
       </label>
     </div>
     <div class="md:w-4/5">
-      <input v-model="inputVal" :placeholder="placeholder" :id="_uid" :type="type" class="bg-gray-200 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-white focus:border-blue">
+      <select v-model="inputVal" class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state">
+        <option v-for="label, key in options" :value="key">{{label}}</option>
+      </select>
     </div>
   </div>
 
@@ -20,17 +22,12 @@ export default {
     value: {
       type: String,
     },
+    options: {
+      type: Object,
+    },
     label: {
       type: String,
       default: 'Input'
-    },
-    placeholder: {
-      type: String,
-      default: ''
-    },
-    type: {
-      type: String,
-      default: 'text'
     }
   },
   computed: {

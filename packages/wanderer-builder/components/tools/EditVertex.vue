@@ -64,11 +64,8 @@ export default {
   },
   methods: {
     closeVertexEditorModal () {
+      this.$builder.rebuildCytoscapeVertexById(this.$store.state.wandererBuilder.editVertex)
       this.$store.commit('wandererBuilder/setEditVertex', 0)
-
-      // Rebuild cytoscape data
-      this.$builder.rebuildCytoscape()
-
     },
     openVertexEditorModal () {
       let selectedVertexIds = this.$builder.getSelectedCytoscapeVertexIds()

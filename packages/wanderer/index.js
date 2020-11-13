@@ -98,20 +98,24 @@ export default class Wanderer {
     throw 'The dependency "'+key+'" is required! Please provide it first!';
   }
 
+  getRandomId () {
+    return uuidv4()
+  }
+
   regenerateJsonDataIds (data) {
 
     let dataString = JSON.stringify(data);
 
     for(let i in data.vertices){
       let oldId = data.vertices[i]._id
-      let newId = uuidv4()
+      let newId = this.getRandomId()
       var re = new RegExp(oldId, 'g')
       dataString = dataString.replace(re,newId)
     }
 
     for(let i in data.edges){
       let oldId = data.edges[i]._id
-      let newId = uuidv4()
+      let newId = this.getRandomId()
       var re = new RegExp(oldId, 'g')
       dataString = dataString.replace(re,newId)
     }
@@ -799,9 +803,7 @@ export default class Wanderer {
 //   //
 //   // }
 //
-//   function generateId () {
-//     return uuidv4()
-//   }
+//
 //
 //   function invokeVertexMethod(targetVertexId, methodName) {
 //

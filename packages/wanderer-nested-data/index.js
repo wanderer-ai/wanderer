@@ -23,7 +23,7 @@ class WandererNestedData {
 
 	set (name, value) {
     if(value instanceof WandererNestedData) {
-      value = value.data
+      value = value.plain()
     }
 		var splits = name.split('.'), s = splits.pop(), result = this.objectifier(splits, this.data)
 		return result && s ? (result[s] = value) : undefined

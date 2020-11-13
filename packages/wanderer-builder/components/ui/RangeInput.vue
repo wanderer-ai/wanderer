@@ -3,11 +3,11 @@
   <div class="md:flex md:items-center mb-6">
     <div class="md:w-1/5">
       <label class="block text-gray-500 md:text-right mb-1 md:mb-0 pr-4" :for="_uid">
-        {{label}}
+        {{label}} ({{inputVal}})
       </label>
     </div>
     <div class="md:w-4/5">
-      <input v-model="inputVal" :placeholder="placeholder" :id="_uid" :type="type" class="bg-gray-200 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-white focus:border-blue">
+      <input v-model="inputVal" :id="_uid" :min="min" :max="max" type="range" class="bg-gray-200 appearance-none w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-white focus:border-blue">
     </div>
   </div>
 
@@ -18,19 +18,19 @@
 export default {
   props: {
     value: {
-      type: String,
+      
     },
     label: {
       type: String,
       default: 'Input'
     },
-    placeholder: {
+    min: {
       type: String,
-      default: ''
+      default: 0
     },
-    type: {
+    max: {
       type: String,
-      default: 'text'
+      default: 100
     }
   },
   computed: {

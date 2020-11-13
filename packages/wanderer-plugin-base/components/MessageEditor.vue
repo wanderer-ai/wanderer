@@ -1,10 +1,7 @@
 <template>
   <div>
 
-    <div class="form-group">
-      <label for="message">Message</label>
-      <textarea v-model="message" type="text" class="form-control" id="message" placeholder="Enter your message"></textarea>
-    </div>
+    <builder-textarea-input label="Message" placeholder="Message" v-model="message" />
 
   </div>
 </template>

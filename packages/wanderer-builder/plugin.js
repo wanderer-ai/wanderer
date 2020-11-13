@@ -5,6 +5,9 @@ import Builder from './Builder'
 import UiModal from './components/ui/Modal.vue'
 import UiButton from './components/ui/Button.vue'
 import UiTextInput from './components/ui/TextInput.vue'
+import UiTextareaInput from './components/ui/TextareaInput.vue'
+import UiSelectInput from './components/ui/SelectInput.vue'
+import UiRangeInput from './components/ui/RangeInput.vue'
 
 export default {
 
@@ -19,6 +22,9 @@ export default {
     Vue.component('builder-modal', UiModal)
     Vue.component('builder-button', UiButton)
     Vue.component('builder-text-input', UiTextInput)
+    Vue.component('builder-textarea-input', UiTextareaInput)
+    Vue.component('builder-select-input', UiSelectInput)
+    Vue.component('builder-range-input', UiRangeInput)
 
     // Extend vuex with new namespace
     store.registerModule('wandererBuilder', {

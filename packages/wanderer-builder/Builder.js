@@ -97,6 +97,13 @@ export default class Builder {
     }
   }
 
+  getEdgeCollectionPropsById (edgeId) {
+    var collection = this.vueGraph.getEdgeDataValue(edgeId, '_collection')
+    if(this.edgeCollectionProps.has(collection) ) {
+      return this.edgeCollectionProps.get(collection)
+    }
+  }
+
   getVertexDataValue (key) {
     var editVertexId = this.store.state.wandererBuilder.editVertex
     return this.vueGraph.getVertexDataValue(editVertexId, key)
@@ -119,28 +126,27 @@ export default class Builder {
     this.vueGraph.setVertexDataValue(editVertexId, key, value, currentLanguage)
   }
 
-  // getVertexDataValueModel (key) {
-  //   var currentLanguage = this.store.state.wandererBuilder.currentLanguage
-  //   var editVertexId = this.store.state.wandererBuilder.editVertex
-  //   return this.vueGraph.getVertexDataValueModel(editVertexId, key, currentLanguage)
-  // }
+  getEdgeDataValue (key) {
+    var editEdgeId = this.store.state.wandererBuilder.editEdge
+    return this.vueGraph.getEdgeDataValue(editEdgeId, key)
+  }
 
-  // getTranslatableVertexDataValueModel(key) {
-  //   var currentLanguage = this.store.state.wandererBuilder.currentLanguage
-  //   var editVertexId = this.store.state.wandererBuilder.editVertex
-  //   return this.vueGraph.getVertexDataValueModel(editVertexId, key, currentLanguage)
-  // }
-  //
-  // getEdgeDataValueModel (key) {
-  //   var editEdgeId = this.store.state.wandererBuilder.editEdge
-  //   return this.vueGraph.getEdgeDataValueModel(editEdgeId, key)
-  // }
-  //
-  // getTranslateableEdgeDataValueModel (key) {
-  //   var currentLanguage = this.store.state.wandererBuilder.currentLanguage
-  //   var editEdgeId = this.store.state.wandererBuilder.editEdge
-  //   return this.vueGraph.getEdgeDataValueModel(editEdgeId, key, currentLanguage)
-  // }
+  getTranslatableEdgeDataValue (key) {
+    var currentLanguage = this.store.state.wandererBuilder.currentLanguage
+    var editEdgeId = this.store.state.wandererBuilder.editEdge
+    return this.vueGraph.getEdgeDataValue(editEdgeId, key, currentLanguage)
+  }
+
+  setEdgeDataValue (key, value) {
+    var editEdgeId = this.store.state.wandererBuilder.editEdge
+    this.vueGraph.setEdgeDataValue(editEdgeId, key, value)
+  }
+
+  setTranslatableEdgeDataValue (key, value) {
+    var currentLanguage = this.store.state.wandererBuilder.currentLanguage
+    var editEdgeId = this.store.state.wandererBuilder.editEdge
+    this.vueGraph.setEdgeDataValue(editEdgeId, key, value, currentLanguage)
+  }
 
   getSelectedCytoscapeVertexIds () {
     let selectedVertices = this.cytoscape.$('node:selected')
@@ -171,26 +177,44 @@ export default class Builder {
   }
 
   edgeDataToCytoscape (edgeData) {
+
+    // Get the source and target collection props
+    var sourceCollectionProps = this.getVertexCollectionPropsById(edgeData.get('_from'))
+    var targetCollectionProps = this.getVertexCollectionPropsById(edgeData.get('_to'))
+
+
     var cytoscapeData = {}
     this.edgeCollectionProps.with(edgeData.get('_collection')+'.toCytoscape', (toCytoscape) => {
-      cytoscapeData = toCytoscape(edgeData, this.store.state.wandererBuilder.currentLanguage)
+      cytoscapeData = toCytoscape(edgeData, sourceCollectionProps, targetCollectionProps, this.store.state.wandererBuilder.currentLanguage)
     })
     // You cannot override the id
     cytoscapeData.id = edgeData.get('_id')
     this.cytoscape.getElementById(edgeData.get('_id')).data(cytoscapeData)
   }
 
+  rebuildCytoscapeVertexById (vertexId) {
+    var vertexData = this.vueGraph.getVertexDataById(vertexId)
+    vertexData = new WandererNestedData(vertexData)
+    this.vertexDataToCytoscape(vertexData)
+  }
+
+  rebuildCytoscapeEdgeById (edgeId) {
+    var edgeData = this.vueGraph.getEdgeDataById(edgeId)
+    edgeData = new WandererNestedData(edgeData)
+    this.edgeDataToCytoscape(edgeData)
+  }
+
   rebuildCytoscape () {
     var vertices = this.vueGraph.getAllVertexData()
     vertices = new WandererNestedData(vertices)
-    vertices.each((vertex) => {
-      this.vertexDataToCytoscape(vertex)
+    vertices.each((vertexData) => {
+      this.vertexDataToCytoscape(vertexData)
     })
 
     var edges = this.vueGraph.getAllEdgeData()
     edges = new WandererNestedData(edges)
-    edges.each((edge) => {
-      this.edgeDataToCytoscape(edge)
+    edges.each((edgeData) => {
+      this.edgeDataToCytoscape(edgeData)
     })
   }
 
@@ -230,22 +254,6 @@ export default class Builder {
 
     }
 
-    // let vertexCollections = WandererSingleton.getVertexCollections()
-    //
-    // // Deep clone the default fields
-    // let newVertexData = JSON.parse(JSON.stringify(vertexCollections[vertexCollectionName].builder.defaultFields))
-    //
-    // // Add base data
-    // newVertexData._id = WandererSingleton.generateId()
-    // newVertexData._collection = vertexCollectionName
-    // newVertexData._origin = false
-    // newVertexData._x = x
-    // newVertexData._y = y
-    // newVertexData._parent = parent
-    //
-    // WandererSingleton.addVertex(newVertexData)
-    //
-    // return newVertexData._id
   }
 
   addEdgeListener (edgeData) {
@@ -263,7 +271,7 @@ export default class Builder {
       cyData.classes = cytoscapeClasses
     })
 
-    // Convert data to Cytoscape if needed
+    // Convert data to Cytoscape
     this.edgeDataToCytoscape(edgeData)
 
     try {
@@ -273,32 +281,61 @@ export default class Builder {
     }
   }
 
-  // addEdge (edgeCollectionName, fromId, toId) {
-  //
-  //   let edgeCollections = WandererSingleton.getEdgeCollections()
-  //   // let vertexCollections = WandererSingleton.getVertexCollections()
-  //
-  //   // Deep clone the default fields
-  //   // let newEdgeData = JSON.parse(JSON.stringify(edgeCollections[edgeCollectionName].builder.defaultFields))
-  //
-  //   let newEdgeData = edgeCollections[edgeCollectionName].builder.defaultFields(WandererSingleton.getVertexCollectionById(fromId), WandererSingleton.getVertexCollectionById(toId));
-  //
-  //   // Add base data
-  //   newEdgeData._id = WandererSingleton.generateId()
-  //   newEdgeData._from = fromId
-  //   newEdgeData._to = toId
-  //   newEdgeData._collection = edgeCollectionName
-  //
-  //   WandererSingleton.addEdge(newEdgeData)
-  //
-  //   return newEdgeData._id
-  // }
+  addVertex (vertexCollectionName, x, y) {
+
+    // Get the collection
+    var vertexCollection = this.vertexCollectionProps.get(vertexCollectionName)
+
+    // Deep clone the default fields
+    let newVertexData = JSON.parse(JSON.stringify(vertexCollection.get('defaultFields')))
+
+    // Add base data
+    newVertexData._id = this.wanderer.getRandomId()
+    newVertexData._collection = vertexCollectionName
+    newVertexData._origin = false
+    newVertexData._x = x
+    newVertexData._y = y
+
+    // Broadcast this new data
+    this.subscriber.addVertexFromData(newVertexData)
+
+    // Add this new node to the builder
+    this.addVertexListener(new WandererNestedData(newVertexData))
+
+    return newVertexData._id
+
+  }
+
+  addEdge (edgeCollectionName, fromId, toId) {
+
+    // Get the collection
+    var edgeCollection = this.edgeCollectionProps.get(edgeCollectionName)
+
+    let defaultFieldsMethod = edgeCollection.get('defaultFields')
+
+    let newEdgeData = defaultFieldsMethod(this.getVertexCollectionPropsById(fromId), this.getVertexCollectionPropsById(toId));
+
+    // Add base data
+    newEdgeData._id = this.wanderer.getRandomId()
+    newEdgeData._from = fromId
+    newEdgeData._to = toId
+    newEdgeData._collection = edgeCollectionName
+
+    // Broadcast this new data
+    this.subscriber.addEdgeFromData(newEdgeData)
+
+    // Add this new edge to the builder
+    this.addEdgeListener(new WandererNestedData(newEdgeData))
+
+    return newEdgeData._id
+  }
 
   appendVertex (cytoscapeNodeId, vertexCollectionName, edgeCollectionName){
 
     // Get the position of the source vertex
-    let position = CytoscapeSingleton.cy.getElementById( cytoscapeNodeId ).position()
+    let position = this.cytoscape.getElementById( cytoscapeNodeId ).position()
 
+    // Calculate a new random position for the new vertex
     var x = position.x + (Math.floor(Math.random() * (100 - 50 + 1) + 50))
     var y = position.y + (Math.floor(Math.random() * (100 - 50 + 1) + 50))
 
@@ -431,10 +468,14 @@ export default class Builder {
 
     // For each vertex collection
     this.vertexCollectionProps.each((vertexCollection, toCollectionName) => {
+
       if(vertexCollection.is('creatable')) {
 
         var possibleOutgoingCollection = {
-          to: vertexCollection,
+          to: {
+            name: toCollectionName,
+            collection:vertexCollection.plain()
+          },
           through: []
         }
 
@@ -447,14 +488,14 @@ export default class Builder {
               this.isAllowedIncommingConnection(toCollectionName, fromCollectionName, throughCollectionName) &&
               this.isAllowedConnection(fromCollectionName, toCollectionName, throughCollectionName)
             ){
-              possibleOutgoingCollection.through.push(edgeCollection)
+              possibleOutgoingCollection.through[throughCollectionName] = edgeCollection.plain()
             }
           }
 
         })
 
         // If this possible outgoing connection has a possible edge
-        if(possibleOutgoingCollection.through.length){
+        if(Object.keys(possibleOutgoingCollection.through).length) {
           possibleOutgoingCollections.push(possibleOutgoingCollection)
         }
 
@@ -554,7 +595,12 @@ export default class Builder {
 
     // Apply the collection styles
     this.vertexCollectionProps.each((item) => {
-      // console.log(item.data.data)
+      item.with('cytoscapeStyles', (cytoscapeStyles) => {
+        cytoscapeStylesheets = cytoscapeStyles.plain().concat(cytoscapeStylesheets)
+      })
+    })
+
+    this.edgeCollectionProps.each((item) => {
       item.with('cytoscapeStyles', (cytoscapeStyles) => {
         cytoscapeStylesheets = cytoscapeStyles.plain().concat(cytoscapeStylesheets)
       })
@@ -571,27 +617,32 @@ export default class Builder {
 
       possibleOutgoingCollections.each((possibleOutgoingCollection) => {
 
-        possibleOutgoingCollection.with('to', (possibleOutgoingVertexCollection) => {
+        possibleOutgoingCollection.with('to.collection', (possibleOutgoingVertexCollection) => {
 
-          possibleOutgoingCollection.with('through', (possibleOutgoingEdgeCollections) => {
+          possibleOutgoingCollection.with('to.name', (possibleOutgoingVertexCollectionName) => {
 
-            possibleOutgoingEdgeCollections.each((possibleOutgoingEdgeCollection) => {
+            possibleOutgoingCollection.with('through', (possibleOutgoingEdgeCollections) => {
 
-              if(possibleOutgoingVertexCollection.appendableViaCxtMenu) {
+              possibleOutgoingEdgeCollections.each((possibleOutgoingEdgeCollection, possibleOutgoingEdgeCollectionName) => {
 
-                if(possibleOutgoingVertexCollection.ctxMenuAllowedEdge&&possibleOutgoingVertexCollection.ctxMenuAllowedEdge==possibleOutgoingEdgeCollection.name) {
-                  cxtmenuCommands.push({
-                    fillColor: possibleOutgoingVertexCollection.color,
-                    content: possibleOutgoingEdgeCollection.label+' '+possibleOutgoingVertexCollection.label,
-                    select: function(vertex){
-                      vertex.trigger('append', {
-                        vertexCollectionName: possibleOutgoingVertexCollection.name,
-                        edgeCollectionName: possibleOutgoingEdgeCollection.name
-                      })
-                    }
-                  })
+                if(possibleOutgoingVertexCollection.is('appendableViaCxtMenu')) {
+
+                  if(possibleOutgoingVertexCollection.has('ctxMenuAllowedEdge')&&possibleOutgoingVertexCollection.get('ctxMenuAllowedEdge')==possibleOutgoingEdgeCollectionName) {
+
+                    cxtmenuCommands.push({
+                      fillColor: possibleOutgoingVertexCollection.get('color'),
+                      content: possibleOutgoingEdgeCollection.get('label')+' '+possibleOutgoingVertexCollection.get('label'),
+                      select: function(vertex){
+                        vertex.trigger('append', {
+                          vertexCollectionName: possibleOutgoingVertexCollectionName,
+                          edgeCollectionName: possibleOutgoingEdgeCollectionName
+                        })
+                      }
+                    })
+                  }
                 }
-              }
+
+              })
 
             })
 

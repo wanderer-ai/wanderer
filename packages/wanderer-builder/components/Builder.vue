@@ -26,8 +26,8 @@
 
     <info-tool />
      <edit-vertex-tool />
-    <!-- <edit-edge-tool />
-    <remove-tool />
+    <edit-edge-tool />
+    <!-- <remove-tool />
     <unlink-tool />
     <connect-tool />-->
     <language-tool />
@@ -47,7 +47,7 @@ import Alerts from './Alerts.vue'
 //
 import InfoTool from './tools/Info.vue'
 import EditVertexTool from './tools/EditVertex.vue'
-// import EditEdgeTool from './tools/EditEdge.vue'
+import EditEdgeTool from './tools/EditEdge.vue'
 // import RemoveTool from './tools/Remove.vue'
 // import UnlinkTool from './tools/Unlink.vue'
 // import ConnectTool from './tools/Connect.vue'
@@ -66,7 +66,7 @@ export default {
     Alerts,
     InfoTool,
     EditVertexTool,
-    // EditEdgeTool,
+    EditEdgeTool,
     // RemoveTool,
     // UnlinkTool,
     // ConnectTool,

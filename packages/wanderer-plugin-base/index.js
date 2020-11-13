@@ -8,7 +8,7 @@ var client = {
 
     // Require some dependencys from wanderer
     var Vue = wanderer.require('vue')
-    // var builder = wanderer.require('builder')
+    var builder = wanderer.require('builder')
 
     // Register some vue components
     Vue.component('wanderer-flow-editor', FlowEditor)
@@ -106,208 +106,126 @@ var client = {
 
     })
 
-  }
-}
+    wanderer.subscriber.addEdgeCollectionProps('leadsTo', {
+      builder: {
+        label: 'leads to',
+        cytoscapeClasses: 'leadsTo',
+        creatable: true,
+        defaultFields: function (fromVertexCollection, toVertexCollection) {
 
-var thread = {
-  install (wanderer) {
-
-    var thread = Wanderer.require('thread')
-
-    // Define a few traversal variables
-    var traversedRequiredEdgeIds = []
-    var traversedForbiddenEdgeIds = []
-    var lastTraversedForbiddenEdgeIds = []
-    var typingTimeouts = {}
-
-    wanderer.addGraphConfiguration('message', 'traversal', {
-      edgeConditions: {
-        sent: {
-          default: true,
-          label: 'sent',
-          condition: function (vertexLifecycleData) {
-            if(vertexLifecycleData!=undefined && vertexLifecycleData.sent) {
-              return true;
-            }
-            return false;
+          var defaultData = {
+            type: 'or',
+            priority: 10,
+            name: '',
+            expose: '',
+            method: false,
+            condition: false
           }
-        }
-      },
-      becomeReachable: function (cytoscapeVertex, vertexData) {
-        WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
-      },
-      visitor: function (cytoscapeVertex, vertexData, language) {
 
-        // If this message was not send before
-        if(!WandererSingleton.getLifecycleValue(cytoscapeVertex.id(), 'sent')) {
+          // // Check the source node collection for default edge conditions
+          // var defaultCondition = WandererSingleton.getVertexCollectionDefaultEdgeCondition(fromVertexCollection.name)
+          // if(defaultCondition) {
+          //   defaultData.condition = defaultCondition
+          // }
+          //
+          // // Check the source node for default expose data fields
+          // var defaultExposeData = WandererSingleton.getVertexCollectionDefaultExposeField(fromVertexCollection.name)
+          // if(defaultExposeData) {
+          //   defaultData.expose = defaultExposeData
+          // }
 
-          // if this message is currently not typing
-          if(typingTimeouts[cytoscapeVertex.id()] === undefined) {
+          return defaultData
+        },
+        cytoscapeStyles: [{
+          selector: '.leadsTo',
+          style: {
+            'line-color': '#6C757D',
+            'target-arrow-color': '#6C757D',
+            'source-arrow-color': '#6C757D',
+            'width': 'data(priority)',
+            'label': 'data(label)',
+            'line-style': 'data(line)'
+          }
+        },{
+          selector: '.leadsTo[type = "and"]',
+          style: {
+            'line-color': '#FEC106',
+            'target-arrow-color': '#FEC106',
+            'source-arrow-color': '#FEC106',
+            // 'label': 'data(label)'
+          }
+        },{
+          selector: '.leadsTo[type = "not"]',
+          style: {
+            'line-color': '#DC3545',
+            'target-arrow-color': '#DC3545',
+            'source-arrow-color': '#DC3545',
+            // 'label': 'data(label)'
+          }
+        }],
+        component: 'wanderer-leads-to-editor',
+        toCytoscape: function(edgeData, sourceCollectionProps, targetCollectionProps, language) {
 
-            // Send a typing signal to the chat
-            WandererStoreSingleton.store.dispatch('wanderer/chat/setTyping', 1000)
+          var defaultCondition = false
 
-            // Now send the message after a while
-            // And set the timeout
-            typingTimeouts[cytoscapeVertex.id()] = setTimeout(()=>{
+          sourceCollectionProps.with('edgeConditions', (edgeConditions) => {
+            edgeConditions.each((edgeCondition, conditionName) => {
+              if(edgeCondition.is('default')) {
+                defaultCondition = conditionName
+              }
+            })
+          })
 
-              // Get the message text
-              var text = WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(cytoscapeVertex.id(), 'message'), cytoscapeVertex.id()))
+          var priority = edgeData.get('priority') / 5
+          if (priority < 1) {
+            priority = 1
+          }
 
-              // Push the message to the chat
-              WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-                component: 'wanderer-message',
-                backgroundColor: '#6C757D',
-                vertexId: cytoscapeVertex.id(),
-                text: text
+          var line = 'solid'
+          var label = ''
+
+          if (edgeData.has('name')) {
+            label = label+'{{'+edgeData.get('name')+'}}'
+          }
+
+          edgeData.with('condition', (condition) => {
+            if(defaultCondition!=condition) {
+              sourceCollectionProps.with('edgeConditions.'+condition+'.label', (label) => {
+                label = label+' ['+label+']'
               })
+            }
+            line = 'dashed'
+          })
 
-              // Remember the message now as sent
-              WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', true)
+          edgeData.with('method', (method) => {
+            targetCollectionProps.with('edgeMethods.'+method+'.label', (label) => {
+              label = label+' ('+label+')'
+            })
 
-              // Remove the message from the typing object
-              delete typingTimeouts[cytoscapeVertex.id()]
+          })
 
-            }, 1000)
+          console.log({
+            line: line,
+            label: label,
+            type: edgeData.get('type'),
+            priority: priority
+          })
 
+          return {
+            line: line,
+            label: label,
+            type: edgeData.get('type'),
+            priority: priority
           }
-
         }
-
       }
 
     })
-
   }
+
 }
 
-export {
-  client, thread
-}
 
-//export default {
-
-
-
-    // WandererSingleton.registerEdgeCollection({
-    //   name: 'leadsTo',
-    //   builder: {
-    //     label: 'leads to',
-    //     cytoscapeClasses: 'leadsTo',
-    //     creatable: true,
-    //     defaultFields: function (fromVertexCollection, toVertexCollection) {
-    //
-    //       var defaultData = {
-    //         type: 'or',
-    //         priority: 10,
-    //         name: '',
-    //         expose: '',
-    //         method: false,
-    //         condition: false,
-    //         // compareVariable: false,
-    //         // compareCondition: '==',
-    //         // compareValue: ''
-    //       }
-    //
-    //       // Check the source node collection for default edge conditions
-    //       var defaultCondition = WandererSingleton.getVertexCollectionDefaultEdgeCondition(fromVertexCollection.name)
-    //       if(defaultCondition) {
-    //         defaultData.condition = defaultCondition
-    //       }
-    //
-    //       // Check the source node for default expose data fields
-    //       var defaultExposeData = WandererSingleton.getVertexCollectionDefaultExposeField(fromVertexCollection.name)
-    //       if(defaultExposeData) {
-    //         defaultData.expose = defaultExposeData
-    //       }
-    //
-    //       return defaultData
-    //     },
-    //     cytoscapeStyles: [{
-    //       selector: '.leadsTo',
-    //       style: {
-    //         'line-color': '#6C757D',
-    //         'target-arrow-color': '#6C757D',
-    //         'source-arrow-color': '#6C757D',
-    //         'width': 'data(priority)',
-    //         'label': 'data(label)',
-    //         'line-style': 'data(line)'
-    //       }
-    //     },{
-    //       selector: '.leadsTo[type = "and"]',
-    //       style: {
-    //         'line-color': '#FEC106',
-    //         'target-arrow-color': '#FEC106',
-    //         'source-arrow-color': '#FEC106',
-    //         // 'label': 'data(label)'
-    //       }
-    //     },{
-    //       selector: '.leadsTo[type = "not"]',
-    //       style: {
-    //         'line-color': '#DC3545',
-    //         'target-arrow-color': '#DC3545',
-    //         'source-arrow-color': '#DC3545',
-    //         // 'label': 'data(label)'
-    //       }
-    //     }],
-    //     component: 'wanderer-leads-to-editor'
-    //   },
-    //   toCytoscape: function(data) {
-    //
-    //     // Get the source vertex collection
-    //     var cytoscapeSourceNode = WandererCsytoscapeSingleton.cy.getElementById(data._from)
-    //     var cytoscapeTargetNode = WandererCsytoscapeSingleton.cy.getElementById(data._to)
-    //     var sourceNodeCollection = WandererSingleton.getVertexCollectionById(cytoscapeSourceNode.id())
-    //     var targetNodeCollection = WandererSingleton.getVertexCollectionById(cytoscapeTargetNode.id())
-    //
-    //     // Find default data
-    //     var defaultCondition = WandererSingleton.getVertexCollectionDefaultEdgeCondition(sourceNodeCollection.name)
-    //
-    //     var priority = data['priority'] / 5
-    //     if (priority < 1) {
-    //       priority = 1
-    //     }
-    //
-    //     var line = 'solid'
-    //     var label = ''
-    //
-    //     if (data.name) {
-    //       label = label+'{{'+data.name+'}}'
-    //     }
-    //
-    //     if (data.condition) {
-    //       // if(data.condition=='custom') {
-    //       //   if(data.compareVariable) {
-    //       //     label = label+' ['+data.compareVariable + data.compareCondition + data.compareValue+']'
-    //       //     line = 'dashed'
-    //       //   }
-    //       // } else {
-    //
-    //           // Only draw condition if not default
-    //           if(defaultCondition!=data.condition) {
-    //             if(sourceNodeCollection.edgeConditions!=undefined) {
-    //               label = label+' ['+sourceNodeCollection.edgeConditions[data.condition].label+']'
-    //             }
-    //           }
-    //
-    //           line = 'dashed'
-    //
-    //       // }
-    //     }
-    //
-    //     if (data.method) {
-    //       if(targetNodeCollection.edgeMethods && targetNodeCollection.edgeMethods[data.method]) {
-    //         label = label+' ('+targetNodeCollection.edgeMethods[data.method].label+')'
-    //       }
-    //     }
-    //
-    //     return {
-    //       line: line,
-    //       label: label,
-    //       type: data['type'],
-    //       priority: priority
-    //     }
-    //   },
     //   // testVisitor: function (cytoscapeEdge, edgeData, language) {
     //   //   // Just remember this edges
     //   //   if (edgeData.type == 'and') {
@@ -424,6 +342,86 @@ export {
     //     return true
     //   }
     // })
+
+
+
+var thread = {
+  install (wanderer) {
+
+    var thread = Wanderer.require('thread')
+
+    // Define a few traversal variables
+    var traversedRequiredEdgeIds = []
+    var traversedForbiddenEdgeIds = []
+    var lastTraversedForbiddenEdgeIds = []
+    var typingTimeouts = {}
+
+    wanderer.addGraphConfiguration('message', 'traversal', {
+      edgeConditions: {
+        sent: {
+          default: true,
+          label: 'sent',
+          condition: function (vertexLifecycleData) {
+            if(vertexLifecycleData!=undefined && vertexLifecycleData.sent) {
+              return true;
+            }
+            return false;
+          }
+        }
+      },
+      becomeReachable: function (cytoscapeVertex, vertexData) {
+        WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', false)
+      },
+      visitor: function (cytoscapeVertex, vertexData, language) {
+
+        // If this message was not send before
+        if(!WandererSingleton.getLifecycleValue(cytoscapeVertex.id(), 'sent')) {
+
+          // if this message is currently not typing
+          if(typingTimeouts[cytoscapeVertex.id()] === undefined) {
+
+            // Send a typing signal to the chat
+            WandererStoreSingleton.store.dispatch('wanderer/chat/setTyping', 1000)
+
+            // Now send the message after a while
+            // And set the timeout
+            typingTimeouts[cytoscapeVertex.id()] = setTimeout(()=>{
+
+              // Get the message text
+              var text = WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(cytoscapeVertex.id(), 'message'), cytoscapeVertex.id()))
+
+              // Push the message to the chat
+              WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+                component: 'wanderer-message',
+                backgroundColor: '#6C757D',
+                vertexId: cytoscapeVertex.id(),
+                text: text
+              })
+
+              // Remember the message now as sent
+              WandererSingleton.setLifecycleValue(cytoscapeVertex.id(), 'sent', true)
+
+              // Remove the message from the typing object
+              delete typingTimeouts[cytoscapeVertex.id()]
+
+            }, 1000)
+
+          }
+
+        }
+
+      }
+
+    })
+
+  }
+}
+
+export {
+  client, thread
+}
+
+//export default {
 
 
     // WandererSingleton.on('traversalStart', function() {
