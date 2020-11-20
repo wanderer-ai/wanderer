@@ -5,11 +5,6 @@ class WandererBroadcastSubscriber {
     this.broadcast = broadcast
     this.subscriberName = subscriberName
     this.events = {}
-
-    // Register broadcast methods
-    for(const m in broadcast.methods) {
-      this[m] = broadcast.methods[m]
-    }
   }
 
   on(eventName, method) {
@@ -35,12 +30,8 @@ class WandererBroadcastSubscriber {
 
 class WandererBroadcast {
 
-  constructor (methods) {
-
+  constructor () {
     this.subscribers = {}
-
-    this.methods = methods
-
   }
 
   distribute (eventName, eventPayload, fromBroadcastSubscriber) {

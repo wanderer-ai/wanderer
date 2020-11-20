@@ -4,24 +4,32 @@
   <div>
 
     <portal to="toolbar" :order="1">
-      <button class="btn btn-primary navbar-btn" title="Edit vertex" v-on:click="openVertexEditorModal()" v-if="selectedVertices==1">
+      <builder-button class="btn btn-primary navbar-btn" title="Edit vertex" v-on:click="openVertexEditorModal()" v-if="selectedVertices==1">
         <icon name="edit"></icon>
-      </button>
+      </builder-button>
     </portal>
 
     <portal to="modals" :order="1">
-      <builder-modal :title="editVertexCollection.label" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
+      <builder-modal :title="(editVertexCollection?editVertexCollection.label:'Unknown collection')" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
 
         <div v-if="isImmutable" class="alert alert-warning" role="alert">
           Warning! This vertex is not part of the current flow! Maybe it was dynamically imported. You can edit this node. But it will not be saved into your flow!
         </div>
 
-        <component v-bind:is="editVertexCollection.component"></component>
+        <div v-if="!editVertexCollection" class="alert alert-warning" role="alert">
+          You cannot edit this vertex. This vertex is part of a unknown collection.
+        </div>
 
-        <language-switcher />
+        <component v-if="editVertexCollection" v-bind:is="editVertexCollection.component"></component>
+
+        <template v-slot:buttons>
+          <language-switcher v-if="editVertexCollection" />
+        </template>
 
       </builder-modal>
     </portal>
+
+
 
   </div>
 
@@ -46,7 +54,10 @@ export default {
     },
     editVertexCollection () {
       if (this.$store.state.wandererBuilder.editVertex !== 0) {
-        return this.$builder.getVertexCollectionPropsById(this.$store.state.wandererBuilder.editVertex).plain()
+        var vertexCollectionProps = this.$builder.getVertexCollectionPropsById(this.$store.state.wandererBuilder.editVertex)
+        if(vertexCollectionProps) {
+          return vertexCollectionProps.plain()
+        }
       }
       return false
     },

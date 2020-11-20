@@ -4,8 +4,9 @@ import WandererNestedData from 'wanderer-nested-data'
 
 export default class Builder {
 
-  constructor (wanderer, vue, store, vueGraph) {
+  constructor (wanderer, broadcast, vue, store, vueGraph) {
     this.wanderer = wanderer
+    this.broadcast = broadcast
     this.vue = vue
     this.store = store
     this.vueGraph = vueGraph
@@ -14,21 +15,21 @@ export default class Builder {
     this.vertexCollectionProps = new WandererNestedData()
     this.edgeCollectionProps = new WandererNestedData()
 
-    this.subscriber = this.wanderer.broadcast.subscribe('builder')
+    this.subscriber = this.broadcast.subscribe('builder')
 
     // Listen for new vertex collection props
-    this.subscriber.on('addVertexCollectionProps', ({collectionName, props}) => {
+    this.subscriber.on('addVertexCollectionProps', ({name, props}) => {
       props = new WandererNestedData(props)
       props.with('builder', (builderProps) => {
-        this.vertexCollectionProps.set(collectionName, builderProps)
+        this.vertexCollectionProps.set(name, builderProps)
       })
     })
 
     // Listen for new edge collection props
-    this.subscriber.on('addEdgeCollectionProps', ({collectionName, props}) => {
+    this.subscriber.on('addEdgeCollectionProps', ({name, props}) => {
       props = new WandererNestedData(props)
       props.with('builder', (builderProps) => {
-        this.edgeCollectionProps.set(collectionName, builderProps)
+        this.edgeCollectionProps.set(name, builderProps)
       })
     })
 
@@ -45,25 +46,25 @@ export default class Builder {
     })
 
     // Listen for new vertices
-    this.subscriber.on('addVertex', (vertexData) => {
+    this.subscriber.on('addVertexFromData', (vertexData) => {
       vertexData = new WandererNestedData(vertexData)
       this.addVertexListener(vertexData)
     })
 
     // Listen for new edges
-    this.subscriber.on('addEdge', (edgeData) => {
+    this.subscriber.on('addEdgeFromData', (edgeData) => {
       edgeData = new WandererNestedData(edgeData)
       this.addEdgeListener(edgeData)
     })
 
     // Listen for vertex deletions
-    this.subscriber.on('removeVertex', (vertexId) => {
+    this.subscriber.on('removeVertexById', (vertexId) => {
       let vertex = this.cytoscape.getElementById(vertexId)
       vertex.remove()
     })
 
     // Listen for edge deletions
-    this.subscriber.on('removeEdge', (edgeId) => {
+    this.subscriber.on('removeEdgeById', (edgeId) => {
       let cytoscapeEdge = this.cytoscape.getElementById(edgeId)
       cytoscapeEdge.remove();
     })
@@ -83,11 +84,15 @@ export default class Builder {
   setCurrentLanguage (language) {
     this.store.commit('wandererBuilder/setCurrentLanguage', language)
     this.rebuildCytoscape()
-    this.subscriber.setLanguage(language);
+    this.subscriber.emit('setLanguage', language);
   }
 
   getCurrentLanguage () {
     return this.store.state.wandererBuilder.currentLanguage;
+  }
+
+  getAllVertexCollectionProps () {
+    return this.vertexCollectionProps
   }
 
   getVertexCollectionPropsById (vertexId) {
@@ -245,10 +250,10 @@ export default class Builder {
       this.vertexDataToCytoscape(vertexData)
 
       // Center cytoscape to origin
-      vertexData.with('_origin', () => {
+      if (vertexData.is('_origin')) {
         this.cytoscape.center(vertexData.get('_id'))
         this.cytoscape.zoom(1)
-      })
+      }
 
     } catch (e) {
 
@@ -271,11 +276,13 @@ export default class Builder {
       cyData.classes = cytoscapeClasses
     })
 
-    // Convert data to Cytoscape
-    this.edgeDataToCytoscape(edgeData)
-
     try {
+
       let cytoscapeEdge = this.cytoscape.add(cyData)
+
+      // Convert data to Cytoscape
+      this.edgeDataToCytoscape(edgeData)
+
     } catch (e) {
 
     }
@@ -297,7 +304,7 @@ export default class Builder {
     newVertexData._y = y
 
     // Broadcast this new data
-    this.subscriber.addVertexFromData(newVertexData)
+    this.subscriber.emit('addVertexFromData', newVertexData)
 
     // Add this new node to the builder
     this.addVertexListener(new WandererNestedData(newVertexData))
@@ -322,7 +329,7 @@ export default class Builder {
     newEdgeData._collection = edgeCollectionName
 
     // Broadcast this new data
-    this.subscriber.addEdgeFromData(newEdgeData)
+    this.subscriber.emit('addEdgeFromData', newEdgeData)
 
     // Add this new edge to the builder
     this.addEdgeListener(new WandererNestedData(newEdgeData))
@@ -476,7 +483,7 @@ export default class Builder {
             name: toCollectionName,
             collection:vertexCollection.plain()
           },
-          through: []
+          through: {}
         }
 
         // For each edge collection

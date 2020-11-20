@@ -6,7 +6,9 @@ export default {
 
     // Require some plugins
     var Vue = wanderer.require('vue')
+    var broadcast = wanderer.require('broadcast')
     var store = wanderer.require('store')
+    // var worker = wanderer.require('worker')
 
     // Extend vuex with new namespace
     store.registerModule('wandererGraph', {
@@ -23,13 +25,15 @@ export default {
         // traversedVertices: []
       },
       mutations: {
-        setOriginVertex (state, vertexId) {
-          state.originVertexId = vertexId
-        },
         addVertex (state, vertexData) {
           state.vertexDocumentIds.push(vertexData._id)
           this._vm.$set(state.vertexDocumentData, vertexData._id, vertexData)
-          console.log(state)
+
+          // Set origin vertex
+          if(vertexData._origin !== undefined && vertexData._origin) {
+            state.originVertexId = vertexData._id
+          }
+
         },
         removeVertex (state, vertexId) {
           state.vertexDocumentIds.splice(state.vertexDocumentIds.indexOf(vertexId), 1)
@@ -105,7 +109,7 @@ export default {
     })
 
     // Create the graph instance
-    var vueGraph = new VueGraph(wanderer, Vue, store)
+    var vueGraph = new VueGraph(wanderer, broadcast, Vue, store)
 
     // Push it to Wanderer
     wanderer.provide('vueGraph', vueGraph)

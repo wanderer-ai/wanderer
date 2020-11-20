@@ -1,16 +1,17 @@
 
 export default class VueGraph {
 
-  constructor (wanderer, vue, store) {
+  constructor (wanderer, broadcast, vue, store) {
 
     // Inject a few required classes
     this.wanderer = wanderer
+    this.broadcast = broadcast
     this.vue = vue
     this.store = store
 
     // Register a broadcast subscriber
-    // So we can keep our vue graph in sync with cytoscape and the traverser
-    this.subscriber = this.wanderer.broadcast.subscribe('vueGraph')
+    // So we can keep our vue graph in sync with cytoscape and other plugins
+    this.subscriber = this.broadcast.subscribe('vueGraph')
 
     // Truncate
     this.subscriber.on('truncate', (vertexData) => {
@@ -18,46 +19,33 @@ export default class VueGraph {
     })
 
     // Listen for new vertices
-    this.subscriber.on('addVertex', (vertexData) => {
+    this.subscriber.on('addVertexFromData', (vertexData) => {
       this.store.commit('wandererGraph/addVertex', vertexData)
-      if(vertexData._origin !== undefined && vertexData._origin) {
-        this.store.commit('wandererGraph/setOriginVertex', vertexData._id)
-      }
     })
 
     // Listen for new edges
-    this.subscriber.on('addEdge', (edgeData) => {
+    this.subscriber.on('addEdgeFromData', (edgeData) => {
       this.store.commit('wandererGraph/addEdge', edgeData)
     })
 
     // Listen for vertex deletions
-    this.subscriber.on('removeVertex', (vertexId) => {
+    this.subscriber.on('removeVertexById', (vertexId) => {
       this.store.commit('wandererGraph/removeVertex', vertexId)
     })
 
     // Listen for edge deletions
-    this.subscriber.on('removeEdge', (edgeId) => {
+    this.subscriber.on('removeEdgeById', (edgeId) => {
       this.store.commit('wandererGraph/removeEdge', edgeId)
     })
 
     // Listen for vertex data changes
-    this.subscriber.on('setVertexDataValue', ({id, key, value, language}) => {
-      this.store.commit('wandererGraph/setVertexDataValue', {
-        id: id,
-        key: key,
-        value: value,
-        language: language
-      })
+    this.subscriber.on('setVertexDataValue', (data) => {
+      this.store.commit('wandererGraph/setVertexDataValue', data)
     })
 
     // Listen for edge data changes
-    this.subscriber.on('setEdgeDataValue', ({id, key, value, language}) => {
-      this.store.commit('wandererGraph/setEdgeDataValue', {
-        id: id,
-        key: key,
-        value: value,
-        language: language
-      })
+    this.subscriber.on('setEdgeDataValue', (data) => {
+      this.store.commit('wandererGraph/setEdgeDataValue', data)
     })
 
   }
@@ -76,12 +64,12 @@ export default class VueGraph {
 
   removeVertex (vertexId) {
     this.store.commit('wandererGraph/removeVertex', vertexId)
-    subscriber.removeVertex(vertexId)
+    subscriber.emit('removeVertex', vertexId)
   }
 
   removeEdge (edgeId) {
     this.store.commit('wandererGraph/removeEdge', edgeId)
-    subscriber.removeEdge(edgeId)
+    subscriber.emit('removeEdge', edgeId)
   }
 
   getAllVertexData () {
@@ -127,7 +115,7 @@ export default class VueGraph {
         value: value,
         language: language
       })
-      this.subscriber.setVertexDataValue({
+      this.subscriber.emit('setVertexDataValue', {
         id: id,
         key: key,
         value: value,
@@ -159,7 +147,7 @@ export default class VueGraph {
         value: value,
         language: language
       })
-      this.subscriber.setEdgeDataValue({
+      this.subscriber.emit('setEdgeDataValue', {
         id: id,
         key: key,
         value: value,

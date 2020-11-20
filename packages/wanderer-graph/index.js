@@ -103,7 +103,7 @@ class WandererEdge extends WandererItem {
 
 class WandererGraph {
 
-  constructor () {
+  constructor (thread) {
     this.collections = {}
     this.vertices = new WandererItemList()
     this.edges = new WandererItemList()
@@ -198,10 +198,4 @@ class WandererGraph {
 
 }
 
-module.exports = {
-  WandererItemList: WandererItemList,
-  WandererItem: WandererItem,
-  WandererVertex: WandererVertex,
-  WandererEdge: WandererEdge,
-  WandererGraph: WandererGraph
-}
+module.exports = WandererGraph

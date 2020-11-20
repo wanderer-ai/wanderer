@@ -1,7 +1,9 @@
 // import {WandererGraph} from 'wanderer-graph'
 const uuidv4 = require('uuid/v4')
 // import WandererNestedData from 'wanderer-nested-data'
+
 import WandererBroadcast from 'wanderer-broadcast'
+
 // import Mustache from 'mustache'
 // import Axios from 'axios'
 //
@@ -17,68 +19,11 @@ export default class Wanderer {
 
   constructor() {
     this.dependencies = {}
-    this.broadcast = new WandererBroadcast ({
 
-      addVertexCollectionProps: function (collectionName, props) {
-        this.emit('addVertexCollectionProps', {
-          collectionName: collectionName,
-          props: props
-        })
-      },
-
-      addEdgeCollectionProps: function (collectionName, props) {
-        this.emit('addEdgeCollectionProps', {
-          collectionName: collectionName,
-          props: props
-        })
-      },
-
-      setLanguage: function (language) {
-        this.emit('setLanguage', language)
-      },
-
-      truncate: function () {
-        this.emit('truncate')
-      },
-
-      addVertexFromData: function (vertexData) {
-        this.emit('addVertex', vertexData)
-      },
-
-      addEdgeFromData: function (edgeData) {
-        this.emit('addEdge', edgeData)
-      },
-
-      removeVertex: function (vertexId) {
-        this.emit('removeVertex', vertexId)
-      },
-
-      removeEdge: function (edgeId) {
-        this.emit('removeEdge', edgeId)
-      },
-
-      setVertexDataValue: function (id, key, value, language) {
-        this.emit('setVertexDataValue', {
-          id: id,
-          key: key,
-          value: value,
-          language: language
-        })
-      },
-
-      setEdgeDataValue: function (id, key, value, language) {
-        this.emit('setEdgeDataValue', {
-          id: id,
-          key: key,
-          value: value,
-          language: language
-        })
-      }
-
-    })
-
+    // Create new broadcast instance
+    this.broadcast = new WandererBroadcast()
     this.subscriber = this.broadcast.subscribe('wanderer')
-
+    this.provide('broadcast', this.broadcast)
   }
 
   use(plugin) {
@@ -141,16 +86,16 @@ export default class Wanderer {
     this.checkImportData(data)
 
     // Emit truncate event
-    this.subscriber.truncate()
+    this.subscriber.emit('truncate')
 
     // Load vertices
     for (var key in data.vertices) {
-      this.subscriber.addVertexFromData(data.vertices[key])
+      this.subscriber.emit('addVertexFromData', data.vertices[key])
     }
 
     // Load edges
     for (var key in data.edges) {
-      this.subscriber.addEdgeFromData(data.edges[key])
+      this.subscriber.emit('addEdgeFromData', data.edges[key])
     }
 
   }

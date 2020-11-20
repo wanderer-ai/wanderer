@@ -4,20 +4,20 @@
   <div>
 
     <portal to="toolbar" :order="2">
-      <button class="btn btn-warning navbar-btn" title="Connect" v-on:click="connectCheck()" v-if="possibleEdgeCollections.length">
+      <builder-button class="btn btn-warning navbar-btn" title="Connect" v-on:click="connectCheck()" v-if="possibleEdgeCollections.length">
         <icon name="link"></icon>
-      </button>
+      </builder-button>
     </portal>
 
     <portal to="modals" :order="1">
-      <modal title="Connect" :show="showModal" v-on:closeButton="showModal=false">
+      <builder-modal title="Connect" :show="showModal" v-on:closeButton="showModal=false">
         Select edge type
 
         <div v-for="edgeCollection in possibleEdgeCollections" :key="edgeCollection">
-          <div class="btn btn-secondary" v-on:click="connect(edgeCollection)">{{edgeCollection}}</div>
+          <builder-button class="btn btn-secondary" v-on:click="connect(edgeCollection)">{{edgeCollection}}</builder-button>
         </div>
 
-      </modal>
+      </builder-modal>
     </portal>
 
   </div>
@@ -29,11 +29,9 @@
 import 'vue-awesome/icons/link'
 import Icon from 'vue-awesome/components/Icon'
 
-import Modal from '../Modal.vue'
-
 export default {
   components: {
-    Icon, Modal
+    Icon
   },
   data: function () {
     return {
@@ -42,15 +40,15 @@ export default {
   },
   computed: {
     selectedVertexIds () {
-      return this.$store.state.wanderer.builder.selectedVertexIds
+      return this.$store.state.wandererBuilder.selectedVertexIds
     },
     possibleEdgeCollections () {
-      if (this.selectedVertexIds.length == 2){
-        if (WandererStoreSingleton.store.state.wanderer.vertexDocumentData[this.selectedVertexIds[0]] !== undefined &&
-           WandererStoreSingleton.store.state.wanderer.vertexDocumentData[this.selectedVertexIds[1]] !== undefined ){
-          let fromCollection = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[this.selectedVertexIds[0]]._collection
-          let toCollection = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[this.selectedVertexIds[1]]._collection
-          return WandererBuilderSingleton.getPossibleEdgeCollections(fromCollection, toCollection)
+      if (this.selectedVertexIds.length == 2) {
+        var fromCollection = this.$vueGraph.getVertexDataValue(this.selectedVertexIds[0], '_collection')
+        var toCollection = this.$vueGraph.getVertexDataValue(this.selectedVertexIds[1], '_collection')
+
+        if (fromCollection !== undefined && toCollection !== undefined ) {
+          return this.$builder.getPossibleEdgeCollectionNames(fromCollection, toCollection)
         }
       }
       return false
@@ -68,7 +66,7 @@ export default {
     },
     connect (edgeCollectionName) {
       this.showModal = false
-      WandererBuilderSingleton.addEdge (edgeCollectionName, this.selectedVertexIds[0], this.selectedVertexIds[1])
+      this.$builder.addEdge (edgeCollectionName, this.selectedVertexIds[0], this.selectedVertexIds[1])
     }
   }
 }

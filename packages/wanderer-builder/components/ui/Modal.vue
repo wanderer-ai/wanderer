@@ -24,7 +24,7 @@
         </slot>
 
         <!--Footer-->
-        <div class="flex justify-end pt-2" v-if="showFooter">
+        <div class="flex justify-between pt-2" v-if="showFooter">
           <slot name="buttons">
 
           </slot>

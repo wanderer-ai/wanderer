@@ -1,0 +1,11 @@
+{
+  "name": "wanderer-chat",
+  "version": "0.0.1",
+  "description": "Wanderer Chat",
+  "author": "",
+  "private": true,
+  "module": "plugin.js",
+  "dependencies": {
+    
+  }
+}

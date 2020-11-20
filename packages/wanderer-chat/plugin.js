@@ -1,27 +1,22 @@
-import ChatComponent from './App'
-import WandererSingleton from 'wanderer-singleton'
-import WandererStoreSingleton from 'wanderer-store-singleton'
-import axios from 'axios'
-const uuidv4 = require('uuid/v4')
+import ChatComponent from './components/Chat'
+import ChatMessageComponent from './components/Message'
+import Chat from './Chat'
 
 export default {
 
-  install (Vue) {
-    // Add axios to Vue
-    Vue.prototype.$axios = axios
+  install (wanderer) {
 
-    // Register builder component
-    Vue.component('wanderer-chat', ChatComponent)
+    // Require some plugins from Wanderer
+    var Vue = wanderer.require('vue')
+    var broadcast = wanderer.require('broadcast')
+    var store = wanderer.require('store')
+    var vueGraph = wanderer.require('vueGraph')
 
-    // var messageDelayResetTimeout
-    // var messageDelay = 0
-
-    var typingTimer = null;
-
-    // Extend vuex with new namespace
-    WandererStoreSingleton.store.registerModule(['wanderer', 'chat'], {
+    // Extend vuex
+    store.registerModule('wandererChat', {
       namespaced: true,
       state: {
+        currentLanguage: 'en',
         messages: [],
         messageIds: [],
         typing: false,
@@ -29,6 +24,9 @@ export default {
         interactionVertexIds : []
       },
       mutations: {
+        setCurrentLanguage (state, language) {
+          state.currentLanguage = language
+        },
         setTyping (state, typing) {
           state.typing = typing
         },
@@ -54,14 +52,13 @@ export default {
           state.messages.push(message)
 
           // Remove old messages if there are too many in the stack
-          // The browser can't render unlimited messages
-          if(state.messages.length>100) {
+          // Unfortunately the browser can't render unlimited messages
+          if(state.messages.length > 100) {
             state.messages.splice(0,1)
             state.messageIds.splice(0,1)
           }
 
         },
-
         cleanMessages (state) {
           state.messages = []
           state.messageIds = []
@@ -94,21 +91,18 @@ export default {
       }
     })
 
-    // This event will be fired on loading new data or on resetting the chat
-    WandererSingleton.on('truncate', function () {
-      WandererStoreSingleton.store.commit('wanderer/chat/cleanMessages')
-      WandererStoreSingleton.store.commit('wanderer/chat/cleanInteractions')
-    })
+    // Register chat component
+    Vue.component('wanderer-chat', ChatComponent)
+    Vue.component('chat-message', ChatMessageComponent)
 
-    // // Listen for traversal event
-    // WandererSingleton.on('traversalFinished', function() {
-    //   console.log('finished')
-    //
-    //   // Add messages to chat
-    //
-    // })
+    // Create the chat instance
+    var chat = new Chat(wanderer, broadcast, Vue, store, vueGraph)
 
-    // Add instance methods
-    // Vue.prototype.$wandererBuilder = WandererBuilderSingleton
+    // Push it to Wanderer
+    wanderer.provide('chat', chat)
+
+    // Push it to vue
+    Vue.prototype.$chat = chat
+
   }
 }

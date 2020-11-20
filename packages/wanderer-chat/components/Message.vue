@@ -48,35 +48,8 @@ export default {
     backgroundColor: {
       default: '#cccccc',
       type: String
-    },
-    // show: {
-    //   default: false,
-    //   type: Boolean
-    // }
-  },
-  // data: function () {
-  //   return {
-  //     showMessage: false
-  //   }
-  // },
-  // watch: {
-  //   show: {
-  //     handler: function (show) {
-  //
-  //       // The show prop has changed
-  //       if (show) {
-  //
-  //         // Start a delay to show the message
-  //         setTimeout(() => {
-  //           this.showMessage = true
-  //           // Emit an event to my parent so the next message can be shown
-  //           this.$emit('messageArrived')
-  //         }, this.delay)
-  //       }
-  //     },
-  //     immediate: true,
-  //   }
-  // }
+    }
+  }
 }
 
 </script>

@@ -4,13 +4,13 @@
   <div>
 
     <portal to="toolbar" :order="2">
-      <button class="btn btn-danger navbar-btn" title="Delete" v-on:click="showModal=true" v-if="selectedVertexIds.length||selectedEdgeIds.length">
+      <builder-button class="btn btn-danger navbar-btn" title="Delete" v-on:click="showModal=true" v-if="selectedVertexIds.length||selectedEdgeIds.length">
         <icon name="trash"></icon>
-      </button>
+      </builder-button>
     </portal>
 
     <portal to="modals" :order="2">
-      <modal title="Delete" :show="showModal" v-on:closeButton="showModal=false">
+      <builder-modal title="Delete" :show="showModal" v-on:closeButton="showModal=false">
 
         <p>
           Warning! Removing edges or nodes is permanent. It can not be undone!
@@ -18,17 +18,24 @@
         </p>
 
         <p>
-          <button v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeVertices()">
+          <builder-button v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeVertices()">
             Remove {{selectedVertexIds.length}} selected vertices and all connected edges
-          </button>
-        </p>
-        <p>
-          <button v-if="selectedEdgeIds.length" class="btn btn-danger" v-on:click="removeEdges()" >
-            Remove {{selectedEdgeIds.length}} selected edges
-          </button>
+          </builder-button>
         </p>
 
-      </modal>
+        <p>
+          <builder-button v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="unlinkVertices()">
+            Unlink {{selectedVertexIds.length}} selected vertices from all the connected edges
+          </builder-button>
+        </p>
+
+        <p>
+          <builder-button v-if="selectedEdgeIds.length" class="btn btn-danger" v-on:click="removeEdges()" >
+            Remove {{selectedEdgeIds.length}} selected edges
+          </builder-button>
+        </p>
+
+      </builder-modal>
     </portal>
 
   </div>
@@ -37,7 +44,6 @@
 
 <script>
 
-import Modal from '../Modal.vue'
 import 'vue-awesome/icons/trash'
 import Icon from 'vue-awesome/components/Icon'
 
@@ -45,7 +51,7 @@ import Icon from 'vue-awesome/components/Icon'
 
 export default {
   components: {
-    Modal, Icon
+    Icon
   },
   data: function () {
     return {
@@ -88,13 +94,13 @@ export default {
   },
   computed: {
     selectedVertexIds () {
-      return this.$store.state.wanderer.builder.selectedVertexIds
+      return this.$store.state.wandererBuilder.selectedVertexIds
     },
     selectedEdgeIds () {
-      return this.$store.state.wanderer.builder.selectedEdgeIds
+      return this.$store.state.wandererBuilder.selectedEdgeIds
     },
     isEditVertexSet () {
-      if (this.$store.state.wanderer.builder.editVertex !== 0) {
+      if (this.$store.state.wandererBuilder.editVertex !== 0) {
         return true
       }
       return false
@@ -104,20 +110,23 @@ export default {
     removeVertices () {
       this.showModal = false
       var component = this
-      let vertexIds = this.$wandererBuilder.getSelectedVertexIds()
+      let vertexIds = this.$builder.getSelectedCytoscapeVertexIds()
 
       for (let i in vertexIds) {
 
-        if(this.$store.state.wanderer.vertexDocumentData[vertexIds[i]]._origin) {
-          this.$store.dispatch('wanderer/builder/addAlert',{message:'You cannot remove the origin node',type:'warning'})
+        var isOrigin = this.$vueGraph.getVertexDataValue(vertexIds[i], '_origin')
+
+        if(isOrigin) {
+          this.$store.dispatch('wandererBuilder/addAlert',{message:'You cannot remove the origin node',type:'warning'})
         } else {
 
           // Remove the connected edges
-          this.$cytoscape.cy.getElementById(vertexIds[i]).connectedEdges().forEach((edge) => {
-            component.$wanderer.removeEdge(edge.id())
+          this.$builder.cytoscape.getElementById(vertexIds[i]).connectedEdges().forEach((edge) => {
+            this.$wanderer.subscriber.emit('removeEdgeById', edge.id)
           })
+
           // Remove the vertex
-          this.$wanderer.removeVertex(vertexIds[i])
+          this.$wanderer.subscriber.emit('removeVertexById', vertexIds[i])
 
         }
 
@@ -125,12 +134,24 @@ export default {
     },
     removeEdges () {
       this.showModal = false
-
-      let edgeIds = this.$wandererBuilder.getSelectedEdgeIds()
-
+      let edgeIds = this.$builder.getSelectedCytoscapeEdgeIds()
       for (let i in edgeIds) {
-        // Remove the edge
-        this.$wanderer.removeEdge(edgeIds[i])
+        this.$wanderer.subscriber.emit('removeEdgeById', edgeIds[i])
+      }
+    },
+    unlinkVertices () {
+
+      this.showModal = false
+      var component = this
+      let vertexIds = this.$builder.getSelectedCytoscapeVertexIds()
+
+      for (let i in vertexIds) {
+
+        // Remove the connected edges
+        this.$builder.cytoscape.getElementById(vertexIds[i]).connectedEdges().forEach((edge) => {
+          this.$wanderer.subscriber.emit('removeEdgeById', edge.id())
+        })
+
       }
     }
   }

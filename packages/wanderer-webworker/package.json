@@ -5,10 +5,6 @@
   "main": "index.js",
   "author": "",
   "dependencies": {
-    "axios": "^0.19.0",
-    "mustache": "^3.1.0",
-    "markdown-it": "^11.0.1",
-    "jexl": "^2.3.0",
-    "uuid": "^3.3.2"
+    
   }
 }

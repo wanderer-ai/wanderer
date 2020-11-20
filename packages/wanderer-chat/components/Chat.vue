@@ -1,17 +1,24 @@
-
+#
 <template>
-  <div class="chat">
-    <div class="chat--messages" ref="messages">
+  <div class="fixed right-0 bottom-0 m-4 z-40">
+
+    <div class="bg-blue p-4" v-if="!show" v-on:click="show=true">
+      Open Chat
+    </div>
+
+    <div v-if="show" class="" ref="messages">
+
+      Chat
 
       <div>
-        <message
+        <chat-message
           v-for="(message,key) of messages"
           :key="message.id"
           :id="message.id"
           :from="message.from"
           :backgroundColor="message.backgroundColor">
-          <component v-bind:is="message.component" :text="message.text" :vertexId="message.vertexId" :lastOfType="lastOfType[message.component] == message.id" :last="key == messages.length - 1"></component>
-        </message>
+          <component v-bind:is="message.component" :text="message.text" :vertexId="message.vertexId"></component>
+        </chat-message>
       </div>
 
       <div class="typing" v-if="typing">
@@ -21,7 +28,7 @@
       </div>
 
       <div v-if="interactions.length">
-        <message
+        <chat-message
           v-if="!interaction.showInNavigation"
           v-for="(interaction,key) of interactions"
           :key="interaction.vertexId"
@@ -29,10 +36,11 @@
           from="remote"
           backgroundColor="#6C757D">
           <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
-        </message>
+        </chat-message>
       </div>
 
     </div>
+
     <div v-if="interactions.length" class="chat--navigation">
       <div
         v-if="interaction.showInNavigation"
@@ -42,58 +50,36 @@
         <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
 
-import WandererSingleton from 'wanderer-singleton'
-import WandererStoreSingleton from 'wanderer-store-singleton'
-import CytoscapeSingleton from 'wanderer-cytoscape-singleton'
-
-import Message from './components/Message.vue'
-// import Report from './components/Report.vue'
-
 var interactionsCount = 0;
 
 export default {
-  name: 'App',
-  components: {
-    Message
-  },
   data: function () {
     return {
-      // showTyping: false,
-      waitingForMessage: false,
-      showReport: false,
-      scrollTimeout: false
+      scrollTimeout: false,
+      show: false
     }
   },
   computed: {
     messageIds: function () {
-      return WandererStoreSingleton.store.state.wanderer.chat.messageIds
+      return this.$store.state.wandererChat.messageIds
     },
     messages: function () {
-      return WandererStoreSingleton.store.state.wanderer.chat.messages
+      return this.$store.state.wandererChat.messages
     },
     interactions: function () {
-      return WandererStoreSingleton.store.state.wanderer.chat.interactions
+      return this.$store.state.wandererChat.interactions
     },
     interactionVertexIds: function () {
-      return WandererStoreSingleton.store.state.wanderer.chat.interactionVertexIds
+      return this.$store.state.wandererChat.interactionVertexIds
     },
     typing: function () {
-      return WandererStoreSingleton.store.state.wanderer.chat.typing
-    },
-    lastOfType: function () {
-      var result = {};
-      for (var key in this.messages) {
-        result[this.messages[key]['component']] = this.messages[key]['id'];
-      }
-      return result
-    },
-    vertexCount () {
-      return WandererStoreSingleton.store.state.wanderer.vertexDocumentIds.length
+      return this.$store.state.wandererChat.typing
     }
   },
   watch: {
@@ -108,25 +94,7 @@ export default {
         interactionsCount = this.interactionVertexIds.length
         this.scrollToBottom()
       }
-    },
-    typing: function () {
-      // this.scrollToBottom()
     }
-  },
-  mounted: function () {
-    // Lets check if cy is already initiated
-    // The Chat component could be part of other libs that have already initiated cy like the builder
-    if (!CytoscapeSingleton.initiated()) {
-      CytoscapeSingleton.init({
-        headless: true
-      })
-    }
-    WandererSingleton.startTraversal()
-  },
-  beforeDestroy: () => {
-
-    WandererSingleton.stopTraversal()
-
   },
   methods: {
     scrollToBottom: function () {
@@ -137,7 +105,9 @@ export default {
       }
 
       this.scrollTimeout = setTimeout(() => {
-        this.$refs['messages'].scrollTo(0,this.$refs['messages'].scrollHeight)
+        if(this.$refs['messages'] != undefined) {
+          this.$refs['messages'].scrollTo(0,this.$refs['messages'].scrollHeight)
+        }
       }, 100)
 
     }
@@ -147,26 +117,6 @@ export default {
 </script>
 
 <style>
-.chat {
-  display: flex;
-  flex-direction: column;
-  height:100%;
-}
-
-.chat--messages {
-  height:100%; /* Take the whole space. The navigation can get the rest of it */
-  flex-shrink: 1;
-  flex-grow: 1;
-  padding-top:25px;
-  overflow-y: scroll;
-}
-
-.chat--navigation {
-  flex-shrink: 1;
-  flex-grow: 1;
-  padding:25px;
-  background-color: #F8F9FA;
-}
 
 .typing {
   display: block;

@@ -4,9 +4,9 @@
   <div>
 
     <portal to="toolbar" :order="1">
-      <button class="btn btn-primary navbar-btn" title="Edit edge" v-on:click="openEdgeEditorModal()" v-if="selectedEdges==1">
+      <builder-button class="btn btn-primary navbar-btn" title="Edit edge" v-on:click="openEdgeEditorModal()" v-if="selectedEdges==1">
         <icon name="edit"></icon>
-      </button>
+      </builder-button>
     </portal>
 
     <portal to="modals" :order="1">

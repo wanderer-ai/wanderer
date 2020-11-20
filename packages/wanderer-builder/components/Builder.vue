@@ -25,15 +25,17 @@
     <file-tool :show="showFileTool" v-on:startTutorial="startTutorial()" v-on:viewExamples="viewExamples()"/>
 
     <info-tool />
-     <edit-vertex-tool />
+    <edit-vertex-tool />
     <edit-edge-tool />
-    <!-- <remove-tool />
-    <unlink-tool />
-    <connect-tool />-->
+    <remove-tool />
+    <!-- <unlink-tool />-->
+    <connect-tool />
     <language-tool />
     <!-- <chat-tool v-on:toggle="toggleChatPanel()"/>
-    <restart-tool v-on:toggle="toggleChatPanel()" v-if="showChatPanel"/>
-    <add-vertex-tool /> -->
+    <restart-tool v-on:toggle="toggleChatPanel()" v-if="showChatPanel"/>-->
+    <add-vertex-tool />
+
+    <wanderer-chat/>
 
   </div>
 </template>
@@ -48,13 +50,13 @@ import Alerts from './Alerts.vue'
 import InfoTool from './tools/Info.vue'
 import EditVertexTool from './tools/EditVertex.vue'
 import EditEdgeTool from './tools/EditEdge.vue'
-// import RemoveTool from './tools/Remove.vue'
+import RemoveTool from './tools/Remove.vue'
 // import UnlinkTool from './tools/Unlink.vue'
-// import ConnectTool from './tools/Connect.vue'
+import ConnectTool from './tools/Connect.vue'
 import FileTool from './tools/File.vue'
 import LanguageTool from './tools/Language.vue'
 // import ChatTool from './tools/Chat.vue'
-// import AddVertexTool from './tools/AddVertex.vue'
+import AddVertexTool from './tools/AddVertex.vue'
 // import RestartTool from './tools/Restart.vue'
 
 export default {
@@ -67,13 +69,13 @@ export default {
     InfoTool,
     EditVertexTool,
     EditEdgeTool,
-    // RemoveTool,
+    RemoveTool,
     // UnlinkTool,
-    // ConnectTool,
+    ConnectTool,
     FileTool,
     LanguageTool,
     // ChatTool,
-    // AddVertexTool,
+    AddVertexTool,
     // RestartTool
   },
   data: function () {

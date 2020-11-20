@@ -14,6 +14,7 @@ export default {
   install (wanderer) {
 
     // Require some plugins
+    var broadcast = wanderer.require('broadcast')
     var Vue = wanderer.require('vue')
     var store = wanderer.require('store')
     var vueGraph = wanderer.require('vueGraph')
@@ -26,7 +27,7 @@ export default {
     Vue.component('builder-select-input', UiSelectInput)
     Vue.component('builder-range-input', UiRangeInput)
 
-    // Extend vuex with new namespace
+    // Extend vuex
     store.registerModule('wandererBuilder', {
       namespaced: true,
       state: {
@@ -100,7 +101,7 @@ export default {
     Vue.component('wanderer-builder', BuilderComponent)
 
     // Create the builder instance
-    var builder = new Builder(wanderer, Vue, store, vueGraph)
+    var builder = new Builder(wanderer, broadcast, Vue, store, vueGraph)
 
     // Push it to Wanderer
     wanderer.provide('builder', builder)

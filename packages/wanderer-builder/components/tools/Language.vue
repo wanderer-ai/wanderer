@@ -4,9 +4,9 @@
   <div>
 
     <portal to="actionbar" :order="1">
-      <button class="btn btn-secondary navbar-btn" title="Switch language" v-on:click="showModal=true">
+      <builder-button class="btn btn-secondary navbar-btn" title="Switch language" v-on:click="showModal=true">
         <icon name="flag"></icon>
-      </button>
+      </builder-button>
     </portal>
 
     <portal to="modals" :order="1">
