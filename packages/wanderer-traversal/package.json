@@ -1,0 +1,10 @@
+{
+  "name": "wanderer-traversal",
+  "version": "0.0.1",
+  "description": "Wanderer.ai Traversal",
+  "main": "index.js",
+  "author": "",
+  "dependencies": {
+
+  }
+}

@@ -18,6 +18,7 @@
     "wanderer-webworker": "^0.0.1",
     "wanderer-vue-graph": "^0.0.1",
     "wanderer-graph": "^0.0.1",
+    "wanderer-traversal": "^0.0.1",
     "wanderer-builder": "^0.0.1",
     "wanderer-chat": "^0.0.1",
     "wanderer-plugin-base": "^0.0.1"

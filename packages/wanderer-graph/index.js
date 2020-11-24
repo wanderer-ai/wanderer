@@ -1,9 +1,12 @@
 
+import WandererNestedData from 'wanderer-nested-data'
+
 class WandererItemList {
 
-  constructor (vertexData) {
+  constructor (subscriber) {
     this.itemIds = []
     this.items = {}
+    this.subscriber = subscriber
   }
 
   add (item) {
@@ -18,35 +21,67 @@ class WandererItemList {
     return false
   }
 
+  removeElementById (id) {
+    if(this.items[id] !== undefined) {
+      delete this.items[id]
+      return true
+    }
+    return false
+  }
+
   empty (item) {
     this.itemIds = []
     this.items = {}
   }
 
-  foreach (callback) {
+  each (callback) {
     for (const i in this.itemIds) {
-      callback(this.items[i])
+      callback(this.items[this.itemIds[i]])
     }
+  }
+
+  sort (key) {
+    this.itemIds = this.itemIds.sort(function(a, b) {
+      var itemA = this.items[a]
+      var itemB = this.items[b]
+      if(itemA.has(key) && itemB.has(key)) {
+        return itemB.get(key) - itemA.get(key)
+      }
+    })
   }
 
 }
 
 class WandererItem {
 
-  constructor (data) {
+  constructor (data, subscriber) {
     this.data = new WandererNestedData(data)
     this.lifecycle = new WandererNestedData()
     this.collection = new WandererNestedData()
+    this.subscriber = subscriber
+  }
+
+  setDataValue (key, value, language) {
+    if(language !== undefined) {
+      this.data.set(key+'.'+language, value)
+    } else {
+      this.data.set(key, value)
+    }
+  }
+
+  setLifecycleValue (key, value) {
+    this.lifecycle.set(key, value)
   }
 
 }
 
 class WandererVertex extends WandererItem {
 
-  constructor (data) {
-    super(data);
-    this.inboundEdges = new WandererItemList()
-    this.outboundEdges = new WandererItemList()
+  constructor (data, subscriber) {
+    super(data, subscriber);
+    this.inboundEdges = new WandererItemList(subscriber)
+    this.outboundEdges = new WandererItemList(subscriber)
+    this.subscriber = subscriber
   }
 
   addInboundEdge (edge) {
@@ -71,24 +106,44 @@ class WandererVertex extends WandererItem {
     return this.inboundEdges
   }
 
+  setDataValue (key, value, language) {
+    super.setDataValue(key, value, language)
+    this.subscriber.emit('setVertexDataValue', {
+      id: this.data.get('_id'),
+      key: key,
+      value: value,
+      language: language
+    })
+  }
+
+  setLifecycleValue (key, value) {
+    super.setLifecycleValue(key, value)
+    this.subscriber.emit('setVertexLifecycleValue', {
+      id: this.data.get('_id'),
+      key: key,
+      value: value
+    })
+  }
+
 }
 
 class WandererEdge extends WandererItem {
 
-  constructor (data) {
+  constructor (data, subscriber) {
     super(data)
     this.sourceVertex = undefined
     this.targetVertex = undefined
+    this.subscriber = subscriber
   }
 
   setSourceVertex (vertex) {
     this.sourceVertex = vertex
-    this.setValue('_from', vertex.data.get('_id'))
+    this.setDataValue('_from', vertex.data.get('_id'))
   }
 
   setTargetVertex (vertex) {
     this.targetVertex = vertex
-    this.setValue('_to', vertex.data.get('_id'))
+    this.setDataValue('_to', vertex.data.get('_id'))
   }
 
   getSourceVertex () {
@@ -99,14 +154,35 @@ class WandererEdge extends WandererItem {
     return this.targetVertex
   }
 
+  setDataValue (key, value, language) {
+    super.setDataValue(key, value, language)
+    this.subscriber.emit('setEdgeDataValue', {
+      id: this.data.get('_id'),
+      key: key,
+      value: value,
+      language: language
+    })
+  }
+
+  setLifecycleValue (key, value) {
+    super.setLifecycleValue(key, value)
+    this.subscriber.emit('setEdgeLifecycleValue', {
+      id: this.data.get('_id'),
+      key: key,
+      value: value
+    })
+  }
+
 }
 
 class WandererGraph {
 
-  constructor (thread) {
+  constructor (subscriber) {
     this.collections = {}
-    this.vertices = new WandererItemList()
-    this.edges = new WandererItemList()
+    this.vertices = new WandererItemList(subscriber)
+    this.edges = new WandererItemList(subscriber)
+    this.subscriber = subscriber
+    this.origin = undefined
   }
 
   setCollectionProps (collectionName, key, props) {
@@ -114,6 +190,10 @@ class WandererGraph {
       this.collections[collectionName] = new WandererNestedData()
     }
     this.collections[collectionName].set(key, props)
+  }
+
+  getOrigin () {
+    return this.origin
   }
 
   getCollections () {
@@ -138,7 +218,7 @@ class WandererGraph {
       throw 'Vertices constructed from data must have a collection (_collection)!';
     }
 
-    var vertex = new WandererVertex(data)
+    var vertex = new WandererVertex(data, this.subscriber)
 
     // Set collection
     if(data._collection !== undefined) {
@@ -148,6 +228,12 @@ class WandererGraph {
     }
 
     this.vertices.add(vertex)
+
+    if(vertex.data.get('_origin')) {
+      this.origin = vertex
+    }
+
+    this.subscriber.emit('addVertexFromData', data)
 
     return vertex
   }
@@ -166,7 +252,7 @@ class WandererGraph {
       throw 'Edges constructed from data must have a target id (_to)!';
     }
 
-    var edge = new WandererEdge(data)
+    var edge = new WandererEdge(data, this.subscriber)
 
     if(data._collection !== undefined) {
       if(this.collections[data._collection] !== undefined) {
@@ -193,9 +279,64 @@ class WandererGraph {
 
     this.edges.add(edge)
 
+    this.subscriber.emit('addEdgeFromData', data)
+
     return edge
+  }
+
+  setVertexDataValue (id, key, value, language) {
+    var vertex = this.vertices.getElementById(id)
+    if(vertex) {
+      vertex.setDataValue(key, value, language)
+    }
+  }
+
+  setEdgeDataValue (id, key, value, language) {
+    var edge = this.edges.getElementById(id)
+    if(edge) {
+      edge.setDataValue(key, value, language)
+    }
+  }
+
+  setVertexLifecycleValue (id, key, value) {
+    var vertex = this.vertices.getElementById(id)
+    if(vertex) {
+      vertex.setLifecycleValue(key, value)
+    }
+  }
+
+  removeVertexById (vertexId) {
+    var item = this.vertices.removeElementById(vertexId)
+    this.subscriber.emit('removeVertexById', vertexId)
+  }
+
+  removeEdgeById (edgeId) {
+    var item = this.edges.removeElementById(edgeId)
+    this.subscriber.emit('removeEdgeById', edgeId)
+  }
+
+  truncate () {
+    this.vertices = new WandererItemList(this.subscriber)
+    this.edges = new WandererItemList(this.subscriber)
+    this.subscriber.emit('truncate')
   }
 
 }
 
-module.exports = WandererGraph
+export default {
+  install (wanderer) {
+
+    // Require the broadcast
+    var broadcast = wanderer.require('broadcast')
+
+    // Register a subscriber
+    var subscriber = broadcast.subscribe('graph')
+
+    // Create a new graph instance
+    var wandererGraph = new WandererGraph(subscriber)
+
+    // Provide the graph
+    wanderer.provide('graph', wandererGraph)
+
+  }
+}

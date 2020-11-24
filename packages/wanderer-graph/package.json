@@ -5,6 +5,6 @@
   "main": "index.js",
   "author": "",
   "dependencies": {
-
+    "wanderer-nested-data": "^0.0.1"
   }
 }

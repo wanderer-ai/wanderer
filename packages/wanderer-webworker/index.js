@@ -17,7 +17,6 @@ module.exports = {
         })
       })
 
-      // Listen for new vertices
       subscriber.on('addVertexFromData', (vertexData) => {
         worker.postMessage({
           'event': 'addVertexFromData',
@@ -25,7 +24,6 @@ module.exports = {
         })
       })
 
-      // Listen for new edges
       subscriber.on('addEdgeFromData', (edgeData) => {
         worker.postMessage({
           'event': 'addEdgeFromData',
@@ -33,7 +31,6 @@ module.exports = {
         })
       })
 
-      // Listen for vertex deletions
       subscriber.on('removeVertexById', (vertexId) => {
         worker.postMessage({
           'event': 'removeVertexById',
@@ -41,7 +38,6 @@ module.exports = {
         })
       })
 
-      // Listen for edge deletions
       subscriber.on('removeEdgeById', (edgeId) => {
         worker.postMessage({
           'event': 'removeEdgeById',
@@ -49,7 +45,6 @@ module.exports = {
         })
       })
 
-      // Listen for vertex data changes
       subscriber.on('setVertexDataValue', (data) => {
         worker.postMessage({
           'event': 'setVertexDataValue',
@@ -57,7 +52,13 @@ module.exports = {
         })
       })
 
-      // Listen for edge data changes
+      subscriber.on('setVertexLifecycleValue', (data) => {
+        worker.postMessage({
+          'event': 'setVertexLifecycleValue',
+          'payload': data
+        })
+      })
+
       subscriber.on('setEdgeDataValue', (data) => {
         worker.postMessage({
           'event': 'setEdgeDataValue',
@@ -89,6 +90,9 @@ module.exports = {
           case 'setEdgeDataValue':
             subscriber.emit('setEdgeDataValue', e.data.payload)
             break;
+          case 'setVertexLifecycleValue':
+            subscriber.emit('setVertexLifecycleValue', e.data.payload)
+            break;
         }
       }, false)
 
@@ -103,36 +107,89 @@ module.exports = {
 
       console.log('Hello from worker thread')
 
-      // graph.on('addVertexFromData', () => {
-      //
-      // })
+      graph.subscriber.on('truncate', (data) => {
+        thread.postMessage({
+          'event': 'truncate'
+        })
+      })
+
+      graph.subscriber.on('addVertexFromData', (data) => {
+        thread.postMessage({
+          'event': 'addVertexFromData',
+          'payload': data
+        })
+      })
+
+      graph.subscriber.on('addEdgeFromData', (data) => {
+        thread.postMessage({
+          'event': 'addEdgeFromData',
+          'payload': data
+        })
+      })
+
+      graph.subscriber.on('removeVertexById', (id) => {
+        thread.postMessage({
+          'event': 'removeVertexById',
+          'payload': id
+        })
+      })
+
+      graph.subscriber.on('removeEdgeById', (id) => {
+        thread.postMessage({
+          'event': 'removeEdgeById',
+          'payload': id
+        })
+      })
+
+      graph.subscriber.on('setVertexDataValue', (data) => {
+        thread.postMessage({
+          'event': 'setVertexDataValue',
+          'payload': data
+        })
+      })
+
+      graph.subscriber.on('setEdgeDataValue', (data) => {
+        thread.postMessage({
+          'event': 'setEdgeDataValue',
+          'payload': data
+        })
+      })
+
+      graph.subscriber.on('setVertexLifecycleValue', (data) => {
+        thread.postMessage({
+          'event': 'setVertexLifecycleValue',
+          'payload': data
+        })
+      })
 
       thread.addEventListener('message', function(e) {
         switch(e.data.event) {
           case 'truncate':
-            // subscriber.emit('truncate')
+            graph.truncate()
             break;
           case 'addVertexFromData':
-            // subscriber.emit('addVertexFromData', e.data.payload)
+            graph.addVertexFromData(e.data.payload)
             break;
           case 'addEdgeFromData':
-            // subscriber.emit('addEdgeFromData', e.data.payload)
+            graph.addEdgeFromData(e.data.payload)
             break;
           case 'removeVertexById':
-            // subscriber.emit('removeVertexById', e.data.payload)
+            graph.removeVertexById(e.data.payload)
             break;
           case 'removeEdgeById':
-            // subscriber.emit('removeEdgeById', e.data.payload)
+            graph.removeEdgeById(e.data.payload)
             break;
           case 'setVertexDataValue':
-            // subscriber.emit('setVertexDataValue', e.data.payload)
+            graph.setVertexDataValue(e.data.payload)
             break;
           case 'setEdgeDataValue':
-            // subscriber.emit('setEdgeDataValue', e.data.payload)
+            graph.setEdgeDataValue(e.data.payload)
+            break;
+          case 'setVertexLifecycleValue':
+            graph.setVertexLifecycleValue(e.data.payload)
             break;
         }
       }, false);
-
 
     }
   }
