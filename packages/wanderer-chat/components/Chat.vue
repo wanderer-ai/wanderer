@@ -11,14 +11,11 @@
       Chat
 
       <div>
-        <chat-message
-          v-for="(message,key) of messages"
-          :key="message.id"
-          :id="message.id"
-          :from="message.from"
-          :backgroundColor="message.backgroundColor">
-          <component v-bind:is="message.component" :text="message.text" :vertexId="message.vertexId"></component>
-        </chat-message>
+        <div
+          v-for="(vertexId, key) in messages"
+          :key="key">
+          <component v-bind:is="getComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
+        </div>
       </div>
 
       <div class="typing" v-if="typing">
@@ -27,7 +24,7 @@
         <span class="circle bouncing"></span>
       </div>
 
-      <div v-if="interactions.length">
+      <!-- <div v-if="interactions.length">
         <chat-message
           v-if="!interaction.showInNavigation"
           v-for="(interaction,key) of interactions"
@@ -37,11 +34,11 @@
           backgroundColor="#6C757D">
           <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
         </chat-message>
-      </div>
+      </div> -->
 
     </div>
 
-    <div v-if="interactions.length" class="chat--navigation">
+    <!-- <div v-if="interactions.length" class="chat--navigation">
       <div
         v-if="interaction.showInNavigation"
         v-for="(interaction,key) of interactions"
@@ -49,7 +46,7 @@
         :id="interaction.vertexId">
         <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
       </div>
-    </div>
+    </div> -->
 
   </div>
 </template>
@@ -66,18 +63,18 @@ export default {
     }
   },
   computed: {
-    messageIds: function () {
-      return this.$store.state.wandererChat.messageIds
-    },
+    // messageIds: function () {
+    //   return this.$store.state.wandererChat.messageIds
+    // },
     messages: function () {
-      return this.$store.state.wandererChat.messages
+      return this.$store.state.wandererChat.messageVertexIds
     },
     interactions: function () {
-      return this.$store.state.wandererChat.interactions
-    },
-    interactionVertexIds: function () {
       return this.$store.state.wandererChat.interactionVertexIds
     },
+    // interactionVertexIds: function () {
+    //   return this.$store.state.wandererChat.interactionVertexIds
+    // },
     typing: function () {
       return this.$store.state.wandererChat.typing
     }
@@ -85,18 +82,24 @@ export default {
   watch: {
     // Lets watch the message ids
     // So we can detect if a new message will income at the stack
-    messageIds: function (newObj, oldObj) {
+    messages: function (newObj, oldObj) {
       this.scrollToBottom()
     },
-    interactionVertexIds: function (newObj, oldObj) {
+    interactions: function (newObj, oldObj) {
       // This object will be completely overidden on every cycle. So lets watch the length only.
-      if(interactionsCount!=this.interactionVertexIds.length) {
-        interactionsCount = this.interactionVertexIds.length
+      if(interactionsCount!=this.interactions.length) {
+        interactionsCount = this.interactions.length
         this.scrollToBottom()
       }
     }
   },
   methods: {
+    getComponentByVertexId: function (vertexId) {
+      var props = this.$chat.getVertexCollectionPropsById(vertexId)
+      if(props) {
+        return props.get('component')
+      }
+    },
     scrollToBottom: function () {
 
       // Set auto scroll activation timeout

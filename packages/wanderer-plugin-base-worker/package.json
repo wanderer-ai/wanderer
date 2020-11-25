@@ -1,7 +1,7 @@
 {
-  "name": "wanderer-plugin-base",
+  "name": "wanderer-plugin-base-worker",
   "version": "0.0.1",
-  "description": "Wanderer.ai Base",
+  "description": "Wanderer.ai Base Worker",
   "author": "",
   "main": "index.js",
   "dependencies": {

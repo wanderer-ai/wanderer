@@ -6,6 +6,6 @@
   "private": true,
   "module": "plugin.js",
   "dependencies": {
-    
+    "wanderer-nested-data": "^0.0.1"
   }
 }

@@ -1,5 +1,7 @@
 <template>
-  <div class="message" v-html="message"></div>
+  <chat-message from="remote" background-color="#ccc">
+    <div class="message" v-html="vertexId"></div>
+  </chat-message>
 </template>
 
 <script>
@@ -7,9 +9,6 @@
 export default {
   props: {
     vertexId: {
-      type: String
-    },
-    text: {
       type: String
     }
   },
@@ -36,13 +35,5 @@ export default {
 </script>
 
 <style>
-
-.message p:last-of-type {
-  margin: 0;
-}
-
-.message a {
-  color:white;
-}
 
 </style>

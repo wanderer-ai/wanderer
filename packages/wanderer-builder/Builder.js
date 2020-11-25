@@ -97,14 +97,14 @@ export default class Builder {
 
   getVertexCollectionPropsById (vertexId) {
     var collection = this.vueGraph.getVertexDataValue(vertexId, '_collection')
-    if(this.vertexCollectionProps.has(collection) ) {
+    if(this.vertexCollectionProps.has(collection)) {
       return this.vertexCollectionProps.get(collection)
     }
   }
 
   getEdgeCollectionPropsById (edgeId) {
     var collection = this.vueGraph.getEdgeDataValue(edgeId, '_collection')
-    if(this.edgeCollectionProps.has(collection) ) {
+    if(this.edgeCollectionProps.has(collection)) {
       return this.edgeCollectionProps.get(collection)
     }
   }

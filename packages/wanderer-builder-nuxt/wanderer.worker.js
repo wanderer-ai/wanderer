@@ -5,18 +5,16 @@ import { thread as workerThread } from 'wanderer-webworker'
 import wandererGraph from 'wanderer-graph'
 import wandererTraversal from 'wanderer-traversal'
 
+import pluginBase from 'wanderer-plugin-base-worker'
+
+// Create new Wanderer instance
 var wanderer = new Wanderer()
 
+// Provide the worker thread
 wanderer.provide('thread', self)
 
-
-// Todo: Der Thread provided messages zurück und in den Graph hinein
-
+// Load the several plugins
 wanderer.use(wandererGraph)
 wanderer.use(workerThread)
 wanderer.use(wandererTraversal)
-
-// self.addEventListener('message', function(e) {
-//   console.log('Message received from worker')
-//   console.log(e)
-// }, false);
+wanderer.use(pluginBase)

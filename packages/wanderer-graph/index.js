@@ -36,7 +36,9 @@ class WandererItemList {
 
   each (callback) {
     for (const i in this.itemIds) {
-      callback(this.items[this.itemIds[i]])
+      if(this.items[this.itemIds[i]] != undefined) {
+        callback(this.items[this.itemIds[i]])
+      }
     }
   }
 
@@ -178,26 +180,33 @@ class WandererEdge extends WandererItem {
 class WandererGraph {
 
   constructor (subscriber) {
-    this.collections = {}
+    this.vertexCollectionProps = new WandererNestedData()
+    this.edgeCollectionProps = new WandererNestedData()
     this.vertices = new WandererItemList(subscriber)
     this.edges = new WandererItemList(subscriber)
     this.subscriber = subscriber
     this.origin = undefined
-  }
 
-  setCollectionProps (collectionName, key, props) {
-    if(this.collections[collectionName] === undefined) {
-      this.collections[collectionName] = new WandererNestedData()
-    }
-    this.collections[collectionName].set(key, props)
+    // Listen for new vertex collection props
+    this.subscriber.on('addVertexCollectionProps', ({name, props}) => {
+      props = new WandererNestedData(props)
+      props.with('graph', (props) => {
+        this.vertexCollectionProps.set(name, props)
+      })
+    })
+
+    // Listen for new edge collection props
+    this.subscriber.on('addEdgeCollectionProps', ({name, props}) => {
+      props = new WandererNestedData(props)
+      props.with('graph', (props) => {
+        this.edgeCollectionProps.set(name, props)
+      })
+    })
+
   }
 
   getOrigin () {
     return this.origin
-  }
-
-  getCollections () {
-    return this.collections
   }
 
   getVertices () {
@@ -222,9 +231,9 @@ class WandererGraph {
 
     // Set collection
     if(data._collection !== undefined) {
-      if(this.collections[data._collection] !== undefined) {
-        vertex.collection = this.collections[data._collection]
-      }
+      this.vertexCollectionProps.with(data._collection, (collection) => {
+        vertex.collection = collection
+      })
     }
 
     this.vertices.add(vertex)
@@ -254,10 +263,11 @@ class WandererGraph {
 
     var edge = new WandererEdge(data, this.subscriber)
 
+    // Set collection
     if(data._collection !== undefined) {
-      if(this.collections[data._collection] !== undefined) {
-        vertex.collection = this.collections[data._collection]
-      }
+      this.edgeCollectionProps.with(data._collection, (collection) => {
+        vertex.collection = collection
+      })
     }
 
     var sourceVertex = this.vertices.getElementById(data._from)
@@ -306,12 +316,28 @@ class WandererGraph {
   }
 
   removeVertexById (vertexId) {
-    var item = this.vertices.removeElementById(vertexId)
+    // Find the vertex
+    var vertex = this.vertices.getElementById(vertexId)
+    // Remove all connected edges
+    vertex.inboundEdges.each((edge) => {
+      this.removeEdgeById(edge.data.get('_id'))
+    })
+    vertex.outboundEdges.each((edge) => {
+      this.removeEdgeById(edge.data.get('_id'))
+    })
+    // Remove the vertex itself
+    this.vertices.removeElementById(vertexId)
     this.subscriber.emit('removeVertexById', vertexId)
   }
 
   removeEdgeById (edgeId) {
-    var item = this.edges.removeElementById(edgeId)
+    // Find the edge
+    var edge = this.edges.getElementById(edgeId)
+    // Remove the edge from the source and target vertex
+    edge.sourceVertex.outboundEdges.removeElementById(edgeId)
+    edge.targetVertex.inboundEdges.removeElementById(edgeId)
+    // Remove the edge itself
+    this.edges.removeElementById(edgeId)
     this.subscriber.emit('removeEdgeById', edgeId)
   }
 

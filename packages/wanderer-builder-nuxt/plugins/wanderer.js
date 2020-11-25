@@ -7,7 +7,7 @@ import Worker from "../wanderer.worker.js"
 import { client as workerClient } from 'wanderer-webworker'
 
 // import { client as workerClient } from 'wanderer-webworker'
-import { client as baseClient } from 'wanderer-plugin-base'
+import pluginBase from 'wanderer-plugin-base-browser'
 
 export default ({ app, store }) => {
 
@@ -27,6 +27,6 @@ export default ({ app, store }) => {
   wanderer.use(BuilderPlugin)
   wanderer.use(ChatPlugin)
   wanderer.use(workerClient)
-  wanderer.use(baseClient)
+  wanderer.use(pluginBase)
 
 }

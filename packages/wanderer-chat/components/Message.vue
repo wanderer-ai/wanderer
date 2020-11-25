@@ -41,10 +41,6 @@ export default {
       default: 'remote',
       type: String
     },
-    delay: {
-      default: 1000,
-      type: Number
-    },
     backgroundColor: {
       default: '#cccccc',
       type: String
