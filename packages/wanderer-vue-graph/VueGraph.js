@@ -48,6 +48,21 @@ export default class VueGraph {
       this.store.commit('wandererGraph/setEdgeDataValue', data)
     })
 
+    // Listen for vertex lifecycle changes
+    this.subscriber.on('setVertexLifecycleValue', (data) => {
+      this.store.commit('wandererGraph/setVertexLifecycleValue', data)
+    })
+
+    // Listen for traversed vertices
+    this.subscriber.on('setTraversedVertices', (data) => {
+      this.store.commit('wandererGraph/setTraversedVertices', data)
+    })
+
+    // Listen for traversed edges
+    this.subscriber.on('setTraversedEdges', (data) => {
+      this.store.commit('wandererGraph/setTraversedEdges', data)
+    })
+
   }
 
   enableLanguage (language) {
@@ -156,135 +171,32 @@ export default class VueGraph {
     }
   }
 
-  // getVertexDataValueModel (vertexId, key, language) {
-  //   var graph = this
-  //   return {
-  //     get() {
-  //       if(graph.store.state.wandererGraph.vertexDocumentData[vertexId] !== undefined) {
-  //         if(language !== undefined) {
-  //           if(graph.store.state.wandererGraph.vertexDocumentData[vertexId][key] !== undefined) {
-  //             return graph.store.state.wandererGraph.vertexDocumentData[vertexId][key][language]
-  //           }
-  //         }
-  //         return graph.store.state.wandererGraph.vertexDocumentData[vertexId][key]
-  //       }
-  //     },
-  //     set(data) {
-  //       if(data !== undefined) {
-  //         graph.store.commit('wandererGraph/setVertexDataValue', {
-  //           id: vertexId,
-  //           key: key,
-  //           value: data,
-  //           language: language
-  //         })
-  //         graph.subscriber.setVertexDataValue({
-  //           id: vertexId,
-  //           key: key,
-  //           value: data,
-  //           language: language
-  //         })
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // getEdgeDataValueModel (edgeId, key, language) {
-  //   var graph = this
-  //   return {
-  //     get() {
-  //       if(graph.store.state.wandererGraph.edgeDocumentData[edgeId] !== undefined) {
-  //         if(language !== undefined) {
-  //           if(graph.store.state.wandererGraph.edgeDocumentData[edgeId][key] !== undefined) {
-  //             return graph.store.state.wandererGraph.edgeDocumentData[edgeId][key][language]
-  //           }
-  //         }
-  //         return graph.store.state.wandererGraph.edgeDocumentData[edgeId][key]
-  //       }
-  //     },
-  //     set(data) {
-  //       if(data !== undefined) {
-  //         graph.store.commit('wandererGraph/setEdgeDataValue', {
-  //           id: edgeId,
-  //           key: key,
-  //           value: data,
-  //           language: language
-  //         })
-  //         graph.subscriber.setEdgeDataValue({
-  //           id: edgeId,
-  //           key: key,
-  //           value: data,
-  //           language: language
-  //         })
-  //       }
-  //     }
-  //   }
-  // }
+  getVertexLifecycleValuesById (id) {
+    return this.store.state.wandererGraph.vertexLifecycleData[id]
+  }
 
-  // getVertexModel (key) {
-  //   return {
-  //     get() {
-  //       if(this.store.state.wanderer.builder.editVertex) {
-  //         if(this.store.state.wanderer.vertexDocumentData[this.store.state.wanderer.builder.editVertex] !== undefined) {
-  //           return this.store.state.wanderer.vertexDocumentData[this.store.state.wanderer.builder.editVertex][key]
-  //         }
-  //       }
-  //     },
-  //     set(data) {
-  //       if(data != undefined) {
-  //         StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-  //           id: StoreSingleton.store.state.wanderer.builder.editVertex,
-  //           key: key,
-  //           value: data
-  //         })
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // getTranslatableVertexModel(key) {
-  //   return {
-  //     get(){
-  //       if(StoreSingleton.store.state.wanderer.builder.editVertex){
-  //         if(StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex] !== undefined){
-  //           if(StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex][key] !== undefined){
-  //             return StoreSingleton.store.state.wanderer.vertexDocumentData[StoreSingleton.store.state.wanderer.builder.editVertex][key][StoreSingleton.store.state.wanderer.currentLanguage]
-  //           }
-  //         }
-  //       }
-  //     },
-  //     set(data){
-  //       if(data != undefined){
-  //         StoreSingleton.store.commit('wanderer/setVertexDataValue', {
-  //           id: StoreSingleton.store.state.wanderer.builder.editVertex,
-  //           key: key,
-  //           value: data,
-  //           language: StoreSingleton.store.state.wanderer.currentLanguage
-  //         })
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // getEdgeModel(key) {
-  //   return {
-  //     get(){
-  //       if(StoreSingleton.store.state.wanderer.builder.editEdge){
-  //         if(StoreSingleton.store.state.wanderer.edgeDocumentData[StoreSingleton.store.state.wanderer.builder.editEdge] !== undefined){
-  //           return StoreSingleton.store.state.wanderer.edgeDocumentData[StoreSingleton.store.state.wanderer.builder.editEdge][key]
-  //         }
-  //       }
-  //     },
-  //     set(data){
-  //       if(data != undefined){
-  //         StoreSingleton.store.commit('wanderer/setEdgeDataValue', {
-  //           id: StoreSingleton.store.state.wanderer.builder.editEdge,
-  //           key: key,
-  //           value: data
-  //         })
-  //       }
-  //     }
-  //   }
-  // }
+  getVertexLifecycleValue (id, key) {
+    if(this.store.state.wandererGraph.vertexLifecycleData[id] !== undefined) {
+      if(this.store.state.wandererGraph.vertexLifecycleData[id][key] !== undefined) {
+        return this.store.state.wandererGraph.vertexLifecycleData[id][key]
+      }
+    }
+    return undefined
+  }
 
+  setVertexLifecycleValue (id, key, value) {
+    if(value !== undefined) {
+      this.store.commit('wandererGraph/setVertexLifecycleValue', {
+        id: id,
+        key: key,
+        value: value
+      })
+      this.subscriber.emit('setVertexLifecycleValue', {
+        id: id,
+        key: key,
+        value: value
+      })
+    }
+  }
 
 }

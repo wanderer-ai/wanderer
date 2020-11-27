@@ -5,7 +5,10 @@ class Traversal {
     this.graph = graph
     this.subscriber = subscriber
     this.traversing = false
-    this.traversedVerticeIds = []
+    this.traversedVertexIds = []
+    this.traversedEdgeIds = []
+    this.lastReachableVertexIds = []
+    this.reachableVertexIds = []
   }
 
   // Check for a given vertex, if all inbound edges will allow to enter this vertex
@@ -84,31 +87,31 @@ class Traversal {
       // This is the first call of the recursive stack
       if (!recursive) {
 
-        this.subscriber.emit('traversalStart')
+        this.subscriber.emit('traversalStarted')
 
         // traversedEdges = WandererCytoscapeSingleton.cy.collection()
         // traversedVertices = WandererCytoscapeSingleton.cy.collection()
-        // traversedEdgeIds = []
-        this.traversedVerticeIds = []
+        this.traversedEdgeIds = []
+        this.traversedVertexIds = []
 
       }
 
       if (this.isVertexTraversable(vertex)) {
 
         // Remember this vertex as reachable in the current traversal
-        // reachableVerticeIds.push(currentCytoscapeVertex.id())
+        this.reachableVertexIds.push(vertex.data.get('_id'))
 
         // Check if the node was also reachable within the last traversal
-        // if(lastReachableVerticeIds.indexOf(currentCytoscapeVertex.id())==-1) {
-        //   // If this node was not reachable during the last traversal...
-        //   if (currentVertexCollection.becomeReachable) {
-        //     currentVertexCollection.becomeReachable(currentCytoscapeVertex, currentVertexData, WandererStoreSingleton.store.state.wanderer.currentLanguage)
-        //   }
-        // }
+        if(this.lastReachableVertexIds.indexOf(vertex.data.get('_id'))==-1) {
+          // If this node was not reachable during the last traversal...
+          vertex.collection.with('becomeReachable', (becomeReachable) => {
+            becomeReachable(vertex)
+          })
+        }
 
         // Remember this vertex as visited
         // traversedVertices = traversedVertices.union(currentCytoscapeVertex);
-        this.traversedVerticeIds.push(vertex.data.get('_id'))
+        this.traversedVertexIds.push(vertex.data.get('_id'))
 
         // Is there a visitor available for this kind of node?
         // Only execute the visitor if we are not in test mode
@@ -118,22 +121,27 @@ class Traversal {
           })
         }
 
+        var outboundEdges = vertex.getOutboundEdges()
+
         // Is there a expander available for this kind of node which will alter the expand edges?
-        // if (currentVertexCollection.expander) {
-        //   expandEdges = currentVertexCollection.expander(currentCytoscapeVertex, currentVertexData, cytoscapeTraversableOutboundEdges)
-        // }
+        vertex.collection.with('expander', (expander) => {
+          outboundEdges = expander(vertex)
+          if(typeof outboundEdges != 'WandererItemList') {
+            outboundEdges = this.graph.createItemList()
+          }
+        })
 
         // Sort the outbound edges
-        // vertex.outboundEdges.sort('priority')
+        outboundEdges = outboundEdges.sort('priority')
 
         // For each outbound edge
-        vertex.getOutboundEdges().each((edge) => {
+        outboundEdges.each((edge) => {
 
           if(this.isEdgeTraversable(edge, vertex)) {
 
             // Remember this edge
             // traversedEdges = traversedEdges.union(expandEdges[i]);
-            // traversedEdgeIds.push(expandEdges[i].id())
+            this.traversedEdgeIds.push(edge.data.get('_id'))
             // WandererStoreSingleton.store.commit('wanderer/rememberTraversedEdge', expandEdges[i].id())
 
             // Call the visitor for this edge if present
@@ -158,7 +166,7 @@ class Traversal {
             // But only visit this node if it was not visited already before in traversal!
             // We don't want to build a infinite recursion!
             var targetVertex = edge.getTargetVertex()
-            if(this.traversedVerticeIds.indexOf(targetVertex.data.get('_id')) == -1) {
+            if(this.traversedVertexIds.indexOf(targetVertex.data.get('_id')) == -1) {
               // Traverse into deep
               this.traverse(targetVertex, true, explore)
             }
@@ -187,26 +195,19 @@ class Traversal {
         this.traverse(vertex, false, false)
       } else {
 
-        console.log('Traversed '+this.traversedVerticeIds.length+' vertices')
+        console.log('Traversed '+this.traversedVertexIds.length+' vertices')
 
         // Update the last reachable vertices
-        // lastReachableVerticeIds = [...reachableVerticeIds]
-        // reachableVerticeIds = []
+        this.lastReachableVertexIds = [...this.reachableVertexIds]
+        this.reachableVertexIds = []
 
-        // console.log(lastReachableVerticeIds)
+        // console.log(lastReachableVertexIds)
 
         // Finish the current traversal by emittig the event
-        this.subscriber.emit('traversalFinished')
-
-        // Animate the traversed edges and vertices
-        // animateTraversal(traversedEdges, traversedVertices)
-
-        // Forget the traversed edges and vertices from the last traversal
-        // WandererStoreSingleton.store.commit('wanderer/resetTraversal')
-
-        // I dont want do this inside the traversal because it generates a blinking effect for elements that are using this information
-        // Send all traversed edges and vertices in store
-        // WandererStoreSingleton.store.commit('wanderer/rememberTraversedVertices', traversedVerticeIds)
+        this.subscriber.emit('traversalFinished', {
+          traversedVertexIds: this.traversedVertexIds,
+          traversedEdgeIds: this.traversedEdgeIds
+        })
 
         // Restart the traversal tick
         setTimeout(() => {

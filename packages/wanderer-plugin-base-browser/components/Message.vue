@@ -1,36 +1,42 @@
 <template>
   <chat-message from="remote" background-color="#ccc">
-    <div class="message" v-html="vertexId"></div>
+    <div class="message" v-html="message"></div>
   </chat-message>
 </template>
 
 <script>
 
 export default {
+  data: function () {
+    return {
+      computedMessage: ''
+    }
+  },
   props: {
     vertexId: {
       type: String
     }
   },
-  // computed: {
-  //   message: function () {
-  //
-  //     var dynamicMode = false
-  //
-  //     // By default this is the message string
-  //     var message = this.text
-  //
-  //     // Override with reactive value if we have enabled the dynamic mode
-  //     if(dynamicMode) {
-  //       if(this.vertexId != undefined) {
-  //         message = WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(this.vertexId,'message'), this.vertexId))
-  //       }
-  //     }
-  //
-  //     return message
-  //
-  //   }
-  // }
+  computed: {
+    message: function () {
+
+      var dynamicMode = false
+
+      var message = this.computedMessage
+
+      // Calculate the template only once
+      // The only exception is the dynamic mode
+      if(dynamicMode||this.computedMessage=='') {
+        if(this.vertexId != undefined) {
+          message = this.$chat.evaluateVertexDataValue(this.vertexId,'message')
+          // this.computedMessage = message
+        }
+      }
+
+      return message
+
+    }
+  }
 }
 </script>
 

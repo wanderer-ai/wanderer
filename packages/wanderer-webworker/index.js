@@ -93,6 +93,12 @@ module.exports = {
           case 'setVertexLifecycleValue':
             subscriber.emit('setVertexLifecycleValue', e.data.payload)
             break;
+          case 'setTraversedVertices':
+            subscriber.emit('setTraversedVertices', e.data.payload)
+            break;
+          case 'setTraversedEdges':
+            subscriber.emit('setTraversedEdges', e.data.payload)
+            break;
         }
       }, false)
 
@@ -104,6 +110,7 @@ module.exports = {
 
       var thread = wanderer.require('thread')
       var graph = wanderer.require('graph')
+      var traversal = wanderer.require('traversal')
 
       console.log('Hello from worker thread')
 
@@ -159,6 +166,17 @@ module.exports = {
         thread.postMessage({
           'event': 'setVertexLifecycleValue',
           'payload': data
+        })
+      })
+
+      traversal.subscriber.on('traversalFinished', (data) => {
+        thread.postMessage({
+          'event': 'setTraversedVertices',
+          'payload': data.traversedVertexIds
+        })
+        thread.postMessage({
+          'event': 'setTraversedEdges',
+          'payload': data.traversedEdgeIds
         })
       })
 

@@ -1,0 +1,10 @@
+{
+  "name": "wanderer-plugin-question-browser",
+  "version": "0.0.1",
+  "description": "Wanderer.ai question browser",
+  "author": "",
+  "main": "index.js",
+  "dependencies": {
+
+  }
+}

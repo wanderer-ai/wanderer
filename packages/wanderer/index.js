@@ -1,19 +1,5 @@
-// import {WandererGraph} from 'wanderer-graph'
 const uuidv4 = require('uuid/v4')
-// import WandererNestedData from 'wanderer-nested-data'
-
 import WandererBroadcast from 'wanderer-broadcast'
-
-// import Mustache from 'mustache'
-// import Axios from 'axios'
-//
-// var md = require('markdown-it')({
-//   html:         false,       // Enable HTML tags in source
-//   breaks:       true,        // Convert '\n' in paragraphs into <br>
-//   linkify:      false        // Autoconvert URL-like text to links
-// });
-// const jexl = require('jexl')
-// const uuidv4 = require('uuid/v4');
 
 export default class Wanderer {
 
@@ -272,57 +258,6 @@ export default class Wanderer {
     }
   }
 
-  // addEdge (edgeData) {
-  //
-  //   let collection = getEdgeCollection(edgeData._collection)
-  //
-  //   // Make the edge immutable if on of the connected nodes are also immutable
-  //   if(
-  //     getVertexValue(edgeData._from, '_immutable') ||
-  //     getVertexValue(edgeData._to, '_immutable')
-  //   ) {
-  //     edgeData['_immutable'] = true
-  //   }
-  //
-  //   if(collection) {
-  //
-  //     try {
-  //
-  //       let cytoscapeEdge = WandererCytoscapeSingleton.cy.add({
-  //         data: {
-  //           id: edgeData._id, //Set required cytoscape id
-  //           source: edgeData._from, //Set cytoscape source
-  //           target: edgeData._to //Set cytoscape target
-  //         },
-  //         classes: collection.builder.cytoscapeClasses
-  //       });
-  //
-  //       // Convert data to Cytoscape if needed
-  //       edgeToCytoscape(edgeData)
-  //
-  //       // Add data to store
-  //       WandererStoreSingleton.store.commit('wanderer/addEdge', edgeData)
-  //
-  //       // Call the collections afterCreate Hook
-  //       if(collection.afterCreate) {
-  //         collection.afterCreate(cytoscapeEdge, edgeData);
-  //       }
-  //
-  //       // Trigger afterAddEdge event
-  //       trigger('afterAddEdge');
-  //
-  //     } catch (e) {
-  //
-  //       console.log(e);
-  //
-  //     }
-  //
-  //   }
-  //
-  // }
-  //
-
-
 }
 //
 // export default (function () {
@@ -333,45 +268,6 @@ export default class Wanderer {
 //   var vertexCollections = {}
 //   var edgeCollections = {}
 //
-//
-//   function registerVertexCollection (configuration) {
-//     vertexCollections[configuration.name] = configuration // Register the collection
-//   }
-//
-//   function registerEdgeCollection (configuration) {
-//     edgeCollections[configuration.name] = configuration // Register the collection
-//   }
-//
-//   function getVertexCollections () {
-//     return vertexCollections
-//   }
-//
-//   function getEdgeCollections () {
-//     return edgeCollections
-//   }
-//
-//   function getVertexCollection(name) {
-//     if(vertexCollections[name] === undefined) {
-//       return vertexCollections['default']
-//     }
-//     return vertexCollections[name]
-//   }
-//
-//   function getVertexCollectionById(id) {
-//     let vertexData = WandererStoreSingleton.store.state.wanderer.vertexDocumentData[id]
-//     if(vertexData) {
-//       return getVertexCollection(vertexData._collection)
-//     }
-//     return false
-//   }
-//
-//   function getEdgeCollectionById(id) {
-//     let edgeData = WandererStoreSingleton.store.state.wanderer.edgeDocumentData[id]
-//     if(edgeData) {
-//       return getEdgeCollection(edgeData._collection)
-//     }
-//     return false
-//   }
 //
 //   function getVertexCollectionDefaultExposeField(name) {
 //     var vertexCollection = getVertexCollection(name)
@@ -397,13 +293,6 @@ export default class Wanderer {
 //       }
 //     }
 //     return false
-//   }
-//
-//   function getEdgeCollection(name) {
-//     if(edgeCollections[name] === undefined) {
-//       return edgeCollections['default']
-//     }
-//     return edgeCollections[name]
 //   }
 //
 //
@@ -559,29 +448,6 @@ export default class Wanderer {
 //     return false;
 //   }
 //
-//   function getLifecycleData (vertexId) {
-//     if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId] != undefined) {
-//       return WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId];
-//     }
-//     return false;
-//   }
-//
-//   function getLifecycleValue (vertexId, key) {
-//     if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId] != undefined) {
-//       if(WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId][key] != undefined) {
-//         return WandererStoreSingleton.store.state.wanderer.vertexLifecycleData[vertexId][key];
-//       }
-//     }
-//     return false;
-//   }
-//
-//   function setLifecycleValue (vertexId, key, value) {
-//     WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-//       id: vertexId,
-//       key: key,
-//       value: value
-//     })
-//   }
 //
 //   function getIncommingLifecycleData (contextVertexId) {
 //

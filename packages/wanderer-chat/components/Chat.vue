@@ -24,17 +24,13 @@
         <span class="circle bouncing"></span>
       </div>
 
-      <!-- <div v-if="interactions.length">
+      <div>
         <chat-message
-          v-if="!interaction.showInNavigation"
-          v-for="(interaction,key) of interactions"
-          :key="interaction.vertexId"
-          :id="interaction.vertexId"
-          from="remote"
-          backgroundColor="#6C757D">
-          <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
+          v-for="(vertexId, key) in interactions"
+          :key="key">
+          <component class="" v-bind:is="getComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
         </chat-message>
-      </div> -->
+      </div>
 
     </div>
 

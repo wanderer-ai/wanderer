@@ -3,10 +3,16 @@ import WandererNestedData from 'wanderer-nested-data'
 
 class WandererItemList {
 
-  constructor (subscriber) {
+  constructor (items) {
+
     this.itemIds = []
     this.items = {}
-    this.subscriber = subscriber
+
+    if(items != undefined) {
+      this.itemIds = Object.keys(items)
+      this.items = items
+    }
+
   }
 
   add (item) {
@@ -42,14 +48,34 @@ class WandererItemList {
     }
   }
 
+  // Return a new sorted list
   sort (key) {
-    this.itemIds = this.itemIds.sort(function(a, b) {
+
+    // Sort the item array into a new one
+    var sortedItemIds = this.itemIds.sort((a, b) => {
       var itemA = this.items[a]
       var itemB = this.items[b]
-      if(itemA.has(key) && itemB.has(key)) {
-        return itemB.get(key) - itemA.get(key)
+      if(itemA.data.has(key) && itemB.data.has(key)) {
+        return itemB.data.get(key) - itemA.data.get(key)
       }
     })
+
+    // Create a new item list
+    var newList = new WandererItemList()
+
+    // Push the sorted items to the new list
+    for (const i in sortedItemIds) {
+      if(this.items[sortedItemIds[i]] != undefined) {
+        newList.add(this.items[sortedItemIds[i]])
+      }
+    }
+
+    return newList
+
+  }
+
+  clone () {
+    return new WandererItemList(this.items)
   }
 
 }
@@ -60,6 +86,7 @@ class WandererItem {
     this.data = new WandererNestedData(data)
     this.lifecycle = new WandererNestedData()
     this.collection = new WandererNestedData()
+    this.collectionName = undefined
     this.subscriber = subscriber
   }
 
@@ -81,8 +108,8 @@ class WandererVertex extends WandererItem {
 
   constructor (data, subscriber) {
     super(data, subscriber);
-    this.inboundEdges = new WandererItemList(subscriber)
-    this.outboundEdges = new WandererItemList(subscriber)
+    this.inboundEdges = new WandererItemList()
+    this.outboundEdges = new WandererItemList()
     this.subscriber = subscriber
   }
 
@@ -182,8 +209,8 @@ class WandererGraph {
   constructor (subscriber) {
     this.vertexCollectionProps = new WandererNestedData()
     this.edgeCollectionProps = new WandererNestedData()
-    this.vertices = new WandererItemList(subscriber)
-    this.edges = new WandererItemList(subscriber)
+    this.vertices = new WandererItemList()
+    this.edges = new WandererItemList()
     this.subscriber = subscriber
     this.origin = undefined
 
@@ -266,7 +293,7 @@ class WandererGraph {
     // Set collection
     if(data._collection !== undefined) {
       this.edgeCollectionProps.with(data._collection, (collection) => {
-        vertex.collection = collection
+        edge.collection = collection
       })
     }
 
@@ -342,9 +369,13 @@ class WandererGraph {
   }
 
   truncate () {
-    this.vertices = new WandererItemList(this.subscriber)
-    this.edges = new WandererItemList(this.subscriber)
+    this.vertices = new WandererItemList()
+    this.edges = new WandererItemList()
     this.subscriber.emit('truncate')
+  }
+
+  createItemList (items) {
+    return new WandererItemList(items)
   }
 
 }

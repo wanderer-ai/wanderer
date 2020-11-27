@@ -22,7 +22,9 @@
     "wanderer-builder": "^0.0.1",
     "wanderer-chat": "^0.0.1",
     "wanderer-plugin-base-browser": "^0.0.1",
-    "wanderer-plugin-base-worker": "^0.0.1"
+    "wanderer-plugin-base-worker": "^0.0.1",
+    "wanderer-plugin-question-browser": "^0.0.1",
+    "wanderer-plugin-question-worker": "^0.0.1"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^3.1.0"

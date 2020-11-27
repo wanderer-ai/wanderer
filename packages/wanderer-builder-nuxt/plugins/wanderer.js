@@ -6,8 +6,8 @@ import ChatPlugin from 'wanderer-chat'
 import Worker from "../wanderer.worker.js"
 import { client as workerClient } from 'wanderer-webworker'
 
-// import { client as workerClient } from 'wanderer-webworker'
 import pluginBase from 'wanderer-plugin-base-browser'
+import pluginQuestion from 'wanderer-plugin-question-browser'
 
 export default ({ app, store }) => {
 
@@ -28,5 +28,6 @@ export default ({ app, store }) => {
   wanderer.use(ChatPlugin)
   wanderer.use(workerClient)
   wanderer.use(pluginBase)
+  wanderer.use(pluginQuestion)
 
 }

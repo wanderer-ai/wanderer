@@ -6,6 +6,8 @@
   "private": true,
   "module": "plugin.js",
   "dependencies": {
-    "wanderer-nested-data": "^0.0.1"
+    "wanderer-nested-data": "^0.0.1",
+    "mustache": "^3.1.0",
+    "markdown-it": "^11.0.1"
   }
 }

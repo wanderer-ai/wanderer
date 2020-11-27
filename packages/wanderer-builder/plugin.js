@@ -8,6 +8,7 @@ import UiTextInput from './components/ui/TextInput.vue'
 import UiTextareaInput from './components/ui/TextareaInput.vue'
 import UiSelectInput from './components/ui/SelectInput.vue'
 import UiRangeInput from './components/ui/RangeInput.vue'
+import UiCheckboxInput from './components/ui/CheckboxInput.vue'
 
 export default {
 
@@ -26,6 +27,7 @@ export default {
     Vue.component('builder-textarea-input', UiTextareaInput)
     Vue.component('builder-select-input', UiSelectInput)
     Vue.component('builder-range-input', UiRangeInput)
+    Vue.component('builder-checkbox-input', UiCheckboxInput)
 
     // Extend vuex
     store.registerModule('wandererBuilder', {

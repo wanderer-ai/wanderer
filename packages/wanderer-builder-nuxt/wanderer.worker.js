@@ -6,6 +6,7 @@ import wandererGraph from 'wanderer-graph'
 import wandererTraversal from 'wanderer-traversal'
 
 import pluginBase from 'wanderer-plugin-base-worker'
+import pluginQuestion from 'wanderer-plugin-question-worker'
 
 // Create new Wanderer instance
 var wanderer = new Wanderer()
@@ -15,6 +16,7 @@ wanderer.provide('thread', self)
 
 // Load the several plugins
 wanderer.use(wandererGraph)
-wanderer.use(workerThread)
 wanderer.use(wandererTraversal)
+wanderer.use(workerThread)
 wanderer.use(pluginBase)
+wanderer.use(pluginQuestion)

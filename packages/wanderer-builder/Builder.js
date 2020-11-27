@@ -294,7 +294,11 @@ export default class Builder {
     var vertexCollection = this.vertexCollectionProps.get(vertexCollectionName)
 
     // Deep clone the default fields
-    let newVertexData = JSON.parse(JSON.stringify(vertexCollection.get('defaultFields')))
+    let newVertexData = {}
+
+    vertexCollection.with('defaultFields', (defaultFields) => {
+      newVertexData = defaultFields.plain()
+    })
 
     // Add base data
     newVertexData._id = this.wanderer.getRandomId()
@@ -302,6 +306,8 @@ export default class Builder {
     newVertexData._origin = false
     newVertexData._x = x
     newVertexData._y = y
+
+    console.log(newVertexData)
 
     // Broadcast this new data
     this.subscriber.emit('addVertexFromData', newVertexData)

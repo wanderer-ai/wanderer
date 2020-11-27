@@ -1,5 +1,13 @@
 import WandererNestedData from 'wanderer-nested-data'
 
+import Mustache from 'mustache'
+
+var md = require('markdown-it')({
+  html:         false,       // Enable HTML tags in source
+  breaks:       true,        // Convert '\n' in paragraphs into <br>
+  linkify:      false        // Autoconvert URL-like text to links
+})
+
 export default class Chat {
 
   constructor (wanderer, broadcast, worker, vue, store, vueGraph) {
@@ -74,5 +82,35 @@ export default class Chat {
   getCurrentLanguage () {
     return this.store.state.wandererChat.currentLanguage;
   }
+
+  getVertexDataValue (id, key) {
+    return this.vueGraph.getVertexDataValue(id, key)
+  }
+
+  getTranslatableVertexDataValue (id, key) {
+    var currentLanguage = this.store.state.wandererChat.currentLanguage
+    return this.vueGraph.getVertexDataValue(id, key, currentLanguage)
+  }
+
+  evaluateVertexDataValue (vertexId, templateKey) {
+
+    // Get the template string
+    var template = this.getTranslatableVertexDataValue(vertexId, templateKey)
+
+    // Render mustache
+    if(typeof template === 'string') {
+      var data = this.vueGraph.getVertexLifecycleValuesById(vertexId)
+      try {
+        template = Mustache.render(template, data);
+        template = md.render(template)
+      } catch {
+
+      }
+    }
+
+    return template
+
+  }
+
 
 }
