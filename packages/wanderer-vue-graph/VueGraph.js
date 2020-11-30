@@ -114,6 +114,7 @@ export default class VueGraph {
           return this.store.state.wandererGraph.vertexDocumentData[id][key]
         } else {
           if(this.store.state.wandererGraph.vertexDocumentData[id][key][language] !== undefined) {
+            // console.log(id, key, language, this.store.state.wandererGraph.vertexDocumentData[id][key][language])
             return this.store.state.wandererGraph.vertexDocumentData[id][key][language]
           }
         }
@@ -123,6 +124,7 @@ export default class VueGraph {
   }
 
   setVertexDataValue (id, key, value, language) {
+    // console.log(id, key, value, language)
     if(value !== undefined) {
       this.store.commit('wandererGraph/setVertexDataValue', {
         id: id,

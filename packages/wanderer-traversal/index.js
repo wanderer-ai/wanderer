@@ -126,7 +126,7 @@ class Traversal {
         // Is there a expander available for this kind of node which will alter the expand edges?
         vertex.collection.with('expander', (expander) => {
           outboundEdges = expander(vertex)
-          if(typeof outboundEdges != 'WandererItemList') {
+          if(!outboundEdges) {
             outboundEdges = this.graph.createItemList()
           }
         })
@@ -182,7 +182,7 @@ class Traversal {
 
     } else {
 
-      console.log('nothing to traverse')
+      // console.log('nothing to traverse')
 
     }
 
@@ -195,7 +195,7 @@ class Traversal {
         this.traverse(vertex, false, false)
       } else {
 
-        console.log('Traversed '+this.traversedVertexIds.length+' vertices')
+        // console.log('Traversed '+this.traversedVertexIds.length+' vertices')
 
         // Update the last reachable vertices
         this.lastReachableVertexIds = [...this.reachableVertexIds]

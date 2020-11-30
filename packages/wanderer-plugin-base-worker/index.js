@@ -20,15 +20,11 @@ export default {
       props: {
         graph: {
           edgeConditions: {
-            sent: {
-              default: true,
-              label: 'sent',
-              condition: function (vertex) {
-                if(vertex.lifecycle.is('sent')) {
-                  return true
-                }
-                return false
+          sent: function (vertex) {
+              if(vertex.lifecycle.is('sent')) {
+                return true
               }
+              return false
             }
           },
           becomeReachable: function (vertex) {
@@ -95,9 +91,11 @@ export default {
               }
             },
             allowTraversal: function (edge, vertex) {
+
+              var allow = true
+
               // Is there a compareVariable available in this data?
               if (edge.data.has('condition')) {
-
 
                 // if(edgeData.condition=='custom') {
                 //
@@ -157,14 +155,15 @@ export default {
                   // Check predefined condition
                   // Todo: Move this to the Wanderer core
                   // This method is similar to the one specified in wanderer-plugin-question
-                  vertex.collection.with('edgeConditions.'+edge.data.condition+'.', (condition) => {
-                    return condition(vertex)
+                  // Nach isEdgeTraversable. Das wäre ein guter Platz dafür
+                  vertex.collection.with('edgeConditions.'+edge.data.get('condition'), (condition) => {
+                    allow = condition(vertex)
                   })
 
                 // }
               }
 
-              return true
+              return allow
             },
             allowTargetTraversal: function (vertex, edge) {
               if (edge.data.get('type') == 'and') {

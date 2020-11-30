@@ -198,13 +198,13 @@ module.exports = {
             graph.removeEdgeById(e.data.payload)
             break;
           case 'setVertexDataValue':
-            graph.setVertexDataValue(e.data.payload)
+            graph.setVertexDataValue(e.data.payload.id, e.data.payload.key, e.data.payload.value)
             break;
           case 'setEdgeDataValue':
-            graph.setEdgeDataValue(e.data.payload)
+            graph.setEdgeDataValue(e.data.payload.id, e.data.payload.key, e.data.payload.value)
             break;
           case 'setVertexLifecycleValue':
-            graph.setVertexLifecycleValue(e.data.payload)
+            graph.setVertexLifecycleValue(e.data.payload.id, e.data.payload.key, e.data.payload.value)
             break;
         }
       }, false);

@@ -53,14 +53,14 @@ export default {
               this._vm.$set(state.vertexDocumentData[id], key, {})
             }
             this._vm.$set(state.vertexDocumentData[id][key], language, value)
-          }else{
+          } else {
             this._vm.$set(state.vertexDocumentData[id], key, value)
           }
         },
         setEdgeDataValue (state, {id, key, value, language}) {
           if(language !== undefined){
             this._vm.$set(state.edgeDocumentData[id][key], language, value)
-          }else{
+          } else {
             this._vm.$set(state.edgeDocumentData[id], key, value)
           }
         },

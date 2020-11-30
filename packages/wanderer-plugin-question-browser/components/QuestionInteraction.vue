@@ -1,5 +1,5 @@
 <template>
-  <div v-if="">
+  <div>
 
     <span :class="(showInNavigation? 'h6':'')+' question-interaction'" v-html="question"></span>
 
@@ -49,7 +49,7 @@ export default {
   computed: {
     question: function () {
       if(this.vertexId != undefined) {
-        message = this.$chat.evaluateVertexDataValue(this.vertexId,'question')
+        return this.$chat.evaluateVertexDataValue(this.vertexId,'question')
       }
     },
     showInNavigation: function () {
@@ -122,92 +122,62 @@ export default {
     answer (suggestionVertexId) {
 
       // Mark question as answered in store
-      // WandererStoreSingleton.store.commit('wanderer/plugin-question/answerQuestion', this.vertexId)
-      WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-        id: this.vertexId,
-        key: 'answered',
-        value: true
-      })
+      this.$vueGraph.setVertexLifecycleValue(this.vertexId, 'answered', true)
 
       // For each suggestion
       for(var s in this.suggestions) {
-        if (this.suggestions.hasOwnProperty(s)) {
 
-          // Answere the direct button suggestion
-          // Was the button itself a suggestion?
-          if(suggestionVertexId != undefined && suggestionVertexId==this.suggestions[s]._id) {
+        // Answere the direct button suggestion
+        // Was the button itself a suggestion?
+        if(suggestionVertexId != undefined && suggestionVertexId==this.suggestions[s]._id) {
 
-            // Mark also this suggestion as answered in the store
-            // WandererStoreSingleton.store.commit('wanderer/plugin-question/answerSuggestion', suggestionVertexId)
-            WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-              id: suggestionVertexId,
-              key: 'answered',
-              value: true
-            })
+          // Mark also this suggestion as answered in the store
+          this.$vueGraph.setVertexLifecycleValue(suggestionVertexId, 'answered', true)
+
+        } else {
+
+          // Answer the other suggestions
+          // Check the values
+          // There must be a value. Values like "" or false(bool) will not answere the suggestion
+          if (this.values[this.suggestions[s]._id] != undefined && this.values[this.suggestions[s]._id]) {
+
+            // Answer the suggestion
+            this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'answered', true)
+
+            // Store the input value inside the lifecycle data of this node
+            this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'value', this.values[this.suggestions[s]._id])
 
           } else {
 
-            // Answer the other suggestions
-            // Check the values
-            // There must be a value. Values like "" or false(bool) will not answere the suggestion
-            if (this.values[this.suggestions[s]._id] != undefined && this.values[this.suggestions[s]._id]) {
-
-              // Answer the suggestion
-              // WandererStoreSingleton.store.commit('wanderer/plugin-question/answerSuggestion', suggestionId)
-              WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-                id: this.suggestions[s]._id,
-                key: 'answered',
-                value: true
-              })
-
-              // Store the input value inside the lifecycle data of this node
-              WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-                id: this.suggestions[s]._id,
-                key: 'value',
-                value: this.values[this.suggestions[s]._id]
-              })
-
-              // Add to answer object
-              // answerObject[this.suggestions[s]._id] = this.values[this.suggestions[s]._id]
-
-            } else {
-
-              // Mark other suggestions as not answered
-              WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-                id: this.suggestions[s]._id,
-                key: 'answered',
-                value: false
-              })
-
-            }
+            // Mark other suggestions as not answered
+            this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'answered', false)
 
           }
 
         }
+
       }
 
       // Create question and suggestion messages
-      if(!this.hideMessages) {
-
-        var questionText = WandererSingleton.markdown2html(WandererSingleton.evaluateVertexTemplate(WandererSingleton.getTranslatableVertexValue(this.vertexId,'question'), this.vertexId))
-
-        WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-          component: 'wanderer-question-message',
-          from: 'remote',
-          backgroundColor: '#6C757D',
-          vertexId: this.vertexId,
-          text: questionText
-        })
-
-        WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-          component: 'wanderer-suggestion-message',
-          from: 'local',
-          backgroundColor: '#28A745',
-          vertexId: this.vertexId,
-          text: this.$getChatSuggestionMessage(this.vertexId)
-        })
-
-      }
+      // if(!this.hideMessages) {
+      //
+      //   WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+      //     component: 'wanderer-question-message',
+      //     from: 'remote',
+      //     backgroundColor: '#6C757D',
+      //     vertexId: this.vertexId,
+      //     text: questionText
+      //   })
+      //
+      //   WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
+      //     component: 'wanderer-suggestion-message',
+      //     from: 'local',
+      //     backgroundColor: '#28A745',
+      //     vertexId: this.vertexId,
+      //     text: this.$getChatSuggestionMessage(this.vertexId)
+      //   })
+      //
+      // }
 
     }
 

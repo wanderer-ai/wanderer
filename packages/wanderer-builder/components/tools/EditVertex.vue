@@ -12,6 +12,8 @@
     <portal to="modals" :order="1">
       <builder-modal :title="(editVertexCollection?editVertexCollection.label:'Unknown collection')" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
 
+        {{$store.state.wandererBuilder.editVertex}}
+
         <div v-if="isImmutable" class="alert alert-warning" role="alert">
           Warning! This vertex is not part of the current flow! Maybe it was dynamically imported. You can edit this node. But it will not be saved into your flow!
         </div>

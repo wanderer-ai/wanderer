@@ -18,6 +18,20 @@ export default {
       name: 'question',
       props: {
         graph: {
+          edgeConditions: {
+            answered:  function (vertex) {
+              if(vertex.lifecycle.is('answered')) {
+                return true
+              }
+              return false
+            },
+            notAnswered: function (vertex) {
+              if(!vertex.lifecycle.is('answered')) {
+                return true
+              }
+              return false
+            }
+          },
           becomeReachable: function (vertex) {
 
             // Reset the lifecycle data
@@ -47,6 +61,7 @@ export default {
               if(edge.data.get('_collection') == 'isAnswerableBy') {
                 var suggestionVertex = edge.targetVertex
                 var suggestionVertexOutboundEdges = suggestionVertex.getOutboundEdges()
+
                 // For each outbound child edge
                 suggestionVertexOutboundEdges.each((childEdge) => {
                   returnOutboundEdges.add(childEdge)
@@ -73,24 +88,17 @@ export default {
       props: {
         graph: {
           edgeConditions: {
-            answered: {
-              default: true,
-              label: 'answered',
-              condition: function (vertex) {
-                if(vertex.lifecycle.is('answered')) {
-                  return true
-                }
-                return false
+            answered:  function (vertex) {
+              if(vertex.lifecycle.is('answered')) {
+                return true
               }
+              return false
             },
-            notAnswered: {
-              label: 'not answered',
-              condition: function (vertex) {
-                if(!vertex.lifecycle.is('answered')) {
-                  return true
-                }
-                return false
+            notAnswered: function (vertex) {
+              if(!vertex.lifecycle.is('answered')) {
+                return true
               }
+              return false
             }
           },
           becomeReachable: function (vertex) {
@@ -100,8 +108,7 @@ export default {
 
           },
           expander: function (vertex) {
-            // Never expand your edges singe the question vertex will do this within its own expander
-            // So return an empty list
+            // Never expand your edges since the question vertex will do this within its own expander
             return false
           }
         }

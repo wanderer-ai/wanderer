@@ -117,6 +117,7 @@ export default class Builder {
   getTranslatableVertexDataValue (key) {
     var currentLanguage = this.store.state.wandererBuilder.currentLanguage
     var editVertexId = this.store.state.wandererBuilder.editVertex
+    console.log(editVertexId)
     return this.vueGraph.getVertexDataValue(editVertexId, key, currentLanguage)
   }
 
@@ -293,11 +294,11 @@ export default class Builder {
     // Get the collection
     var vertexCollection = this.vertexCollectionProps.get(vertexCollectionName)
 
-    // Deep clone the default fields
     let newVertexData = {}
 
+    // Deep clone the default fields
     vertexCollection.with('defaultFields', (defaultFields) => {
-      newVertexData = defaultFields.plain()
+      newVertexData = defaultFields.clone()
     })
 
     // Add base data
@@ -306,8 +307,6 @@ export default class Builder {
     newVertexData._origin = false
     newVertexData._x = x
     newVertexData._y = y
-
-    console.log(newVertexData)
 
     // Broadcast this new data
     this.subscriber.emit('addVertexFromData', newVertexData)
@@ -324,9 +323,13 @@ export default class Builder {
     // Get the collection
     var edgeCollection = this.edgeCollectionProps.get(edgeCollectionName)
 
-    let defaultFieldsMethod = edgeCollection.get('defaultFields')
+    let newEdgeData = {}
 
-    let newEdgeData = defaultFieldsMethod(this.getVertexCollectionPropsById(fromId), this.getVertexCollectionPropsById(toId));
+    console.log(edgeCollection)
+
+    edgeCollection.with('defaultFields', (defaultFields) => {
+      newEdgeData = defaultFields(this.getVertexCollectionPropsById(fromId), this.getVertexCollectionPropsById(toId))
+    })
 
     // Add base data
     newEdgeData._id = this.wanderer.getRandomId()

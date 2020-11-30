@@ -119,7 +119,19 @@ export default {
               label: 'read',
               exposeDefault: true
             }
+          },
+          edgeConditions: {
+            answered: {
+              default: true,
+              label: 'answered'
+            },
+            notAnswered: {
+              label: 'not answered'
+            }
           }
+        },
+        chat: {
+          component: 'wanderer-question-interaction'
         }
       }
     })
@@ -192,6 +204,15 @@ export default {
             value: {
               label: 'Value',
               exposeDefault: true
+            }
+          },
+          edgeConditions: {
+            answered: {
+              default: true,
+              label: 'answered'
+            },
+            notAnswered: {
+              label: 'not answered'
             }
           }
         }

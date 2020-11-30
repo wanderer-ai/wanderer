@@ -17,7 +17,7 @@ export default {
     Vue.component('wanderer-message', Message)
 
     // Set debug mode for this plugin
-    var debug = false
+    var debug = true
 
     // Register some vertices for the builder
     wanderer.subscriber.emit('addVertexCollectionProps', {
@@ -106,7 +106,13 @@ export default {
               label: 'sent',
               exposeDefault: false
             }
-          }
+          },
+          edgeConditions: {
+            sent: {
+              default: true,
+              label: 'sent'
+            }
+          },
         },
         chat: {
           component: 'wanderer-message'
@@ -121,7 +127,7 @@ export default {
           label: 'leads to',
           cytoscapeClasses: 'leadsTo',
           creatable: true,
-          defaultFields: function (fromVertexCollection, toVertexCollection) {
+          defaultFields: function (sourceCollectionProps, targetCollectionProps) {
 
             var defaultData = {
               type: 'or',
@@ -129,16 +135,19 @@ export default {
               name: '',
               expose: '',
               method: false,
-              condition: false
+              condition: 'none'
             }
 
-            // // Check the source node collection for default edge conditions
-            // var defaultCondition = WandererSingleton.getVertexCollectionDefaultEdgeCondition(fromVertexCollection.name)
-            // if(defaultCondition) {
-            //   defaultData.condition = defaultCondition
-            // }
-            //
-            // // Check the source node for default expose data fields
+            // Check the source node collection for default edge conditions
+            sourceCollectionProps.with('edgeConditions', (edgeConditions) => {
+              edgeConditions.each((edgeCondition, conditionName) => {
+                if(edgeCondition.is('default')) {
+                  defaultData.condition = conditionName
+                }
+              })
+            })
+
+            // Check the source node for default expose data fields
             // var defaultExposeData = WandererSingleton.getVertexCollectionDefaultExposeField(fromVertexCollection.name)
             // if(defaultExposeData) {
             //   defaultData.expose = defaultExposeData
@@ -215,16 +224,9 @@ export default {
               }
             })
 
-            console.log({
-              line: line,
-              label: label,
-              type: edgeData.get('type'),
-              priority: priority
-            })
-
             return {
               line: line,
-              label: label,
+              label: label+(debug?' '+edgeData.get('_id'):''),
               type: edgeData.get('type'),
               priority: priority
             }

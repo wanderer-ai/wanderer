@@ -18,7 +18,11 @@ class WandererNestedData {
 	}
 
   plain () {
-    return this.data
+    return this.data;
+  }
+
+  clone () {
+    return JSON.parse(JSON.stringify(this.data));
   }
 
 	set (name, value) {
