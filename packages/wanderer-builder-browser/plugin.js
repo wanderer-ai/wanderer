@@ -19,6 +19,7 @@ export default {
     var Vue = wanderer.require('vue')
     var store = wanderer.require('store')
     var vueGraph = wanderer.require('vueGraph')
+    var worker = wanderer.require('worker')
 
     // Register some ui components
     Vue.component('builder-modal', UiModal)
@@ -103,7 +104,7 @@ export default {
     Vue.component('wanderer-builder', BuilderComponent)
 
     // Create the builder instance
-    var builder = new Builder(wanderer, broadcast, Vue, store, vueGraph)
+    var builder = new Builder(wanderer, broadcast, Vue, store, vueGraph, worker)
 
     // Push it to Wanderer
     wanderer.provide('builder', builder)

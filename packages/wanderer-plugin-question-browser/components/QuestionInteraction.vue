@@ -159,7 +159,9 @@ export default {
       }
 
       // Create question and suggestion messages
-      // if(!this.hideMessages) {
+      if(!this.hideMessages) {
+        this.$store.commit('wandererChat/addMessage', this.vertexId)
+      }
       //
       //   WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
       //     component: 'wanderer-question-message',

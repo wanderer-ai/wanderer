@@ -4,13 +4,17 @@ import WandererNestedData from 'wanderer-nested-data'
 
 export default class Builder {
 
-  constructor (wanderer, broadcast, vue, store, vueGraph) {
+  constructor (wanderer, broadcast, vue, store, vueGraph, worker) {
     this.wanderer = wanderer
     this.broadcast = broadcast
     this.vue = vue
     this.store = store
     this.vueGraph = vueGraph
+    this.worker = worker
+
     this.cytoscape = undefined
+
+    this.animatingTraversal = false
 
     this.vertexCollectionProps = new WandererNestedData()
     this.edgeCollectionProps = new WandererNestedData()
@@ -78,6 +82,15 @@ export default class Builder {
     this.subscriber.on('setEdgeDataValue', ({id, key, value, language}) => {
 
     })
+
+    // Listen to worker messages
+    this.worker.addEventListener('message', (e) => {
+      switch(e.data.event) {
+        case 'animateTraversal':
+          this.animateTraversal(e.data.payload)
+          break;
+      }
+    }, false)
 
   }
 
@@ -542,6 +555,36 @@ export default class Builder {
     return possibleEdgeCollections
   }
 
+  animateTraversal ({traversedVertexIds, traversedEdgeIds}) {
+
+    if(!this.animatingTraversal) {
+
+      this.animatingTraversal = true
+
+      var animateItems = this.cytoscape.collection()
+
+      for(var i in traversedVertexIds) {
+        animateItems = animateItems.union(this.cytoscape.getElementById(traversedVertexIds[i]))
+      }
+
+      for(var i in traversedEdgeIds) {
+        animateItems = animateItems.union(this.cytoscape.getElementById(traversedEdgeIds[i]))
+      }
+
+      animateItems.addClass('pulse')
+
+      setTimeout(() => {
+
+        animateItems.removeClass('pulse')
+
+        this.animatingTraversal = false
+
+      }, 1500)
+
+    }
+
+  }
+
   initCytoscape (config) {
 
     cytoscape.use( cxtmenu )
@@ -580,7 +623,24 @@ export default class Builder {
           'transition-property': 'line-color',
           'transition-duration': '0.5s'
         }
-      },
+      }
+    )
+
+    // Apply the collection styles
+    this.vertexCollectionProps.each((item) => {
+      item.with('cytoscapeStyles', (cytoscapeStyles) => {
+        cytoscapeStylesheets = cytoscapeStyles.plain().concat(cytoscapeStylesheets)
+      })
+    })
+
+    this.edgeCollectionProps.each((item) => {
+      item.with('cytoscapeStyles', (cytoscapeStyles) => {
+        cytoscapeStylesheets = cytoscapeStyles.plain().concat(cytoscapeStylesheets)
+      })
+    })
+
+    // Add system styles
+    cytoscapeStylesheets.push(
       {
         selector: 'node.pulse',
         style: {
@@ -608,19 +668,6 @@ export default class Builder {
         }
       }
     )
-
-    // Apply the collection styles
-    this.vertexCollectionProps.each((item) => {
-      item.with('cytoscapeStyles', (cytoscapeStyles) => {
-        cytoscapeStylesheets = cytoscapeStyles.plain().concat(cytoscapeStylesheets)
-      })
-    })
-
-    this.edgeCollectionProps.each((item) => {
-      item.with('cytoscapeStyles', (cytoscapeStyles) => {
-        cytoscapeStylesheets = cytoscapeStyles.plain().concat(cytoscapeStylesheets)
-      })
-    })
 
     this.cytoscape.style().fromJson(cytoscapeStylesheets).update();
 

@@ -115,7 +115,7 @@ export default {
           },
         },
         chat: {
-          component: 'wanderer-message'
+          messageComponent: 'wanderer-message'
         }
       }
     })

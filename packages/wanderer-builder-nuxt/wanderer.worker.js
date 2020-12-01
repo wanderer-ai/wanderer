@@ -1,6 +1,7 @@
 
 import Wanderer from 'wanderer'
 import { thread as workerThread } from 'wanderer-webworker'
+import builderPlugin from 'wanderer-builder-worker'
 
 import wandererGraph from 'wanderer-graph'
 import wandererTraversal from 'wanderer-traversal'
@@ -18,5 +19,6 @@ wanderer.provide('thread', self)
 wanderer.use(wandererGraph)
 wanderer.use(wandererTraversal)
 wanderer.use(workerThread)
+wanderer.use(builderPlugin)
 wanderer.use(pluginBase)
 wanderer.use(pluginQuestion)

@@ -51,7 +51,7 @@ export default {
               foundQuestions[vertex.data.get('_id')] = []
             }
           },
-          expander: function (vertex) {
+          expander: function (vertex, traversal) {
 
             var returnOutboundEdges = vertex.getOutboundEdges()
 
@@ -59,13 +59,17 @@ export default {
             returnOutboundEdges.each((edge) => {
               // If this is a isAnswerableBy edge
               if(edge.data.get('_collection') == 'isAnswerableBy') {
+                
                 var suggestionVertex = edge.targetVertex
-                var suggestionVertexOutboundEdges = suggestionVertex.getOutboundEdges()
-
-                // For each outbound child edge
-                suggestionVertexOutboundEdges.each((childEdge) => {
-                  returnOutboundEdges.add(childEdge)
-                })
+                if (traversal.isVertexTraversable(suggestionVertex)) {
+                  // For each outbound child edge
+                  var suggestionVertexOutboundEdges = suggestionVertex.getOutboundEdges()
+                  suggestionVertexOutboundEdges.each((childEdge) => {
+                    if(traversal.isEdgeTraversable(childEdge, suggestionVertex)) {
+                      returnOutboundEdges.add(childEdge)
+                    }
+                  })
+                }
 
                 // Add this suggestion to question result
                 if(foundQuestions[vertex.data.get('_id')]) {

@@ -1,4 +1,4 @@
-#
+
 <template>
   <div class="fixed right-0 bottom-0 m-4 z-40">
 
@@ -14,7 +14,7 @@
         <div
           v-for="(vertexId, key) in messages"
           :key="key">
-          <component v-bind:is="getComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
+          <component v-bind:is="getMessageComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
         </div>
       </div>
 
@@ -28,7 +28,7 @@
         <chat-message
           v-for="(vertexId, key) in interactions"
           :key="key">
-          <component class="" v-bind:is="getComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
+          <component class="" v-bind:is="getInteractionComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
         </chat-message>
       </div>
 
@@ -90,10 +90,16 @@ export default {
     }
   },
   methods: {
-    getComponentByVertexId: function (vertexId) {
+    getMessageComponentByVertexId: function (vertexId) {
       var props = this.$chat.getVertexCollectionPropsById(vertexId)
       if(props) {
-        return props.get('component')
+        return props.get('messageComponent')
+      }
+    },
+    getInteractionComponentByVertexId: function (vertexId) {
+      var props = this.$chat.getVertexCollectionPropsById(vertexId)
+      if(props) {
+        return props.get('interactionComponent')
       }
     },
     scrollToBottom: function () {

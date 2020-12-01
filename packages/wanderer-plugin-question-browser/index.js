@@ -1,7 +1,6 @@
 import QuestionEditor from './components/QuestionEditor.vue'
 import SuggestionEditor from './components/SuggestionEditor.vue'
 import QuestionInteraction from './components/QuestionInteraction.vue'
-import SuggestionMessage from './components/SuggestionMessage.vue'
 import QuestionMessage from './components/QuestionMessage.vue'
 import IsAnswerableByEditor from './components/IsAnswerableByEditor.vue'
 
@@ -18,7 +17,6 @@ export default {
     Vue.component('wanderer-question-editor', QuestionEditor)
     Vue.component('wanderer-suggestion-editor', SuggestionEditor)
     Vue.component('wanderer-question-interaction', QuestionInteraction)
-    Vue.component('wanderer-suggestion-message', SuggestionMessage)
     Vue.component('wanderer-question-message', QuestionMessage)
     Vue.component('wanderer-is-answerable-by-editor', IsAnswerableByEditor)
 
@@ -131,7 +129,8 @@ export default {
           }
         },
         chat: {
-          component: 'wanderer-question-interaction'
+          messageComponent: 'wanderer-question-message',
+          interactionComponent: 'wanderer-question-interaction'
         }
       }
     })

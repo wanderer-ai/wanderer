@@ -125,7 +125,7 @@ class Traversal {
 
         // Is there a expander available for this kind of node which will alter the expand edges?
         vertex.collection.with('expander', (expander) => {
-          outboundEdges = expander(vertex)
+          outboundEdges = expander(vertex, this)
           if(!outboundEdges) {
             outboundEdges = this.graph.createItemList()
           }
@@ -209,7 +209,7 @@ class Traversal {
           traversedEdgeIds: this.traversedEdgeIds
         })
 
-        // Restart the traversal tick
+        // Start the next traversal tick
         setTimeout(() => {
           this.traverse(vertex)
         }, 1000)
