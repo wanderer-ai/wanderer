@@ -11,7 +11,8 @@ export default {
     var subscriber = broadcast.subscribe('question-plugin')
 
     // Define some variables for collecting some data while traversing
-    var foundQuestions = {}
+    var openQuestions = {}
+    var traversedQuestions = []
 
     // Add collection props
     subscriber.emit('addVertexCollectionProps', {
@@ -48,8 +49,9 @@ export default {
           },
           visitor: function (vertex) {
             if(!vertex.lifecycle.is('answered')) {
-              foundQuestions[vertex.data.get('_id')] = []
+              openQuestions[vertex.data.get('_id')] = []
             }
+            traversedQuestions.push(vertex.data.get('_id'))
           },
           expander: function (vertex, traversal) {
 
@@ -59,9 +61,10 @@ export default {
             returnOutboundEdges.each((edge) => {
               // If this is a isAnswerableBy edge
               if(edge.data.get('_collection') == 'isAnswerableBy') {
-                
+
                 var suggestionVertex = edge.targetVertex
                 if (traversal.isVertexTraversable(suggestionVertex)) {
+
                   // For each outbound child edge
                   var suggestionVertexOutboundEdges = suggestionVertex.getOutboundEdges()
                   suggestionVertexOutboundEdges.each((childEdge) => {
@@ -69,11 +72,12 @@ export default {
                       returnOutboundEdges.add(childEdge)
                     }
                   })
-                }
 
-                // Add this suggestion to question result
-                if(foundQuestions[vertex.data.get('_id')]) {
-                  foundQuestions[vertex.data.get('_id')].push(suggestionVertex.data.get('_id'))
+                  // Add this suggestion to question result
+                  if(openQuestions[vertex.data.get('_id')]) {
+                    openQuestions[vertex.data.get('_id')].push(suggestionVertex.data.get('_id'))
+                  }
+
                 }
 
               }
@@ -127,16 +131,23 @@ export default {
     subscriber.on('traversalFinished', function() {
 
       thread.postMessage({
-        'event': 'sendInteractionQuestions',
-        'payload': foundQuestions
+        'event': 'sendOpenQuestions',
+        'payload': openQuestions
       })
 
-      foundQuestions = {}
+      thread.postMessage({
+        'event': 'sendTraversedQuestions',
+        'payload': traversedQuestions
+      })
+
+      openQuestions = {}
+      traversedQuestions = []
 
     })
 
     subscriber.on('truncate', function() {
-      foundQuestions = {}
+      openQuestions = {}
+      traversedQuestions = []
     })
 
     // // Listen for thread events

@@ -83,11 +83,11 @@ export default {
             visitor: function (edge) {
               // Just remember this edges
               if (edge.data.get('type') == 'and') {
-                traversedRequiredEdgeIds.push(cytoscapeEdge.id())
+                traversedRequiredEdgeIds.push(edge.data.get('_id'))
               }
               // Use the visitor to get a List of all the NOT edges
               if (edge.data.get('type') == 'not') {
-                traversedForbiddenEdgeIds.push(cytoscapeEdge.id())
+                traversedForbiddenEdgeIds.push(edge.data.get('_id'))
               }
             },
             allowTraversal: function (edge, vertex) {

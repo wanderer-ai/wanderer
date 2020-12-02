@@ -1,7 +1,7 @@
 <template>
 
   <div class="btn-group" >
-    <builder-button v-bind:class="{'btn-primary': currentLanguage==enabledLanguage,'btn-secondary': currentLanguage!=enabledLanguage}" v-for="(enabledLanguage) in enabledLanguages" v-bind:key="enabledLanguage" v-on:click="localize(enabledLanguage)">{{languages[enabledLanguage]['name']}}</builder-button>
+    <builder-button :size="size" v-bind:class="{'btn-primary': currentLanguage==enabledLanguage,'btn-secondary': currentLanguage!=enabledLanguage}" v-for="(enabledLanguage) in enabledLanguages" v-bind:key="enabledLanguage" v-on:click="localize(enabledLanguage)">{{languages[enabledLanguage]['name']}}</builder-button>
   </div>
 
 </template>
@@ -9,6 +9,12 @@
 <script>
 
   export default {
+    props: {
+      size: {
+        type: String,
+        default: 'normal'
+      }
+    },
     computed: {
       languages () {
         return this.$wanderer.getLanguages()

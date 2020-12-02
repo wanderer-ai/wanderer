@@ -1,48 +1,57 @@
 
 <template>
-  <div class="fixed right-0 bottom-0 m-4 z-40">
+  <div class="chat--container">
 
-    <div class="bg-blue p-4" v-if="!show" v-on:click="show=true">
+    <div class="chat--button" v-if="!show" v-on:click="show=true">
       Open Chat
     </div>
 
-    <div v-if="show" class="" ref="messages">
+    <div v-if="show" class="chat--panel">
 
-      Chat
-
-      <div>
-        <div
-          v-for="(vertexId, key) in messages"
-          :key="key">
-          <component v-bind:is="getMessageComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
+      <div class="chat--header">
+        <div class="chat--title">
+          {{name}}
+        </div>
+        <div class="chat--close" v-on:click="show=false">
+          ×
         </div>
       </div>
 
-      <div class="typing" v-if="typing">
-        <span class="circle bouncing"></span>
-        <span class="circle bouncing"></span>
-        <span class="circle bouncing"></span>
+      <div class="chat--body" ref="chatbody">
+
+        <div class="chat--messages">
+          <div
+            v-for="(vertexId, key) in messages"
+            :key="key">
+            <component v-if="!isInteractionInsideNavigation(vertexId)" v-bind:is="getMessageComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
+          </div>
+        </div>
+
+        <div class="chat--typing" v-if="typing">
+          <span class="circle bouncing"></span>
+          <span class="circle bouncing"></span>
+          <span class="circle bouncing"></span>
+        </div>
+
+        <div class="chat--interactions">
+          <div
+            v-for="(vertexId, key) in interactions"
+            :key="key">
+            <component v-if="!isInteractionInsideNavigation(vertexId)" v-bind:is="getInteractionComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
+          </div>
+        </div>
+
       </div>
 
-      <div>
-        <chat-message
+      <div class="chat--navigation">
+        <div
           v-for="(vertexId, key) in interactions"
           :key="key">
-          <component class="" v-bind:is="getInteractionComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
-        </chat-message>
+          <component v-if="isInteractionInsideNavigation(vertexId)" v-bind:is="getInteractionComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
+        </div>
       </div>
 
     </div>
-
-    <!-- <div v-if="interactions.length" class="chat--navigation">
-      <div
-        v-if="interaction.showInNavigation"
-        v-for="(interaction,key) of interactions"
-        :key="interaction.vertexId"
-        :id="interaction.vertexId">
-        <component class="mb-2" v-bind:is="interaction.component" :vertexId="interaction.vertexId"></component>
-      </div>
-    </div> -->
 
   </div>
 </template>
@@ -59,9 +68,9 @@ export default {
     }
   },
   computed: {
-    // messageIds: function () {
-    //   return this.$store.state.wandererChat.messageIds
-    // },
+    name () {
+      return this.$chat.getTranslatableOriginDataValue('topic')
+    },
     messages: function () {
       return this.$store.state.wandererChat.messageVertexIds
     },
@@ -96,6 +105,9 @@ export default {
         return props.get('messageComponent')
       }
     },
+    isInteractionInsideNavigation: function (vertexId) {
+      return this.$vueGraph.getVertexDataValue(vertexId, 'showInNavigation')
+    },
     getInteractionComponentByVertexId: function (vertexId) {
       var props = this.$chat.getVertexCollectionPropsById(vertexId)
       if(props) {
@@ -110,8 +122,8 @@ export default {
       }
 
       this.scrollTimeout = setTimeout(() => {
-        if(this.$refs['messages'] != undefined) {
-          this.$refs['messages'].scrollTo(0,this.$refs['messages'].scrollHeight)
+        if(this.$refs['chatbody'] != undefined) {
+          this.$refs['chatbody'].scrollTo(0,this.$refs['chatbody'].scrollHeight)
         }
       }, 100)
 
@@ -123,7 +135,56 @@ export default {
 
 <style>
 
-.typing {
+.chat--container {
+  @apply fixed right-0 bottom-0 m-4 z-50;
+}
+
+.chat--button {
+  @apply relative bg-blue p-4 rounded-md shadow-md text-white;
+}
+
+.chat--button:after {
+  @apply absolute block w-0 h-0;
+  content: "";
+  right: 2rem;
+  bottom: -1rem;
+  border-left: 1rem solid transparent;
+  border-right: 2px solid transparent;
+  border-top: 1rem solid theme('colors.blue');
+}
+
+.chat--panel {
+  @apply flex h-full items-stretch flex-col rounded-md shadow-lg border-2 border-blue;
+  width:300px;
+  height:500px;
+}
+
+.chat--header {
+  @apply flex justify-between bg-blue p-4 text-white;
+}
+
+.chat--title {
+  @apply font-bold;
+}
+
+.chat--close {
+  @apply cursor-pointer;
+}
+
+.chat--body {
+  @apply flex-grow;
+  overflow-y: auto;
+}
+
+.chat--messages {
+  @apply p-2;
+}
+
+.chat--navigation {
+  @apply bg-blue p-4 text-white;
+}
+
+.chat--typing {
   display: block;
   width: 60px;
   height: 40px;

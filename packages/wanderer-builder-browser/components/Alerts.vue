@@ -31,7 +31,7 @@
   export default {
     computed: {
       alerts () { return this.$store.state.wandererBuilder.alerts },
-    },
+    }
   }
 
 </script>

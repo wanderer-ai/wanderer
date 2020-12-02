@@ -4,15 +4,13 @@
   <div>
 
     <portal to="toolbar" :order="1">
-      <builder-button class="btn btn-primary navbar-btn" title="Edit vertex" v-on:click="openVertexEditorModal()" v-if="selectedVertices==1">
+      <builder-button title="Edit vertex" v-on:click="openVertexEditorModal()" v-if="selectedVertices==1">
         <icon name="edit"></icon>
       </builder-button>
     </portal>
 
     <portal to="modals" :order="1">
       <builder-modal :title="(editVertexCollection?editVertexCollection.label:'Unknown collection')" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
-
-        {{$store.state.wandererBuilder.editVertex}}
 
         <div v-if="isImmutable" class="alert alert-warning" role="alert">
           Warning! This vertex is not part of the current flow! Maybe it was dynamically imported. You can edit this node. But it will not be saved into your flow!
@@ -22,10 +20,12 @@
           You cannot edit this vertex. This vertex is part of a unknown collection.
         </div>
 
+        <builder-text-input label="ID" :disabled="true" v-model="$store.state.wandererBuilder.editVertex" />
+
         <component v-if="editVertexCollection" v-bind:is="editVertexCollection.component"></component>
 
         <template v-slot:buttons>
-          <language-switcher v-if="editVertexCollection" />
+          <language-switcher size="small" v-if="editVertexCollection" />
         </template>
 
       </builder-modal>

@@ -1,16 +1,18 @@
 
 <template>
-  <div class="wanderer-builder">
+  <div class="">
 
-    <div class="wanderer-builder-wrapper flex flex-col relative z-10 h-screen">
+    <div class="flex flex-col relative z-10 h-screen">
 
-      <div class="wanderer-builder-toolbar">
+      <div class="">
         <toolbar />
       </div>
 
-      <div class="wanderer-builder-cytoscape flex-grow flex-shrink overflow-hidden">
+      <div class="flex-grow flex-shrink overflow-hidden relative ">
 
-        <!-- <chat-panel class="wanderer-builder-chat" :show="showChatPanel" v-on:closeButton="showChatPanel=false" /> -->
+        <div class="builder--toolbar absolute z-30 top-2 left-2">
+          <portal-target class="btn-group" name="toolbar" multiple />
+        </div>
 
         <cytoscape />
 
@@ -106,5 +108,9 @@ export default {
 
 <style>
 
+.builder--toolbar {
+  top:2rem;
+  left:2rem;
+}
 
 </style>

@@ -55,8 +55,10 @@ class WandererItemList {
     var sortedItemIds = this.itemIds.sort((a, b) => {
       var itemA = this.items[a]
       var itemB = this.items[b]
-      if(itemA.data.has(key) && itemB.data.has(key)) {
-        return itemB.data.get(key) - itemA.data.get(key)
+      if(itemA != undefined && itemB != undefined) {
+        if(itemA.data.has(key) && itemB.data.has(key)) {
+          return itemB.data.get(key) - itemA.data.get(key)
+        }
       }
     })
 

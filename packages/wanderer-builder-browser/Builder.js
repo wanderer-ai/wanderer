@@ -130,7 +130,6 @@ export default class Builder {
   getTranslatableVertexDataValue (key) {
     var currentLanguage = this.store.state.wandererBuilder.currentLanguage
     var editVertexId = this.store.state.wandererBuilder.editVertex
-    console.log(editVertexId)
     return this.vueGraph.getVertexDataValue(editVertexId, key, currentLanguage)
   }
 
@@ -154,6 +153,11 @@ export default class Builder {
     var currentLanguage = this.store.state.wandererBuilder.currentLanguage
     var editEdgeId = this.store.state.wandererBuilder.editEdge
     return this.vueGraph.getEdgeDataValue(editEdgeId, key, currentLanguage)
+  }
+
+  getTranslatableOriginDataValue (key) {
+    var currentLanguage = this.store.state.wandererBuilder.currentLanguage
+    return this.vueGraph.getOriginDataValue(key, currentLanguage)
   }
 
   setEdgeDataValue (key, value) {
@@ -337,8 +341,6 @@ export default class Builder {
     var edgeCollection = this.edgeCollectionProps.get(edgeCollectionName)
 
     let newEdgeData = {}
-
-    console.log(edgeCollection)
 
     edgeCollection.with('defaultFields', (defaultFields) => {
       newEdgeData = defaultFields(this.getVertexCollectionPropsById(fromId), this.getVertexCollectionPropsById(toId))

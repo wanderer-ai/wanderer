@@ -24,9 +24,13 @@ export default {
     store.registerModule('wandererQuestion', {
       namespaced: true,
       state: {
-        suggestions: {}
+        suggestions: {},
+        traversedQuestions: []
       },
       mutations: {
+        setTraversedQuestions (state, questionIds) {
+          this._vm.$set(state, 'traversedQuestions', questionIds)
+        },
         addSuggestions (state, {questionId, suggestionIds}) {
           // Add suggestion array
           if(state.suggestions[questionId] == undefined) {
@@ -258,7 +262,7 @@ export default {
         case 'truncate':
           store.commit('wandererQuestion/truncate')
           break;
-        case 'sendInteractionQuestions':
+        case 'sendOpenQuestions':
 
           var foundQuestions = e.data.payload
 
@@ -288,6 +292,9 @@ export default {
 
           }
 
+          break;
+        case 'sendTraversedQuestions':
+          store.commit('wandererQuestion/setTraversedQuestions', e.data.payload)
           break;
       }
     }, false)

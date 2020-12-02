@@ -12,7 +12,8 @@ module.exports = {
     // Listen to traversalFinished event
     subscriber.on('traversalFinished', (payload) => {
 
-      // Animate the nodes if this is ok
+      // Send a animation request to the builder
+      // Only send it if the animation can be handled by the client
       if(payload.traversedVertexIds.length+payload.traversedEdgeIds.length <= 100) {
         worker.postMessage({
           'event': 'animateTraversal',

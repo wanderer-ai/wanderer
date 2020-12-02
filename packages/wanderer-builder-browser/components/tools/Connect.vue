@@ -4,7 +4,7 @@
   <div>
 
     <portal to="toolbar" :order="2">
-      <builder-button class="btn btn-warning navbar-btn" title="Connect" v-on:click="connectCheck()" v-if="possibleEdgeCollections.length">
+      <builder-button color="yellow" title="Connect" v-on:click="connectCheck()" v-if="possibleEdgeCollections.length">
         <icon name="link"></icon>
       </builder-button>
     </portal>

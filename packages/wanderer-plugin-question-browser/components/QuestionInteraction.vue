@@ -1,5 +1,6 @@
 <template>
-  <div>
+
+  <chat-message from="remote" background-color="#ccc">
 
     <span :class="(showInNavigation? 'h6':'')+' question-interaction'" v-html="question"></span>
 
@@ -26,11 +27,11 @@
 
     <div :class="'btn-group has-wrap '+(showInNavigation? '':'shake')">
 
-      <button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" :disabled="answered" :class="'btn btn-success rounded-0 '+(showInNavigation? 'btn-sm':'')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</button>
+      <chat-button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" color="green" :disabled="answered" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
 
     </div>
 
-  </div>
+  </chat-message>
 </template>
 
 <script>

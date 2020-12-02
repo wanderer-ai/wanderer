@@ -8,7 +8,7 @@
 
     <chat-message from="local" background-color="#ccc">
       <span>{{answers}}</span>
-      <span :class="(repeatable?'button--pointer':'button--disabled')" v-on:click="askAgain()">↺</span>
+      <span v-if="repeatable" v-on:click="askAgain()">↺</span>
     </chat-message>
 
   </div>
@@ -26,7 +26,8 @@ export default {
   data: function () {
     return {
       computedMessage: '',
-      computedAnswers: ''
+      computedAnswers: '',
+      suggestionIds: false
     }
   },
   computed: {
@@ -60,49 +61,52 @@ export default {
           message = ''
 
           // Get all suggestions
-          if(this.$store.state.wandererQuestion.suggestions[this.vertexId] != undefined) {
+          if(!this.suggestionIds) {
+            if(this.$store.state.wandererQuestion.suggestions[this.vertexId] != undefined) {
+              // Note: Clone this object because I want to sort it and I dont want to create an infinite Vue update loop
+              // Also cache this data to the local state because the traverser will erase the suggestions with the nect tick
+              this.suggestionIds = JSON.parse(JSON.stringify(this.$store.state.wandererQuestion.suggestions[this.vertexId]))
+            }
+          }
 
-            // Note: Clone this object because I want to sort it and I dont want to create an infinite Vue update loop
-            var suggestionIds = JSON.parse(JSON.stringify(this.$store.state.wandererQuestion.suggestions[this.vertexId]))
-            if (suggestionIds != undefined) {
+          if (this.suggestionIds != undefined) {
 
-              // Sort by priority
-              suggestionIds = suggestionIds.sort((a, b) => {
-                return this.$vueGraph.getVertexDataValue(a, 'priority')-this.$vueGraph.getVertexDataValue(b, 'priority')
-              })
+            // Sort by priority
+            this.suggestionIds = this.suggestionIds.sort((a, b) => {
+              return this.$vueGraph.getVertexDataValue(a, 'priority')-this.$vueGraph.getVertexDataValue(b, 'priority')
+            })
 
-              // Find answered suggestions
-              var answeredSuggestionIds = []
-              for(let suggestionId in suggestionIds) {
-                var answered = this.$vueGraph.getVertexLifecycleValue(suggestionIds[suggestionId], 'answered')
-                if(answered) {
-                  answeredSuggestionIds.push(suggestionIds[suggestionId])
-                }
-              }
-
-              // Foreach answered suggestion
-              for(let suggestionId in answeredSuggestionIds) {
-
-                var type = this.$vueGraph.getVertexDataValue(answeredSuggestionIds[suggestionId],'type')
-                var suggestion = this.$chat.getTranslatableVertexDataValue(answeredSuggestionIds[suggestionId],'suggestion')
-                var value = this.$vueGraph.getVertexLifecycleValue(answeredSuggestionIds[suggestionId],'value')
-
-                if(type=='button' || type=='checkbox') {
-                  message = message+suggestion
-                }
-
-                if(type=='text' || type=='textarea') {
-                  message = message+value
-                }
-
-                if(suggestionId != Object.keys(answeredSuggestionIds).length - 1) {
-                  message = message + ', '
-                }
-
+            // Find answered suggestions
+            var answeredSuggestionIds = []
+            for(let suggestionId in this.suggestionIds) {
+              var answered = this.$vueGraph.getVertexLifecycleValue(this.suggestionIds[suggestionId], 'answered')
+              if(answered) {
+                answeredSuggestionIds.push(this.suggestionIds[suggestionId])
               }
             }
 
+            // Foreach answered suggestion
+            for(let suggestionId in answeredSuggestionIds) {
+
+              var type = this.$vueGraph.getVertexDataValue(answeredSuggestionIds[suggestionId],'type')
+              var suggestion = this.$chat.getTranslatableVertexDataValue(answeredSuggestionIds[suggestionId],'suggestion')
+              var value = this.$vueGraph.getVertexLifecycleValue(answeredSuggestionIds[suggestionId],'value')
+
+              if(type=='button' || type=='checkbox') {
+                message = message+suggestion
+              }
+
+              if(type=='text' || type=='textarea') {
+                message = message+value
+              }
+
+              if(suggestionId != Object.keys(answeredSuggestionIds).length - 1) {
+                message = message + ', '
+              }
+
+            }
           }
+
 
         }
       }
@@ -110,30 +114,27 @@ export default {
       return message
     },
     repeatable: function () {
-      return true
-      // return WandererSingleton.isVertexInTraversal(this.vertexId)
+      // Check if this question is still part of the current traversal
+      if(this.$store.state.wandererQuestion.traversedQuestions.indexOf(this.vertexId) !== -1) {
+        return true
+      }
+      return false
     }
   },
   methods: {
     askAgain () {
 
-      // if(this.repeatable) {
-      //
-      //   // Mark this question as not answered
-      //   WandererStoreSingleton.store.commit('wanderer/setVertexLifecycleData', {
-      //     id: this.vertexId,
-      //     key: 'answered',
-      //     value: false
-      //   })
-      //
-      //   // Reset all suggestions
-      //   var cytoscapeVertex = CytoscapeSingleton.cy.getElementById(this.vertexId);
-      //   var children = cytoscapeVertex.children('.suggestion');
-      //   children.forEach(function(child) {
-      //     WandererSingleton.setLifecycleValue(child.id(), 'answered', false)
-      //   })
-      //
-      // }
+      if(this.repeatable) {
+
+        // Mark this question as not answered
+        this.$vueGraph.setVertexLifecycleValue(this.vertexId, 'answered', false)
+
+        // Reset all suggestions
+        for(var i in this.suggestionIds) {
+          this.$vueGraph.setVertexLifecycleValue(this.suggestionIds[i], 'answered', false)
+        }
+      
+      }
 
     }
   }

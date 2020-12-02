@@ -4,7 +4,7 @@
   <div>
 
     <portal to="toolbar" :order="2">
-      <builder-button class="btn btn-danger navbar-btn" title="Delete" v-on:click="showModal=true" v-if="selectedVertexIds.length||selectedEdgeIds.length">
+      <builder-button color="red" title="Delete" v-on:click="showModal=true" v-if="selectedVertexIds.length||selectedEdgeIds.length">
         <icon name="trash"></icon>
       </builder-button>
     </portal>

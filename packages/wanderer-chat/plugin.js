@@ -1,5 +1,6 @@
 import ChatComponent from './components/Chat'
 import ChatMessageComponent from './components/Message'
+import ChatButtonComponent from './components/Button'
 import Chat from './Chat'
 
 export default {
@@ -90,6 +91,7 @@ export default {
     // Register chat component
     Vue.component('wanderer-chat', ChatComponent)
     Vue.component('chat-message', ChatMessageComponent)
+    Vue.component('chat-button', ChatButtonComponent)
 
     // Create the chat instance
     var chat = new Chat(wanderer, broadcast, worker, Vue, store, vueGraph)

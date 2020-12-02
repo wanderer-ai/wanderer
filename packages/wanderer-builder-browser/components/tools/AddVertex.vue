@@ -4,7 +4,7 @@
   <div>
 
     <portal to="toolbar" :order="3">
-      <builder-button class="btn btn-secondary navbar-btn" title="Add vertex" v-on:click="showModal=true" v-if="selectedVertexIds.length==0||selectedVertexIds.length==1">
+      <builder-button color="yellow" title="Add vertex" v-on:click="showModal=true" v-if="selectedVertexIds.length==0||selectedVertexIds.length==1">
         <icon name="plus"></icon>
       </builder-button>
     </portal>
@@ -14,7 +14,7 @@
 
         <div v-if="selectedVertexIds.length==0">
 
-            <builder-button class="" v-for="(collection, name) in possibleVertexCollections" v-if="collection.creatable" v-bind:key="name" :style="'background-color:'+collection.color+';border-color:'+collection.color+';'" v-on:click="add(name)">
+            <builder-button class="" v-for="(collection, name) in possibleVertexCollections" v-if="collection.creatable" v-bind:key="name" :style="'background-color:'+collection.color+';'" v-on:click="add(name)">
               <icon name="plus"></icon> add {{collection.label}}
             </builder-button>
 
@@ -22,9 +22,9 @@
 
         <div v-if="selectedVertexIds.length==1">
 
-          <span v-for="(possibleOutgoing) in possibleOutgoingCollections" v-bind:key="possibleOutgoing.to.name">
+          <span class="mr-2" v-for="(possibleOutgoing) in possibleOutgoingCollections" v-bind:key="possibleOutgoing.to.name">
 
-            <builder-button class="" v-for="(through, throughName) in possibleOutgoing.through" v-bind:key="throughName" :style="'background-color:'+possibleOutgoing.to.color+';border-color:'+possibleOutgoing.to.color+';'" v-on:click="append(possibleOutgoing.to.name, throughName)">
+            <builder-button class="" v-for="(through, throughName) in possibleOutgoing.through" v-bind:key="throughName" :style="'background-color:'+possibleOutgoing.to.color+';'" v-on:click="append(possibleOutgoing.to.name, throughName)">
               <icon name="plus"></icon> {{through.label}} {{possibleOutgoing.to.collection.label}}
             </builder-button>
 
