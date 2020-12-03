@@ -44,9 +44,6 @@ export default {
       }
     })
 
-    // Set debug mode for this plugin
-    var debug = false
-
     // Register some vertices for the builder
     wanderer.subscriber.emit('addVertexCollectionProps', {
       name: 'question',
@@ -102,18 +99,18 @@ export default {
           canBeParent: true,
           parentLabel: (data, language) => {
             if(data.question[language]) {
-              return data.question[language]+(debug? ' ('+data._id+')':'')
+              return data.question[language]
             }
             return 'Question'
           },
           toCytoscape: function(vertexData, language) {
             if(vertexData.has('question.'+language)) {
               return {
-                label: vertexData.get('question.'+language)+(debug?' '+vertexData.get('_id'):'')
+                label: vertexData.get('question.'+language)
               }
             }
             return {
-              label: 'Question'+(debug?' '+vertexData.get('_id'):'')
+              label: 'Question'
             }
           },
           lifecycleData: {
@@ -199,7 +196,7 @@ export default {
             }
             priority = priority + 'px'
             return {
-              label: label+(debug? ' ('+vertexData.get('_id')+')':''),
+              label: label,
               priority: priority
             }
           },

@@ -2,11 +2,11 @@
 
   <div>
 
-    <chat-message from="remote" background-color="#ccc">
+    <chat-message from="remote">
       <div class="question-message" v-html="question"></div>
     </chat-message>
 
-    <chat-message from="local" background-color="#ccc">
+    <chat-message from="local">
       <span>{{answers}}</span>
       <span v-if="repeatable" v-on:click="askAgain()">↺</span>
     </chat-message>
@@ -27,7 +27,7 @@ export default {
     return {
       computedMessage: '',
       computedAnswers: '',
-      suggestionIds: false
+      suggestionIds: undefined
     }
   },
   computed: {
@@ -61,7 +61,7 @@ export default {
           message = ''
 
           // Get all suggestions
-          if(!this.suggestionIds) {
+          if(this.suggestionIds == undefined) {
             if(this.$store.state.wandererQuestion.suggestions[this.vertexId] != undefined) {
               // Note: Clone this object because I want to sort it and I dont want to create an infinite Vue update loop
               // Also cache this data to the local state because the traverser will erase the suggestions with the nect tick
@@ -70,6 +70,8 @@ export default {
           }
 
           if (this.suggestionIds != undefined) {
+
+            console.log(this.suggestionIds)
 
             // Sort by priority
             this.suggestionIds = this.suggestionIds.sort((a, b) => {
@@ -133,7 +135,7 @@ export default {
         for(var i in this.suggestionIds) {
           this.$vueGraph.setVertexLifecycleValue(this.suggestionIds[i], 'answered', false)
         }
-      
+
       }
 
     }

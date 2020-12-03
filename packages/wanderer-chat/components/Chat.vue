@@ -28,9 +28,9 @@
         </div>
 
         <div class="chat--typing" v-if="typing">
-          <span class="circle bouncing"></span>
-          <span class="circle bouncing"></span>
-          <span class="circle bouncing"></span>
+          <span class="chat--typing-circle"></span>
+          <span class="chat--typing-circle"></span>
+          <span class="chat--typing-circle"></span>
         </div>
 
         <div class="chat--interactions">
@@ -147,10 +147,10 @@ export default {
   @apply absolute block w-0 h-0;
   content: "";
   right: 2rem;
-  bottom: -1rem;
-  border-left: 1rem solid transparent;
+  bottom: -0.5rem;
+  border-left: 0.5rem solid transparent;
   border-right: 2px solid transparent;
-  border-top: 1rem solid theme('colors.blue');
+  border-top: 0.5rem solid theme('colors.blue');
 }
 
 .chat--panel {
@@ -172,12 +172,12 @@ export default {
 }
 
 .chat--body {
-  @apply flex-grow;
+  @apply flex-grow bg-gray p-2;
   overflow-y: auto;
 }
 
 .chat--messages {
-  @apply p-2;
+
 }
 
 .chat--navigation {
@@ -185,55 +185,40 @@ export default {
 }
 
 .chat--typing {
-  display: block;
-  width: 60px;
-  height: 40px;
-  background-color: #6C757D;
-  margin-left: 20px;
-  border-radius: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom:25px;
+  @apply flex mb-2 mt-4;
 }
 
-.circle {
+.chat--typing-circle {
+  @apply bg-gray-dark;
   display: block;
-  height: 10px;
-  width: 10px;
+  height: 8px;
+  width: 8px;
   border-radius: 50%;
-  background-color: #fff;
-  margin: 3px;
+  margin: 2px;
+  animation: hat-typing-bounce 600ms ease-in-out infinite;
+  /* animation: chat-typing-scale 600ms ease-in-out infinite; */
 }
 
-.circle.bouncing {
-  animation: bounce 600ms ease-in-out infinite;
-}
-
-.circle.scaling {
-  animation: typing 600ms ease-in-out infinite;
-}
-
-.circle:nth-child(1) {
+.chat--typing-circle:nth-child(1) {
   animation-delay: 0ms;
 }
 
-.circle:nth-child(2) {
+.chat--typing-circle:nth-child(2) {
   animation-delay: 200ms
 }
 
-.circle:nth-child(3) {
+.chat--typing-circle:nth-child(3) {
   animation-delay: 400ms
 }
 
-@keyframes typing {
+@keyframes chat-typing-scale {
   0% { transform: scale(1); }
   33% { transform: scale(1); }
   50% { transform: scale(1.4); }
   100% { transform: scale(1); }
 }
 
-@keyframes bounce {
+@keyframes hat-typing-bounce {
   0% { transform: translateY(0); }
   33% { transform: translateY(0); }
   50% { transform: translateY(-10px); }

@@ -38,11 +38,11 @@ export default {
 }
 
 .button-normal {
-  @apply p-2 px-3 text-base;
+  @apply p-2 px-3 text-sm;
 }
 
 .button-small {
-  @apply p-1 px-2 text-sm;
+  @apply p-1 px-2 text-xs;
 }
 
 </style>

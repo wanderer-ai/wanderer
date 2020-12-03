@@ -38,7 +38,8 @@ export default {
 
                 // Send a typing signal to the chat
                 thread.postMessage({
-                  'event': 'sendChatTyping'
+                  'event': 'sendChatTyping',
+                  'payload': 1000
                 })
 
                 // Now send the message after a while

@@ -1,5 +1,6 @@
 const uuidv4 = require('uuid/v4')
 import WandererBroadcast from 'wanderer-broadcast'
+import Axios from 'axios'
 
 export default class Wanderer {
 
@@ -87,28 +88,34 @@ export default class Wanderer {
   }
 
   async loadFromFile (file) {
-
     return new Promise((resolve, reject) => {
-
       const reader = new FileReader()
-
       reader.onload = e => {
-
-        // try {
+        try {
           var data = JSON.parse(e.target.result)
           this.loadFromData(data)
           resolve()
-
-        // } catch (e) {
+        } catch (e) {
           reject('This file is not a wanderer .json file! '+e)
-        // }
-
+        }
       }
-
       reader.readAsText(file)
-
     })
+  }
 
+  async loadFromUrl (url) {
+    return new Promise((resolve, reject) => {
+      Axios.get(url).catch((e) => {
+        reject('The requested file was not found: '+e.message);
+      }).then((response) => {
+        try {
+          this.loadFromData(response.data)
+          resolve()
+        } catch (e) {
+          reject(e);
+        }
+      })
+    })
   }
 
   getLanguages() {

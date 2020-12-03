@@ -20,7 +20,7 @@
           You cannot edit this vertex. This vertex is part of a unknown collection.
         </div>
 
-        <builder-text-input label="ID" :disabled="true" v-model="$store.state.wandererBuilder.editVertex" />
+        <builder-text-input v-if="debug" label="ID" :disabled="true" v-model="$store.state.wandererBuilder.editVertex" />
 
         <component v-if="editVertexCollection" v-bind:is="editVertexCollection.component"></component>
 
@@ -48,6 +48,9 @@ export default {
     Icon, LanguageSwitcher
   },
   computed: {
+    debug () {
+      return this.$store.state.wandererBuilder.debug
+    },
     showVertexEditorModal () {
       if (this.$store.state.wandererBuilder.editVertex !== 0) {
         return true

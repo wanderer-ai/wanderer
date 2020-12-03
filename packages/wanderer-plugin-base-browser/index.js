@@ -16,9 +16,6 @@ export default {
     Vue.component('wanderer-message-editor', MessageEditor)
     Vue.component('wanderer-message', Message)
 
-    // Set debug mode for this plugin
-    var debug = true
-
     // Register some vertices for the builder
     wanderer.subscriber.emit('addVertexCollectionProps', {
       name: 'flow',
@@ -48,11 +45,11 @@ export default {
           toCytoscape: function(vertexData, language) {
             if(vertexData.has('topic.'+language)) {
               return {
-                label: vertexData.get('topic.'+language)+(debug?' '+vertexData.get('_id'):'')
+                label: vertexData.get('topic.'+language)
               }
             }
             return {
-              label: 'Topic'+(debug?' '+vertexData.get('_id'):'')
+              label: 'Topic'
             }
           }
         }
@@ -94,11 +91,11 @@ export default {
           toCytoscape: function(vertexData, language) {
             if(vertexData.has('message.'+language)){
               return {
-                label: vertexData.get('message.'+language)+(debug?' '+vertexData.get('_id'):'')
+                label: vertexData.get('message.'+language)
               }
             }
             return {
-              label: 'Message'+(debug?' '+vertexData.get('_id'):'')
+              label: 'Message'
             }
           },
           lifecycleData: {
@@ -226,7 +223,7 @@ export default {
 
             return {
               line: line,
-              label: label+(debug?' '+edgeData.get('_id'):''),
+              label: label,
               type: edgeData.get('type'),
               priority: priority
             }

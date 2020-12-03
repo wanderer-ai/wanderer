@@ -371,6 +371,7 @@ class WandererGraph {
   }
 
   truncate () {
+    this.origin = undefined
     this.vertices = new WandererItemList()
     this.edges = new WandererItemList()
     this.subscriber.emit('truncate')

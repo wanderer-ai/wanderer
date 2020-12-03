@@ -41,17 +41,17 @@
             or
           </span>
 
-          <builder-button>
+          <builder-button class="upload--button">
             <icon name="upload"></icon>
             Restore from file
-            <input class="btn" type="file" @change="loadJsonFile">
+            <input type="file" @change="loadFromFile">
           </builder-button>
 
         </div>
 
         <div class="mb-4" v-if="vertexCount">
 
-          <builder-button v-on:click="exportJsonFile()">
+          <builder-button v-on:click="loadFromFile()">
             <icon name="download"></icon>
             Download your current project
           </builder-button>
@@ -62,7 +62,7 @@
 
           <div class="input-group mb-3">
             <div class="input-group-prepend">
-              <builder-button v-on:click="loadJsonRemote(url)">
+              <builder-button v-on:click="loadFromUrl(url)">
                 <icon name="globe"></icon>
                 Restore from URL
               </builder-button>
@@ -70,11 +70,6 @@
             <input type="text" class="form-control" v-model="url">
           </div>
 
-        </div>
-
-        <div class="alert alert-warning" role="alert">
-          <strong>Important information:</strong> This software is experimental! Currently you should not use Wanderer.ai for production projects!
-          The project is in a early stage of development. So your conversation flows could break in the future.
         </div>
 
       </builder-modal>
@@ -137,13 +132,13 @@ export default {
     }
   },
   methods: {
-    startTutorial (url) {
+    startTutorial () {
       this.showModal = false
-      this.$emit('startTutorial')
+      this.$wanderer.loadFromUrl('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json')
     },
-    viewExamples (url) {
+    viewExamples () {
       this.showModal = false
-      this.$emit('viewExamples')
+      this.$wanderer.loadFromUrl('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/examples/examples.json')
     },
     startEmptyProject () {
 
@@ -173,26 +168,22 @@ export default {
       this.showModal = false
 
     },
-    async loadJsonRemote (url) {
+    async loadFromUrl (url) {
       try {
-        await WandererSingleton.loadJsonRemote(url)
+        await this.$wanderer.loadFromUrl(url)
         this.showModal = false
       } catch (e) {
-        WandererStoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e, type: 'danger'})
+        this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'danger'})
       }
-
     },
-    async loadJsonFile (ev) {
-
+    async loadFromFile (ev) {
       const file = ev.target.files[0]
-
-      // try {
+      try {
         await this.$wanderer.loadFromFile(file)
         this.showModal = false
-      //} catch (e) {
-        // this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'danger'})
-      //}
-
+      } catch (e) {
+        this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'danger'})
+      }
     },
     generateExportData () {
       let exportData = {
@@ -273,26 +264,19 @@ export default {
 
 <style>
 
-.upload-btn-wrapper {
+.upload--button {
   position: relative;
   overflow: hidden;
   display: inline-block;
 }
 
-.upload-btn-wrapper input[type=file] {
+.upload--button input[type=file] {
   font-size: 100px;
   position: absolute;
   left: 0;
   top: 0;
   opacity: 0;
-}
-
-.col.has-devider {
-  border-right:1px solid #eee;
-}
-
-.col.has-devider:last-of-type {
-  border-right:0;
+  cursor: pointer;
 }
 
 </style>

@@ -122,7 +122,7 @@ export default {
 
           // Remove the connected edges
           this.$builder.cytoscape.getElementById(vertexIds[i]).connectedEdges().forEach((edge) => {
-            this.$wanderer.subscriber.emit('removeEdgeById', edge.id)
+            this.$wanderer.subscriber.emit('removeEdgeById', edge.id())
           })
 
           // Remove the vertex

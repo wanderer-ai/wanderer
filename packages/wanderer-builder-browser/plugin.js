@@ -2,8 +2,10 @@ import PortalVue from 'portal-vue'
 import BuilderComponent from './components/Builder'
 import Builder from './Builder'
 
+import UiContent from './components/ui/Content.vue'
 import UiModal from './components/ui/Modal.vue'
 import UiButton from './components/ui/Button.vue'
+import UiCircleButton from './components/ui/CircleButton.vue'
 import UiTextInput from './components/ui/TextInput.vue'
 import UiTextareaInput from './components/ui/TextareaInput.vue'
 import UiSelectInput from './components/ui/SelectInput.vue'
@@ -22,8 +24,10 @@ export default {
     var worker = wanderer.require('worker')
 
     // Register some ui components
+    Vue.component('builder-content', UiContent)
     Vue.component('builder-modal', UiModal)
     Vue.component('builder-button', UiButton)
+    Vue.component('builder-circle-button', UiCircleButton)
     Vue.component('builder-text-input', UiTextInput)
     Vue.component('builder-textarea-input', UiTextareaInput)
     Vue.component('builder-select-input', UiSelectInput)
@@ -34,6 +38,7 @@ export default {
     store.registerModule('wandererBuilder', {
       namespaced: true,
       state: {
+        debug: false,
         currentLanguage: 'en',
         alerts: [],
         editVertex: 0,

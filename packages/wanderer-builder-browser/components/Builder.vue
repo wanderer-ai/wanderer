@@ -94,14 +94,7 @@ export default {
     //     this.showChatPanel = true
     //   }
     // },
-    // async startTutorial () {
-    //   this.showChatPanel = true
-    //   await WandererSingleton.loadJsonRemote('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json')
-    // },
-    // async viewExamples () {
-    //   this.showChatPanel = true
-    //   await WandererSingleton.loadJsonRemote('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/examples/examples.json')
-    // }
+    
   }
 }
 </script>

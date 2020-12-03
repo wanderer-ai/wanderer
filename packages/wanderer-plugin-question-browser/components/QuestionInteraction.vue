@@ -1,6 +1,6 @@
 <template>
 
-  <chat-message from="remote" background-color="#ccc">
+  <chat-message from="remote">
 
     <span :class="(showInNavigation? 'h6':'')+' question-interaction'" v-html="question"></span>
 
@@ -97,7 +97,7 @@ export default {
           if (suggestionIds != undefined) {
 
             suggestionIds = suggestionIds.sort((a, b) => {
-                return this.$vueGraph.getVertexDataValue(b, 'priority')-this.$vueGraph.getVertexDataValue(a, 'priority')
+              return this.$vueGraph.getVertexDataValue(b, 'priority')-this.$vueGraph.getVertexDataValue(a, 'priority')
             })
 
             for(let i in suggestionIds) {

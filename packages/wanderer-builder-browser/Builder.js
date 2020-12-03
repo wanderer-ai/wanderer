@@ -196,6 +196,11 @@ export default class Builder {
     })
     // You cannot override the id
     cytoscapeData.id = vertexData.get('_id')
+    // Add debug information
+    if(this.store.state.wandererBuilder.debug) {
+      cytoscapeData.label = cytoscapeData.label+' ('+vertexData.get('_id')+')'
+    }
+    // Set the data
     this.cytoscape.getElementById(vertexData.get('_id')).data(cytoscapeData)
   }
 
@@ -212,6 +217,11 @@ export default class Builder {
     })
     // You cannot override the id
     cytoscapeData.id = edgeData.get('_id')
+    // Add debug information
+    if(this.store.state.wandererBuilder.debug) {
+      cytoscapeData.label = cytoscapeData.label+' ('+edgeData.get('_id')+')'
+    }
+    // Set the data
     this.cytoscape.getElementById(edgeData.get('_id')).data(cytoscapeData)
   }
 

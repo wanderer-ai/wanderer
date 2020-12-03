@@ -16,6 +16,8 @@
           Warning! This edge is not part of the current flow! Maybe it was dynamically imported. You can edit this edge. But it will not be saved into your flow!
         </div>
 
+        <builder-text-input v-if="debug" label="ID" :disabled="true" v-model="$store.state.wandererBuilder.editEdge" />
+
         <component v-bind:is="editEdgeCollection.component"></component>
 
       </builder-modal>
@@ -35,6 +37,9 @@ export default {
     Icon
   },
   computed: {
+    debug () {
+      return this.$store.state.wandererBuilder.debug
+    },
     showEdgeEditorModal () {
       if (this.$store.state.wandererBuilder.editEdge !== 0) {
         return true

@@ -82,7 +82,10 @@ class Traversal {
 
     if(vertex != undefined) {
 
-      // console.log((explore?'exploring':'traversing')+' vertex '+vertex.data.get('_id'))
+      if(explore) {
+        // console.log('vertex '+vertex.data.get('_id'))
+        // console.log(this.graph.vertices)
+      }
 
       // This is the first call of the recursive stack
       if (!recursive) {
@@ -211,7 +214,7 @@ class Traversal {
 
         // Start the next traversal tick
         setTimeout(() => {
-          this.traverse(vertex)
+          this.traverse()
         }, 1000)
 
 

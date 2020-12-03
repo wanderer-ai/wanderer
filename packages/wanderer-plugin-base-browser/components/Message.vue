@@ -1,5 +1,5 @@
 <template>
-  <chat-message from="remote" background-color="#ccc">
+  <chat-message from="remote">
     <div class="message" v-html="message"></div>
   </chat-message>
 </template>

@@ -50,6 +50,9 @@ export default class Chat {
         case 'sendChatMessage':
           this.store.commit('wandererChat/addMessage', e.data.payload)
           break;
+        case 'sendChatTyping':
+          this.store.dispatch('wandererChat/setTyping', e.data.payload)
+          break;
       }
     }, false);
 
