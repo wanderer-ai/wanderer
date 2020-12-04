@@ -1,37 +1,40 @@
 <template>
 
-  <chat-message from="remote">
+  <div v-if="hide">
 
-    <span :class="(showInNavigation? 'h6':'')+' question-interaction'" v-html="question"></span>
+    <component from="remote" v-bind:is="(showInNavigation?'div':'chat-message')">
+      <span :class="(showInNavigation? 'h6':'')+' question-interaction'" v-html="question"></span>
+    </component>
 
-    <div v-for="suggestion in suggestions" :key="suggestion._id">
+    <component from="local" v-bind:is="(showInNavigation?'div':'chat-message')">
+      <div v-for="suggestion in suggestions" :key="suggestion._id">
 
-      <div class="form-check" v-if="suggestion.type=='checkbox'">
-        <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]" :id="suggestion._id">
-        <label class="form-check-label" :for="suggestion._id" v-if="suggestion.suggestion">
-          {{suggestion.suggestion}}
-        </label>
+        <div class="form-check" v-if="suggestion.type=='checkbox'">
+          <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]" :id="suggestion._id">
+          <label class="form-check-label" :for="suggestion._id" v-if="suggestion.suggestion">
+            {{suggestion.suggestion}}
+          </label>
+        </div>
+
+        <div class="form-group" v-if="suggestion.type=='text'">
+          <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
+          <input type="text" class="form-control" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
+        </div>
+
+        <div class="form-group" v-if="suggestion.type=='textarea'">
+          <label  v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
+          <textarea class="form-control" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
+        </div>
+
       </div>
 
-      <div class="form-group" v-if="suggestion.type=='text'">
-        <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
-        <input type="text" class="form-control" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
+      <div :class="'btn-group has-wrap '+(showInNavigation? '':'shake')">
+        <chat-button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" color="green" :disabled="answered" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
       </div>
+    </component>
 
-      <div class="form-group" v-if="suggestion.type=='textarea'">
-        <label  v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
-        <textarea class="form-control" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
-      </div>
+  </div>
 
-    </div>
-
-    <div :class="'btn-group has-wrap '+(showInNavigation? '':'shake')">
-
-      <chat-button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" color="green" :disabled="answered" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
-
-    </div>
-
-  </chat-message>
 </template>
 
 <script>
@@ -76,8 +79,8 @@ export default {
           return true
         // Wenn die Frage eigene Messages generiert ...
         } else {
-          // Hide the question
-          // Die Messages sollen dann optisch den Platz der Frage einnehmen
+          // Hide the question immediatelly
+          // Die Messages sollen dann optisch den Platz der Interaction einnehmen
           return false
         }
       // Wenn die Frage noch nicht beantwortet ist ...
@@ -125,6 +128,9 @@ export default {
       // Mark question as answered in store
       this.$vueGraph.setVertexLifecycleValue(this.vertexId, 'answered', true)
 
+      // Remember the answered suggestions
+      var answeredSuggestionVertexIds = []
+
       // For each suggestion
       for(var s in this.suggestions) {
 
@@ -134,6 +140,8 @@ export default {
 
           // Mark also this suggestion as answered in the store
           this.$vueGraph.setVertexLifecycleValue(suggestionVertexId, 'answered', true)
+
+          answeredSuggestionVertexIds.push(suggestionVertexId)
 
         } else {
 
@@ -148,6 +156,8 @@ export default {
             // Store the input value inside the lifecycle data of this node
             this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'value', this.values[this.suggestions[s]._id])
 
+            answeredSuggestionVertexIds.push(this.suggestions[s]._id)
+
           } else {
 
             // Mark other suggestions as not answered
@@ -159,28 +169,21 @@ export default {
 
       }
 
+      // Sort answered suggestions by priority
+      // We want to persist them in the history of the chat
+      answeredSuggestionVertexIds = answeredSuggestionVertexIds.sort((a, b) => {
+        return this.$vueGraph.getVertexDataValue(a, 'priority')-this.$vueGraph.getVertexDataValue(b, 'priority')
+      })
+
       // Create question and suggestion messages
       if(!this.hideMessages) {
-        this.$store.commit('wandererChat/addMessage', this.vertexId)
+        this.$store.commit('wandererChat/addMessage', {
+          vertexId: this.vertexId,
+          payload: {
+            answeredSuggestionVertexIds: answeredSuggestionVertexIds
+          },
+        })
       }
-      //
-      //   WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-      //     component: 'wanderer-question-message',
-      //     from: 'remote',
-      //     backgroundColor: '#6C757D',
-      //     vertexId: this.vertexId,
-      //     text: questionText
-      //   })
-      //
-      //   WandererStoreSingleton.store.commit('wanderer/chat/addMessage', {
-      //     component: 'wanderer-suggestion-message',
-      //     from: 'local',
-      //     backgroundColor: '#28A745',
-      //     vertexId: this.vertexId,
-      //     text: this.$getChatSuggestionMessage(this.vertexId)
-      //   })
-      //
-      // }
 
     }
 
@@ -189,9 +192,6 @@ export default {
 </script>
 
 <style>
-/* .button-again {
-  cursor:pointer;
-} */
 
 .question-interaction p:last-of-type {
   margin: 0;

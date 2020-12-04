@@ -4,7 +4,7 @@
   <div>
 
     <portal to="toolbar" :order="2">
-      <builder-button color="yellow" title="Connect" v-on:click="connectCheck()" v-if="possibleEdgeCollections.length">
+      <builder-button color="yellow" title="Connect" v-on:click="connectCheck()" v-if="possibleEdgeCollections.length&&selectedEdgeIds.length==0">
         <icon name="link"></icon>
       </builder-button>
     </portal>
@@ -41,6 +41,9 @@ export default {
   computed: {
     selectedVertexIds () {
       return this.$store.state.wandererBuilder.selectedVertexIds
+    },
+    selectedEdgeIds () {
+      return this.$store.state.wandererBuilder.selectedEdgeIds
     },
     possibleEdgeCollections () {
       if (this.selectedVertexIds.length == 2) {

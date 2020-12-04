@@ -77,7 +77,7 @@ export default {
         this.showModal = false
         this.$emit('startTutorial')
       } catch (e) {
-        StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e.message, type: 'danger'})
+        StoreSingleton.store.dispatch('wanderer/builder/addAlert',{message: e.message, type: 'error'})
         this.showModal = false
       }
     }

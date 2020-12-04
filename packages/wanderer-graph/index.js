@@ -4,7 +4,6 @@ import WandererNestedData from 'wanderer-nested-data'
 class WandererItemList {
 
   constructor (items) {
-
     this.itemIds = []
     this.items = {}
 
@@ -12,7 +11,6 @@ class WandererItemList {
       this.itemIds = Object.keys(items)
       this.items = items
     }
-
   }
 
   add (item) {

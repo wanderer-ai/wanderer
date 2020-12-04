@@ -36,13 +36,13 @@ export default {
           becomeReachable: function (vertex) {
 
             // Reset the lifecycle data
-            vertex.lifecycle.set('answered', false)
+            vertex.setLifecycleValue('answered', false)
 
             // Reset all suggestions
             vertex.outboundEdges.each((edge) => {
               var target = edge.targetVertex
               if(target.data.get('_collection') == 'suggestion') {
-                target.lifecycle.set('answered', false)
+                target.setLifecycleValue('answered', false)
               }
             })
 
@@ -110,7 +110,7 @@ export default {
             }
           },
           becomeReachable: function (vertex) {
-            vertex.lifecycle.set('answered', false)
+            vertex.setLifecycleValue('answered', false)
           },
           visitor: function (vertex) {
 

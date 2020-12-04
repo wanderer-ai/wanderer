@@ -4,13 +4,13 @@
   <div>
 
     <portal to="toolbar" :order="1">
-      <builder-button title="Edit vertex" v-on:click="openVertexEditorModal()" v-if="selectedVertices==1">
+      <builder-button title="Edit vertex" v-on:click="openVertexEditorModal()" v-if="selectedVertices==1&&selectedEdges==0">
         <icon name="edit"></icon>
       </builder-button>
     </portal>
 
     <portal to="modals" :order="1">
-      <builder-modal :title="(editVertexCollection?editVertexCollection.label:'Unknown collection')" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
+      <builder-modal size="lg" :title="(editVertexCollection?editVertexCollection.label:'Unknown collection')" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
 
         <div v-if="isImmutable" class="alert alert-warning" role="alert">
           Warning! This vertex is not part of the current flow! Maybe it was dynamically imported. You can edit this node. But it will not be saved into your flow!
@@ -68,6 +68,9 @@ export default {
     },
     selectedVertices () {
       return this.$store.state.wandererBuilder.selectedVertexIds.length
+    },
+    selectedEdges () {
+      return this.$store.state.wandererBuilder.selectedEdgeIds.length
     },
     isImmutable () {
       if (this.$store.state.wandererBuilder.editVertex !== 0) {

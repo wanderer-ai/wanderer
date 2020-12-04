@@ -4,13 +4,13 @@
   <div>
 
     <portal to="toolbar" :order="1">
-      <builder-button title="Edit edge" v-on:click="openEdgeEditorModal()" v-if="selectedEdges==1">
+      <builder-button title="Edit edge" v-on:click="openEdgeEditorModal()" v-if="selectedEdges==1&&selectedVertices==0">
         <icon name="edit"></icon>
       </builder-button>
     </portal>
 
     <portal to="modals" :order="1">
-      <builder-modal :title="editEdgeCollection.label" :show="showEdgeEditorModal" v-on:closeButton="closeEdgeEditorModal()">
+      <builder-modal size="lg" :title="editEdgeCollection.label" :show="showEdgeEditorModal" v-on:closeButton="closeEdgeEditorModal()">
 
         <div v-if="isImmutable" class="alert alert-warning" role="alert">
           Warning! This edge is not part of the current flow! Maybe it was dynamically imported. You can edit this edge. But it will not be saved into your flow!
@@ -54,6 +54,9 @@ export default {
     },
     selectedEdges () {
       return this.$store.state.wandererBuilder.selectedEdgeIds.length
+    },
+    selectedVertices () {
+      return this.$store.state.wandererBuilder.selectedVertexIds.length
     },
     isImmutable () {
       if (this.$store.state.wandererBuilder.editEdge !== 0) {

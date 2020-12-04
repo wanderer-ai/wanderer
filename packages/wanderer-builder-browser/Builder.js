@@ -597,6 +597,62 @@ export default class Builder {
 
   }
 
+  generateExportData () {
+
+    let exportData = {
+      // version: WandererConfig.version,
+      vertices: [],
+      edges: []
+    }
+
+    // export vertices
+    for(let i in this.store.state.wandererGraph.vertexDocumentIds) {
+      if(
+        this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]]['_immutable'] === undefined ||
+        this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]]['_immutable'] === false
+      ) {
+
+        // Override some flow values before saving it to the file
+        if(this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]]['_origin']) {
+          this.store.commit('wanderer/setVertexDataValue', {
+            id: this.store.state.wandererGraph.vertexDocumentIds[i],
+            key: 'builder',
+            value: 'wanderer.ai'
+          })
+          this.store.commit('wanderer/setVertexDataValue', {
+            id: this.store.state.wandererGraph.vertexDocumentIds[i],
+            key: 'target',
+            value: 'web'
+          })
+          this.store.commit('wanderer/setVertexDataValue', {
+            id: this.store.state.wandererGraph.vertexDocumentIds[i],
+            key: 'version',
+            value: this.version
+          })
+          this.store.commit('wanderer/setVertexDataValue', {
+            id: this.store.state.wandererGraph.vertexDocumentIds[i],
+            key: 'time',
+            value: new Date()
+          })
+        }
+
+        exportData.vertices.push(this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]])
+      }
+    }
+
+    // export edges
+    for(let i in this.store.state.wandererGraph.edgeDocumentIds) {
+      if(
+        this.store.state.wandererGraph.edgeDocumentData[this.store.state.wandererGraph.edgeDocumentIds[i]]['_immutable'] === undefined ||
+        this.store.state.wandererGraph.edgeDocumentData[this.store.state.wandererGraph.edgeDocumentIds[i]]['_immutable'] === false
+      ) {
+        exportData.edges.push(this.store.state.wandererGraph.edgeDocumentData[this.store.state.wandererGraph.edgeDocumentIds[i]])
+      }
+    }
+
+    return exportData
+  }
+
   initCytoscape (config) {
 
     cytoscape.use( cxtmenu )
@@ -828,7 +884,7 @@ export default class Builder {
         this.position({x: 0, y: 0});
         builder.store.dispatch('wandererBuilder/addAlert', {
           message:'You cannot move the origin node',
-          type:'warning'
+          type:'info'
         })
       }
     });

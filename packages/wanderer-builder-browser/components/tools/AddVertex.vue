@@ -4,7 +4,7 @@
   <div>
 
     <portal to="toolbar" :order="3">
-      <builder-button color="yellow" title="Add vertex" v-on:click="showModal=true" v-if="selectedVertexIds.length==0||selectedVertexIds.length==1">
+      <builder-button color="yellow" title="Add vertex" v-on:click="showModal=true" v-if="selectedVertexIds.length==0||(selectedVertexIds.length==1&&selectedEdgeIds.length==0)">
         <icon name="plus"></icon>
       </builder-button>
     </portal>
@@ -12,25 +12,25 @@
     <portal to="modals" :order="1">
       <builder-modal title="Add vertex" :show="showModal"  v-on:closeButton="showModal=false">
 
-        <div v-if="selectedVertexIds.length==0">
+        <builder-button-group v-if="selectedVertexIds.length==0">
+          <builder-button class="" v-for="(collection, name) in possibleVertexCollections" v-if="collection.creatable" v-bind:key="name" :style="'background-color:'+collection.color+';'" v-on:click="add(name)">
+            <div class="flex justify-between items-center">
+              <icon class="mr-2" name="plus"></icon>
+              <span class="">add {{collection.label}}</span>
+            </div>
+          </builder-button>
+        </builder-button-group>
 
-            <builder-button class="" v-for="(collection, name) in possibleVertexCollections" v-if="collection.creatable" v-bind:key="name" :style="'background-color:'+collection.color+';'" v-on:click="add(name)">
-              <icon name="plus"></icon> add {{collection.label}}
+        <builder-button-group>
+          <template v-if="selectedVertexIds.length==1" v-for="(possibleOutgoing) in possibleOutgoingCollections">
+            <builder-button v-for="(through, throughName) in possibleOutgoing.through" v-bind:key="throughName" :style="'background-color:'+possibleOutgoing.to.collection.color+';'" v-on:click="append(possibleOutgoing.to.name, throughName)">
+              <div class="flex justify-between items-center">
+                <icon class="mr-2" name="plus"></icon>
+                <span>{{through.label}} {{possibleOutgoing.to.collection.label}}</span>
+              </div>
             </builder-button>
-
-        </div>
-
-        <div v-if="selectedVertexIds.length==1">
-
-          <span class="mr-2" v-for="(possibleOutgoing) in possibleOutgoingCollections" v-bind:key="possibleOutgoing.to.name">
-
-            <builder-button class="" v-for="(through, throughName) in possibleOutgoing.through" v-bind:key="throughName" :style="'background-color:'+possibleOutgoing.to.color+';'" v-on:click="append(possibleOutgoing.to.name, throughName)">
-              <icon name="plus"></icon> {{through.label}} {{possibleOutgoing.to.collection.label}}
-            </builder-button>
-
-          </span>
-
-        </div>
+          </template>
+        </builder-button-group>
 
       </builder-modal>
     </portal>
@@ -56,6 +56,9 @@ export default {
   computed: {
     selectedVertexIds () {
       return this.$store.state.wandererBuilder.selectedVertexIds
+    },
+    selectedEdgeIds () {
+      return this.$store.state.wandererBuilder.selectedEdgeIds
     },
     possibleOutgoingCollections () {
       if(this.selectedVertexIds.length == 1) {

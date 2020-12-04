@@ -12,7 +12,7 @@
 
     <span class="">
 
-      <portal-target class="" name="actionbar" multiple />
+      <portal-target tag="builder-button-group" name="actionbar" multiple />
 
     </span>
 

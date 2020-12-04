@@ -10,65 +10,62 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <builder-modal :showHeader="true" title="Save and Restore" :showFooter="true" :showClose="vertexCount>0" :show="showModal"  v-on:closeButton="showModal=false">
+      <builder-modal :showHeader="true" title="Project" :showFooter="true" :showClose="vertexCount>0" :show="showModal"  v-on:closeButton="showModal=false">
 
-        <div class="mb-4">
+        <div class="flex flex-col">
 
-          <builder-button color="green" v-on:click="startTutorial()">
-            <icon name="book"></icon>
-            Start a tutorial now
-          </builder-button>
-
-          <span>
-            or
-          </span>
-
-          <builder-button color="green" v-on:click="viewExamples()">
-            <icon name="lightbulb"></icon>
-            View some examples
-          </builder-button>
-
-        </div>
-
-        <div class="mb-4">
-
-          <builder-button v-on:click="startEmptyProject()">
-            <icon name="file"></icon>
-            Start a new project
-          </builder-button>
-
-          <span>
-            or
-          </span>
-
-          <builder-button class="upload--button">
-            <icon name="upload"></icon>
-            Restore from file
-            <input type="file" @change="loadFromFile">
-          </builder-button>
-
-        </div>
-
-        <div class="mb-4" v-if="vertexCount">
-
-          <builder-button v-on:click="loadFromFile()">
-            <icon name="download"></icon>
-            Download your current project
-          </builder-button>
-
-        </div>
-
-        <div class="mb-4">
-
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <builder-button v-on:click="loadFromUrl(url)">
-                <icon name="globe"></icon>
-                Restore from URL
-              </builder-button>
+          <builder-button class="mb-4" color="green" v-on:click="startTutorial()">
+            <div class="flex w-full justify-between items-center">
+              <icon name="book"></icon>
+              <span>Start tutorial</span>
+              <icon name="arrow-right"></icon>
             </div>
-            <input type="text" class="form-control" v-model="url">
-          </div>
+          </builder-button>
+
+          <builder-button class="mb-4" color="green" v-on:click="viewExamples()">
+            <div class="flex w-full justify-between items-center">
+              <icon name="lightbulb"></icon>
+              <span>View examples</span>
+              <icon name="arrow-right"></icon>
+            </div>
+          </builder-button>
+
+          <builder-button v-if="vertexCount" class="mb-4" color="yellow" v-on:click="downloadFile()">
+            <div class="flex w-full justify-between items-center">
+              <icon name="download"></icon>
+              <span>Download project</span>
+              <icon name="arrow-right"></icon>
+            </div>
+          </builder-button>
+
+          <builder-button class="mb-4" v-on:click="startEmptyProject()">
+            <div class="flex w-full justify-between items-center">
+              <icon name="file"></icon>
+              <span>New project</span>
+              <icon name="arrow-right"></icon>
+            </div>
+          </builder-button>
+
+          <builder-button class="mb-4 upload--button">
+            <div>
+              <div class="flex w-full justify-between items-center">
+                <icon name="upload"></icon>
+                <span>Restore from file</span>
+                <icon name="arrow-right"></icon>
+              </div>
+              <input type="file" @change="loadFromFile">
+            </div>
+          </builder-button>
+
+          <builder-button class="w-full" v-on:click="loadFromUrl(url)">
+            <div class="flex w-full justify-between items-center">
+              <icon name="globe"></icon>
+              <span>Restore from URL</span>
+              <icon name="arrow-right"></icon>
+            </div>
+          </builder-button>
+
+          <input type="text" class="rounded w-full py-2 px-4 text-gray-700 leading-tight border-2 border-blue" v-model="url" />
 
         </div>
 
@@ -81,16 +78,17 @@
 
 <script>
 
-import 'vue-awesome/icons/save'
 import Icon from 'vue-awesome/components/Icon'
 
 // Icons
+import 'vue-awesome/icons/save'
 import 'vue-awesome/icons/download'
 import 'vue-awesome/icons/book'
 import 'vue-awesome/icons/file'
 import 'vue-awesome/icons/upload'
 import 'vue-awesome/icons/globe'
 import 'vue-awesome/icons/lightbulb'
+import 'vue-awesome/icons/arrow-right'
 
 import {version} from '../../package.json'
 
@@ -117,15 +115,14 @@ export default {
   },
   computed: {
     vertexCount () {
-      // return this.$store.state.wanderer.vertexDocumentIds.length;
+      return this.$store.state.wandererGraph.vertexDocumentIds.length;
     },
     fileName () {
-      // if (this.$store.state.wanderer.originVertexId) {
-      //   if(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.originVertexId].topic){
-      //     return this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.originVertexId].topic[this.$store.state.wanderer.currentLanguage]+'.json';
-      //   }
-      // }
-      return 'untitled.json'
+      var fileName = this.$builder.getTranslatableOriginDataValue('topic')
+      if(!fileName) {
+        fileName = 'untitled.json'
+      }
+      return fileName.replace(/[^\w.]+/g, "_").toLowerCase()
     },
     version () {
       return version
@@ -173,7 +170,7 @@ export default {
         await this.$wanderer.loadFromUrl(url)
         this.showModal = false
       } catch (e) {
-        this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'danger'})
+        this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'error'})
       }
     },
     async loadFromFile (ev) {
@@ -182,65 +179,11 @@ export default {
         await this.$wanderer.loadFromFile(file)
         this.showModal = false
       } catch (e) {
-        this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'danger'})
+        this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'error'})
       }
     },
-    generateExportData () {
-      let exportData = {
-        // version: WandererConfig.version,
-        vertices: [],
-        edges: []
-      }
-
-      // export vertices
-      for(let i in this.$store.state.wanderer.vertexDocumentIds) {
-        if(
-          this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]]['_immutable'] === undefined ||
-          this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]]['_immutable'] === false
-        ) {
-
-          // Override some flow values before saving it to the file
-          if(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]]['_origin']) {
-            WandererStoreSingleton.store.commit('wanderer/setVertexDataValue', {
-              id: this.$store.state.wanderer.vertexDocumentIds[i],
-              key: 'builder',
-              value: 'wanderer.ai'
-            })
-            WandererStoreSingleton.store.commit('wanderer/setVertexDataValue', {
-              id: this.$store.state.wanderer.vertexDocumentIds[i],
-              key: 'target',
-              value: 'web'
-            })
-            WandererStoreSingleton.store.commit('wanderer/setVertexDataValue', {
-              id: this.$store.state.wanderer.vertexDocumentIds[i],
-              key: 'version',
-              value: this.version
-            })
-            WandererStoreSingleton.store.commit('wanderer/setVertexDataValue', {
-              id: this.$store.state.wanderer.vertexDocumentIds[i],
-              key: 'time',
-              value: new Date()
-            })
-          }
-
-          exportData.vertices.push(this.$store.state.wanderer.vertexDocumentData[this.$store.state.wanderer.vertexDocumentIds[i]])
-        }
-      }
-
-      // export edges
-      for(let i in this.$store.state.wanderer.edgeDocumentIds) {
-        if(
-          this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]]['_immutable'] === undefined ||
-          this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]]['_immutable'] === false
-        ) {
-          exportData.edges.push(this.$store.state.wanderer.edgeDocumentData[this.$store.state.wanderer.edgeDocumentIds[i]])
-        }
-      }
-
-      return exportData
-    },
-    exportJsonFile () {
-      let exportData = this.generateExportData();
+    downloadFile () {
+      let exportData = this.$builder.generateExportData();
 
       // Trigger download
       var element = document.createElement('a');

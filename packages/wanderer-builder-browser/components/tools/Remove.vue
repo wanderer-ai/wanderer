@@ -10,30 +10,26 @@
     </portal>
 
     <portal to="modals" :order="2">
-      <builder-modal title="Delete" :show="showModal" v-on:closeButton="showModal=false">
+      <builder-modal title="Are you sure?" :show="showModal" v-on:closeButton="showModal=false">
 
-        <p>
-          Warning! Removing edges or nodes is permanent. It can not be undone!
-          If you want to keep your vertices simply disconnect them and drag them away.
-        </p>
+        <div class="mb-4">
+          Are you sure you want to delete the selected items?
+        </div>
 
-        <p>
-          <builder-button v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeVertices()">
-            Remove {{selectedVertexIds.length}} selected vertices and all connected edges
+        <builder-button-group>
+          <builder-button color="red" v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeVertices()">
+            Remove {{selectedVertexIds.length}} vertices
           </builder-button>
-        </p>
 
-        <p>
-          <builder-button v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="unlinkVertices()">
-            Unlink {{selectedVertexIds.length}} selected vertices from all the connected edges
+          <builder-button color="red" v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="unlinkVertices()">
+            Unlink {{selectedVertexIds.length}} vertices
           </builder-button>
-        </p>
 
-        <p>
-          <builder-button v-if="selectedEdgeIds.length" class="btn btn-danger" v-on:click="removeEdges()" >
-            Remove {{selectedEdgeIds.length}} selected edges
+          <builder-button color="red" v-if="selectedEdgeIds.length" class="btn btn-danger" v-on:click="removeEdges()" >
+            Remove {{selectedEdgeIds.length}} edges
           </builder-button>
-        </p>
+        </builder-button-group>
+
 
       </builder-modal>
     </portal>
@@ -117,7 +113,7 @@ export default {
         var isOrigin = this.$vueGraph.getVertexDataValue(vertexIds[i], '_origin')
 
         if(isOrigin) {
-          this.$store.dispatch('wandererBuilder/addAlert',{message:'You cannot remove the origin node',type:'warning'})
+          this.$store.dispatch('wandererBuilder/addAlert',{message:'You cannot remove the origin node',type:'info'})
         } else {
 
           // Remove the connected edges

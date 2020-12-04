@@ -111,65 +111,69 @@ module.exports = {
       var thread = wanderer.require('thread')
       var graph = wanderer.require('graph')
       var traversal = wanderer.require('traversal')
+      var broadcast = wanderer.require('broadcast')
+
+      // Register a subscriber
+      var subscriber = broadcast.subscribe('worker-thread')
 
       console.log('Hello from worker thread')
 
-      graph.subscriber.on('truncate', (data) => {
+      subscriber.on('truncate', (data) => {
         thread.postMessage({
           'event': 'truncate'
         })
       })
 
-      graph.subscriber.on('addVertexFromData', (data) => {
+      subscriber.on('addVertexFromData', (data) => {
         thread.postMessage({
           'event': 'addVertexFromData',
           'payload': data
         })
       })
 
-      graph.subscriber.on('addEdgeFromData', (data) => {
+      subscriber.on('addEdgeFromData', (data) => {
         thread.postMessage({
           'event': 'addEdgeFromData',
           'payload': data
         })
       })
 
-      graph.subscriber.on('removeVertexById', (id) => {
+      subscriber.on('removeVertexById', (id) => {
         thread.postMessage({
           'event': 'removeVertexById',
           'payload': id
         })
       })
 
-      graph.subscriber.on('removeEdgeById', (id) => {
+      subscriber.on('removeEdgeById', (id) => {
         thread.postMessage({
           'event': 'removeEdgeById',
           'payload': id
         })
       })
 
-      graph.subscriber.on('setVertexDataValue', (data) => {
+      subscriber.on('setVertexDataValue', (data) => {
         thread.postMessage({
           'event': 'setVertexDataValue',
           'payload': data
         })
       })
 
-      graph.subscriber.on('setEdgeDataValue', (data) => {
+      subscriber.on('setEdgeDataValue', (data) => {
         thread.postMessage({
           'event': 'setEdgeDataValue',
           'payload': data
         })
       })
 
-      graph.subscriber.on('setVertexLifecycleValue', (data) => {
+      subscriber.on('setVertexLifecycleValue', (data) => {
         thread.postMessage({
           'event': 'setVertexLifecycleValue',
           'payload': data
         })
       })
 
-      traversal.subscriber.on('traversalFinished', (data) => {
+      subscriber.on('traversalFinished', (data) => {
         thread.postMessage({
           'event': 'setTraversedVertices',
           'payload': data.traversedVertexIds

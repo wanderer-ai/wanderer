@@ -5,6 +5,7 @@ import Builder from './Builder'
 import UiContent from './components/ui/Content.vue'
 import UiModal from './components/ui/Modal.vue'
 import UiButton from './components/ui/Button.vue'
+import UiButtonGroup from './components/ui/ButtonGroup.vue'
 import UiCircleButton from './components/ui/CircleButton.vue'
 import UiTextInput from './components/ui/TextInput.vue'
 import UiTextareaInput from './components/ui/TextareaInput.vue'
@@ -27,6 +28,7 @@ export default {
     Vue.component('builder-content', UiContent)
     Vue.component('builder-modal', UiModal)
     Vue.component('builder-button', UiButton)
+    Vue.component('builder-button-group', UiButtonGroup)
     Vue.component('builder-circle-button', UiCircleButton)
     Vue.component('builder-text-input', UiTextInput)
     Vue.component('builder-textarea-input', UiTextareaInput)

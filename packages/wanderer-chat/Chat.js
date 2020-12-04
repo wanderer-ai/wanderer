@@ -68,6 +68,13 @@ export default class Chat {
 
   }
 
+  getMessageDataById (messageId) {
+    if(this.store.state.wandererChat.messages[messageId] != undefined) {
+      return this.store.state.wandererChat.messages[messageId]
+    }
+    return undefined
+  }
+
   getVertexCollectionPropsById (vertexId) {
     var collection = this.vueGraph.getVertexDataValue(vertexId, '_collection')
     if(collection) {

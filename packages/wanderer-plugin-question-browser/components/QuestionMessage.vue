@@ -19,18 +19,23 @@
 
 export default {
   props: {
-    vertexId: {
+    messageId: {
       type: String
     }
   },
   data: function () {
     return {
       computedMessage: '',
-      computedAnswers: '',
-      suggestionIds: undefined
+      computedAnswers: ''
     }
   },
   computed: {
+    messageData: function () {
+      return this.$chat.getMessageDataById(this.messageId)
+    },
+    answeredSuggestionVertexIds: function () {
+      return this.messageData.payload.answeredSuggestionVertexIds
+    },
     question: function () {
       var dynamicMode = false
 
@@ -39,8 +44,8 @@ export default {
       // Calculate the template only once
       // The only exception is the dynamic mode
       if(dynamicMode||this.computedMessage=='') {
-        if(this.vertexId != undefined) {
-          message = this.$chat.evaluateVertexDataValue(this.vertexId, 'question')
+        if(this.messageData.vertexId != undefined) {
+          message = this.$chat.evaluateVertexDataValue(this.messageData.vertexId, 'question')
           // this.computedMessage = message
         }
       }
@@ -56,43 +61,18 @@ export default {
       // Calculate the template only once
       // The only exception is the dynamic mode
       if(dynamicMode||this.computedAnswers=='') {
-        if(this.vertexId != undefined) {
+        if(this.messageData.vertexId != undefined) {
 
           message = ''
 
-          // Get all suggestions
-          if(this.suggestionIds == undefined) {
-            if(this.$store.state.wandererQuestion.suggestions[this.vertexId] != undefined) {
-              // Note: Clone this object because I want to sort it and I dont want to create an infinite Vue update loop
-              // Also cache this data to the local state because the traverser will erase the suggestions with the nect tick
-              this.suggestionIds = JSON.parse(JSON.stringify(this.$store.state.wandererQuestion.suggestions[this.vertexId]))
-            }
-          }
-
-          if (this.suggestionIds != undefined) {
-
-            console.log(this.suggestionIds)
-
-            // Sort by priority
-            this.suggestionIds = this.suggestionIds.sort((a, b) => {
-              return this.$vueGraph.getVertexDataValue(a, 'priority')-this.$vueGraph.getVertexDataValue(b, 'priority')
-            })
-
-            // Find answered suggestions
-            var answeredSuggestionIds = []
-            for(let suggestionId in this.suggestionIds) {
-              var answered = this.$vueGraph.getVertexLifecycleValue(this.suggestionIds[suggestionId], 'answered')
-              if(answered) {
-                answeredSuggestionIds.push(this.suggestionIds[suggestionId])
-              }
-            }
+          if (this.answeredSuggestionVertexIds != undefined) {
 
             // Foreach answered suggestion
-            for(let suggestionId in answeredSuggestionIds) {
+            for(let suggestionId in this.answeredSuggestionVertexIds) {
 
-              var type = this.$vueGraph.getVertexDataValue(answeredSuggestionIds[suggestionId],'type')
-              var suggestion = this.$chat.getTranslatableVertexDataValue(answeredSuggestionIds[suggestionId],'suggestion')
-              var value = this.$vueGraph.getVertexLifecycleValue(answeredSuggestionIds[suggestionId],'value')
+              var type = this.$vueGraph.getVertexDataValue(this.answeredSuggestionVertexIds[suggestionId],'type')
+              var suggestion = this.$chat.getTranslatableVertexDataValue(this.answeredSuggestionVertexIds[suggestionId],'suggestion')
+              var value = this.$vueGraph.getVertexLifecycleValue(this.answeredSuggestionVertexIds[suggestionId],'value')
 
               if(type=='button' || type=='checkbox') {
                 message = message+suggestion
@@ -102,13 +82,12 @@ export default {
                 message = message+value
               }
 
-              if(suggestionId != Object.keys(answeredSuggestionIds).length - 1) {
+              if(suggestionId != Object.keys(this.answeredSuggestionVertexIds).length - 1) {
                 message = message + ', '
               }
 
             }
           }
-
 
         }
       }
@@ -117,7 +96,7 @@ export default {
     },
     repeatable: function () {
       // Check if this question is still part of the current traversal
-      if(this.$store.state.wandererQuestion.traversedQuestions.indexOf(this.vertexId) !== -1) {
+      if(this.$store.state.wandererQuestion.traversedQuestions.indexOf(this.messageData.vertexId) !== -1) {
         return true
       }
       return false
@@ -129,11 +108,11 @@ export default {
       if(this.repeatable) {
 
         // Mark this question as not answered
-        this.$vueGraph.setVertexLifecycleValue(this.vertexId, 'answered', false)
+        this.$vueGraph.setVertexLifecycleValue(this.messageData.vertexId, 'answered', false)
 
-        // Reset all suggestions
-        for(var i in this.suggestionIds) {
-          this.$vueGraph.setVertexLifecycleValue(this.suggestionIds[i], 'answered', false)
+        // Reset all answered suggestions
+        for(var i in this.answeredSuggestionVertexIds) {
+          this.$vueGraph.setVertexLifecycleValue(this.answeredSuggestionVertexIds[i], 'answered', false)
         }
 
       }

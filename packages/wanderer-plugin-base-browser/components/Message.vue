@@ -9,28 +9,24 @@
 export default {
   data: function () {
     return {
-      computedMessage: ''
+
     }
   },
   props: {
-    vertexId: {
+    messageId: {
       type: String
     }
   },
   computed: {
+    messageData: function () {
+      return this.$chat.getMessageDataById(this.messageId)
+    },
     message: function () {
 
-      var dynamicMode = false
+      var message = ''
 
-      var message = this.computedMessage
-
-      // Calculate the template only once
-      // The only exception is the dynamic mode
-      if(dynamicMode||this.computedMessage=='') {
-        if(this.vertexId != undefined) {
-          message = this.$chat.evaluateVertexDataValue(this.vertexId,'message')
-          // this.computedMessage = message
-        }
+      if(this.messageData.vertexId != undefined) {
+        message = this.$chat.evaluateVertexDataValue(this.messageData.vertexId,'message')
       }
 
       return message

@@ -33,9 +33,9 @@ export default {
   min-width:2.5rem;
 }
 
-.button + .button {
+/* .button + .button {
   @apply ml-2;
-}
+} */
 
 .button-normal {
   @apply p-2 px-3 text-sm;

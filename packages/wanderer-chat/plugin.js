@@ -19,8 +19,9 @@ export default {
       namespaced: true,
       state: {
         currentLanguage: 'en',
-        messageVertexIds: [],
-        // messageIds: [],
+        // messageVertexIds: [],
+        messageIds: [],
+        messages: {},
         typing: false,
         // interactions: [],
         interactionVertexIds : []
@@ -32,33 +33,37 @@ export default {
         setTyping (state, typing) {
           state.typing = typing
         },
-        addMessage (state, vertexId) {
+        addMessage (state, {vertexId, payload}) {
 
-          // var message = {
-          //   id: wanderer.getRandomId()
-          // }
-
-          // if (message.component === undefined) { throw Error('Every message needs a Vue component!') }
+          var message = {
+            id: wanderer.getRandomId(),
+            vertexId: vertexId,
+            payload: payload
+          }
 
           // Freeze the message object to improve performance
-          // Object.freeze(message);
+          Object.freeze(message);
 
           // Add the message to stack if it does not exist already
-          // state.messageIds.push(message.id)
+          state.messageIds.push(message.id)
 
-          state.messageVertexIds.push(vertexId)
+          state.messages[message.id] = message
 
           // Remove old messages if there are too many in the stack
           // Unfortunately the browser can't render unlimited messages
-          if(state.messageVertexIds.length > 100) {
-            state.messageVertexIds.splice(0,1)
-            // state.messageIds.splice(0,1)
+          if(state.messageIds.length > 100) {
+            var removedItems = state.messageIds.splice(0,1)
+            if(removedItems[0] != undefined) {
+              // Also remove the message data
+              delete state.messages[removedItems[0]]
+            }
           }
 
         },
         cleanMessages (state) {
-          state.messageVertexIds = []
-          // state.messageIds = []
+          // state.messageVertexIds = []
+          state.messageIds = []
+          state.messages = {}
         },
         addInteraction (state, vertexId) {
 

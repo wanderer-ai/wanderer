@@ -1,27 +1,20 @@
 <template>
 
-  <div class="alerts">
+  <div class="builder--alerts">
 
-    <transition-group name="fade">
-      <div
-        class="alert"
-        v-bind:class="{
-          'alert-primary': alert.type=='primary',
-          'alert-secondary': alert.type=='secondary',
-          'alert-success': alert.type=='success',
-          'alert-danger': alert.type=='danger',
-          'alert-warning': alert.type=='warning',
-          'alert-info': alert.type=='info',
-          'alert-light': alert.type=='light',
-          'alert-dark': alert.type=='dark',
-        }"
-        role="alert"
-        v-for="(alert) in alerts"
-        v-bind:key="alerts.indexOf(alert)"
-      >
-        {{alert.message}}
-      </div>
-    </transition-group>
+    <div
+      class="p-4 rounded-lg mb-4 text-white"
+      v-bind:class="{
+        'bg-red': alert.type=='error',
+        'bg-yellow': alert.type=='info',
+        'bg-green': alert.type=='success'
+      }"
+      v-for="(alert) in alerts"
+      v-bind:key="alerts.indexOf(alert)"
+    >
+      {{alert.message}}
+    </div>
+
   </div>
 
 </template>
@@ -38,11 +31,11 @@
 
 <style>
 
-  .alerts{
+  .builder--alerts {
     position:fixed;
-    width:400px;
-    top:90px;
-    right:15px;
+    max-width:400px;
+    bottom: 2rem;
+    left: 2rem;
     z-index: 9999;
   }
 

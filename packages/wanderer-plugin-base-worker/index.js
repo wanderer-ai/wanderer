@@ -48,11 +48,13 @@ export default {
 
                   thread.postMessage({
                     'event': 'sendChatMessage',
-                    'payload': vertex.data.get('_id')
+                    'payload': {
+                      vertexId: vertex.data.get('_id')
+                    }
                   })
 
                   // Remember the message now as sent
-                  vertex.lifecycle.set('sent', true)
+                  vertex.setLifecycleValue('sent', true)
 
                   // Remove the message from the typing object
                   delete typingTimeouts[vertex.data.get('_id')]

@@ -14,22 +14,23 @@
 
         <language-switcher v-on:localized="showModal=false"/>
 
-        <div v-if="showMore">
+        <div class="pt-4 flex flex-wrap" v-if="showMore">
 
-          <span class="" v-for="(language, code) in languages" v-bind:key="code">
+          <label class="mr-4" v-for="(language, code) in languages" v-bind:key="code">
 
-            <label class="">
-              <input class="form-check-input" type="checkbox" value="true" v-on:click="toggle(code,$event)" :checked="enabledLanguages.includes(code)">
-              {{language.name}}
-            </label>
+            <input class="" type="checkbox" value="true" v-on:click="toggle(code,$event)" :checked="enabledLanguages.includes(code)">
+            <span>{{language.name}}</span>
 
-          </span>
+          </label>
 
         </div>
 
         <template v-slot:buttons>
           <builder-button color="gray-dark" size="small" v-on:click="toggleMore">
-            <icon name="flag"></icon> More languages
+            <div class="flex items-center justify-between">
+              <icon class="mr-2" name="flag"></icon>
+              <span>More languages</span>
+            </div>
           </builder-button>
         </template>
 

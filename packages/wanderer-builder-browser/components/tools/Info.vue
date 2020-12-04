@@ -10,7 +10,7 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <builder-modal :title="'Conversation Builder version '+version" :show="showModal"  v-on:closeButton="showModal=false">
+      <builder-modal title="Conversation Builder" :show="showModal"  v-on:closeButton="showModal=false">
         <builder-content>
           <p>
             Hey! This is a free service! Use it for commercial or private projects as long as you use it with the wanderer.ai domain.
@@ -29,6 +29,9 @@
           <p>
             <strong>Important information:</strong> This software is experimental! Currently you should not use Wanderer.ai for production projects!
             The project is in a early stage of development. So your conversation flows could break in the future.
+          </p>
+          <p>
+            Version {{version}}
           </p>
         </builder-content>
 

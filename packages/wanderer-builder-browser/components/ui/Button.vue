@@ -1,6 +1,6 @@
 <template>
 
-  <button @click="$emit('click')" :class="'button button-'+size+' bg-'+color+' rounded text-'+textColor">
+  <button @click="$emit('click')" :class="'builder-button builder-button-'+size+' bg-'+color+' rounded flex justify-center items-center text-center text-'+textColor">
     <slot></slot>
   </button>
 
@@ -29,19 +29,15 @@ export default {
 
 <style>
 
-.button {
+.builder-button {
   min-width:2.5rem;
 }
 
-.button + .button {
-  @apply ml-2;
-}
-
-.button-normal {
+.builder-button-normal {
   @apply p-2 px-3 text-base;
 }
 
-.button-small {
+.builder-button-small {
   @apply p-1 px-2 text-sm;
 }
 

@@ -11,7 +11,7 @@
       <div class="flex-grow flex-shrink overflow-hidden relative ">
 
         <div class="builder--toolbar absolute z-30 top-2 left-2">
-          <portal-target class="btn-group" name="toolbar" multiple />
+          <portal-target tag="builder-button-group" name="toolbar" multiple />
         </div>
 
         <cytoscape />
@@ -94,7 +94,7 @@ export default {
     //     this.showChatPanel = true
     //   }
     // },
-    
+
   }
 }
 </script>

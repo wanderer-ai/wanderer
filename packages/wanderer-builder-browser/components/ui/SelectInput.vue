@@ -7,7 +7,7 @@
       </label>
     </div>
     <div class="md:w-4/5">
-      <select v-model="inputVal" class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state">
+      <select v-model="inputVal" class="rounded w-full py-2 px-4 leading-tight focus:outline-none bg-white border-2 border-white focus:border-blue" :id="_uid">
         <option v-for="label, key in options" :value="key">{{label}}</option>
       </select>
     </div>
