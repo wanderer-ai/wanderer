@@ -1,7 +1,7 @@
 {
   "name": "wanderer-plugin-question-worker",
   "version": "0.0.1",
-  "description": "Wanderer.ai Question Worker",
+  "description": "Wanderer.ai question Worker",
   "author": "",
   "main": "index.js",
   "dependencies": {

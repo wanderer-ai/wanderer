@@ -5,11 +5,13 @@
 
     <builder-range-input label="Priority" type="range" v-model="priority" min="0" max="100" />
 
-    <builder-select-input label="Expose" v-model="expose" :options="lifecycleData"/>
+    <div v-if="type!='not'">
+      <builder-select-input label="Expose" v-model="expose" :options="lifecycleData"/>
 
-    <builder-text-input label="Expose Alias" v-model="name" />
+      <builder-text-input label="Expose Alias" v-model="name" />
 
-    <builder-select-input label="Condition" v-model="condition" :options="edgeConditions"/>
+      <builder-select-input label="Condition" v-model="condition" :options="edgeConditions"/>
+    </div>
 
     <!--
 

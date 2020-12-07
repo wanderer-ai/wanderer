@@ -10,10 +10,16 @@ module.exports = {
       // Register a subscriber
       var subscriber = broadcast.subscribe('worker-client')
 
-      // Truncate
       subscriber.on('truncate', (vertexData) => {
         worker.postMessage({
           'event': 'truncate'
+        })
+      })
+
+      subscriber.on('setLanguage', (language) => {
+        worker.postMessage({
+          'event': 'setLanguage',
+          'payload': language
         })
       })
 
@@ -72,6 +78,9 @@ module.exports = {
           case 'truncate':
             subscriber.emit('truncate')
             break;
+          case 'setLanguage':
+            subscriber.emit('setLanguage', e.data.payload)
+            break;
           case 'addVertexFromData':
             subscriber.emit('addVertexFromData', e.data.payload)
             break;
@@ -88,6 +97,8 @@ module.exports = {
             subscriber.emit('setVertexDataValue', e.data.payload)
             break;
           case 'setEdgeDataValue':
+            console.log('incomming edge data set')
+            console.log(e.data.payload)
             subscriber.emit('setEdgeDataValue', e.data.payload)
             break;
           case 'setVertexLifecycleValue':
@@ -116,11 +127,16 @@ module.exports = {
       // Register a subscriber
       var subscriber = broadcast.subscribe('worker-thread')
 
-      console.log('Hello from worker thread')
-
-      subscriber.on('truncate', (data) => {
+      subscriber.on('truncate', () => {
         thread.postMessage({
           'event': 'truncate'
+        })
+      })
+
+      subscriber.on('setLanguage', (language) => {
+        thread.postMessage({
+          'event': 'setLanguage',
+          'payload': language
         })
       })
 
@@ -187,28 +203,31 @@ module.exports = {
       thread.addEventListener('message', function(e) {
         switch(e.data.event) {
           case 'truncate':
-            graph.truncate()
+            subscriber.emit('truncate')
+            break;
+          case 'setLanguage':
+            subscriber.emit('setLanguage', e.data.payload)
             break;
           case 'addVertexFromData':
-            graph.addVertexFromData(e.data.payload)
+            subscriber.emit('addVertexFromData', e.data.payload)
             break;
           case 'addEdgeFromData':
-            graph.addEdgeFromData(e.data.payload)
+            subscriber.emit('addEdgeFromData', e.data.payload)
             break;
           case 'removeVertexById':
-            graph.removeVertexById(e.data.payload)
+            subscriber.emit('removeVertexById', e.data.payload)
             break;
           case 'removeEdgeById':
-            graph.removeEdgeById(e.data.payload)
+            subscriber.emit('removeEdgeById', e.data.payload)
             break;
           case 'setVertexDataValue':
-            graph.setVertexDataValue(e.data.payload.id, e.data.payload.key, e.data.payload.value)
+            subscriber.emit('setVertexDataValue', e.data.payload)
             break;
           case 'setEdgeDataValue':
-            graph.setEdgeDataValue(e.data.payload.id, e.data.payload.key, e.data.payload.value)
+            subscriber.emit('setEdgeDataValue', e.data.payload)
             break;
           case 'setVertexLifecycleValue':
-            graph.setVertexLifecycleValue(e.data.payload.id, e.data.payload.key, e.data.payload.value)
+            subscriber.emit('setVertexLifecycleValue', e.data.payload)
             break;
         }
       }, false);

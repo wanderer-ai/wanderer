@@ -3,7 +3,7 @@
   <div class="chat--container" v-if="vertexCount">
 
     <div v-if="!isVisible">
-      <div class="chat--button" @click="show()" :class="(actionRequired?'chat--shake':'')">
+      <div class="chat--opener" @click="show()" :class="(actionRequired?'chat--shake':'')">
         Open Chat
       </div>
     </div>
@@ -174,12 +174,12 @@ export default {
   @apply fixed right-0 bottom-0 m-4 z-50;
 }
 
-.chat--button {
+.chat--opener {
   @apply relative bg-blue p-4 rounded-md shadow-md text-white;
   cursor:pointer;
 }
 
-.chat--button:after {
+.chat--opener:after {
   @apply absolute block w-0 h-0;
   content: "";
   right: 2rem;

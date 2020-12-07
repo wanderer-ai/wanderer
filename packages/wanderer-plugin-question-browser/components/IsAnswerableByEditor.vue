@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+    This edge has no propertys. It just connects suggestions and questions together.
   </div>
 </template>
 

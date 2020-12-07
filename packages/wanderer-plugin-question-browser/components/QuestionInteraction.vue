@@ -9,28 +9,28 @@
     <component from="local" v-bind:is="(showInNavigation?'div':'chat-message')">
       <div v-for="suggestion in suggestions" :key="suggestion._id">
 
-        <div class="form-check" v-if="suggestion.type=='checkbox'">
-          <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]" :id="suggestion._id">
-          <label class="form-check-label" :for="suggestion._id" v-if="suggestion.suggestion">
+        <div class="mb-2" v-if="suggestion.type=='checkbox'">
+          <label class="form-check-label" v-if="suggestion.suggestion">
+            <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]">
             {{suggestion.suggestion}}
           </label>
         </div>
 
-        <div class="form-group" v-if="suggestion.type=='text'">
+        <div class="mb-2" v-if="suggestion.type=='text'">
           <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
-          <input type="text" class="form-control" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
+          <input type="text" class="w-full text-black p-2" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
         </div>
 
-        <div class="form-group" v-if="suggestion.type=='textarea'">
+        <div class="mb-2" v-if="suggestion.type=='textarea'">
           <label  v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
-          <textarea class="form-control" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
+          <textarea class="w-full text-black p-2" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
         </div>
 
       </div>
 
-      <div :class="'btn-group has-wrap '+(showInNavigation? '':'shake')">
-        <chat-button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" color="green" :disabled="answered" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
-      </div>
+      <chat-button-group :class="(showInNavigation? '':'shake')">
+        <chat-button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" color="blue" :disabled="answered" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
+      </chat-button-group>
     </component>
 
   </div>

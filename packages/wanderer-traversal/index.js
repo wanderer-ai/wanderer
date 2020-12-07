@@ -120,7 +120,7 @@ class Traversal {
         // Only execute the visitor if we are not in test mode
         if (!explore) {
           vertex.collection.with('visitor', (visitor) => {
-            visitor(vertex)
+            visitor(vertex, this)
           })
         }
 
@@ -205,6 +205,7 @@ class Traversal {
         this.reachableVertexIds = []
 
         // console.log(lastReachableVertexIds)
+        // console.log(this.traversedVertexIds.length+' '+this.traversedEdgeIds.length)
 
         // Finish the current traversal by emittig the event
         this.subscriber.emit('traversalFinished', {

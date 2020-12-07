@@ -8,6 +8,7 @@ import { client as workerClient } from 'wanderer-webworker'
 
 import pluginBase from 'wanderer-plugin-base-browser'
 import pluginQuestion from 'wanderer-plugin-question-browser'
+import pluginAction from 'wanderer-plugin-action-browser'
 
 export default ({ app, store }) => {
 
@@ -29,5 +30,6 @@ export default ({ app, store }) => {
   wanderer.use(workerClient)
   wanderer.use(pluginBase)
   wanderer.use(pluginQuestion)
+  wanderer.use(pluginAction)
 
 }

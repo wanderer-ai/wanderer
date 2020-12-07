@@ -55,7 +55,8 @@ export default {
           },
           expander: function (vertex, traversal) {
 
-            var returnOutboundEdges = vertex.getOutboundEdges()
+            // Note: Clone the item list here because we will add new edges to the object with every cycle
+            var returnOutboundEdges = vertex.getOutboundEdges().clone()
 
             // For each outbound edge
             returnOutboundEdges.each((edge) => {

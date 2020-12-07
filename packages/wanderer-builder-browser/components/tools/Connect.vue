@@ -11,11 +11,12 @@
 
     <portal to="modals" :order="1">
       <builder-modal title="Connect" :show="showModal" v-on:closeButton="showModal=false">
-        Select edge type
 
-        <div v-for="edgeCollection in possibleEdgeCollections" :key="edgeCollection">
-          <builder-button class="btn btn-secondary" v-on:click="connect(edgeCollection)">{{edgeCollection}}</builder-button>
-        </div>
+        <builder-button-group>
+          <template v-for="edgeCollection in possibleEdgeCollections">
+            <builder-button v-on:click="connect(edgeCollection)">{{edgeCollection}}</builder-button>
+          </template>
+        </builder-button-group>
 
       </builder-modal>
     </portal>

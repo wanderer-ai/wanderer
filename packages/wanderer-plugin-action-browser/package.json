@@ -1,0 +1,10 @@
+{
+  "name": "wanderer-plugin-action-browser",
+  "version": "0.0.1",
+  "description": "Wanderer.ai action browser",
+  "author": "",
+  "main": "index.js",
+  "dependencies": {
+
+  }
+}

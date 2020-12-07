@@ -18,11 +18,11 @@ class WandererNestedData {
 	}
 
   plain () {
-    return this.data;
+    return this.data
   }
 
   clone () {
-    return JSON.parse(JSON.stringify(this.data));
+    return JSON.parse(JSON.stringify(this.data))
   }
 
 	set (name, value) {
@@ -47,6 +47,10 @@ class WandererNestedData {
 
   is (name) {
     return this.get(name) === true
+  }
+
+  isEmpty (name) {
+    return this.get(name) == ''
   }
 
   with (name, method) {

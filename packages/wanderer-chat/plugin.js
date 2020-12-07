@@ -1,7 +1,8 @@
-import ChatComponent from './components/Chat'
-import ChatMessageComponent from './components/Message'
-import ChatButtonComponent from './components/Button'
 import Chat from './Chat'
+import ChatComponent from './components/Chat'
+import ChatMessageComponent from './components/ui/Message'
+import ChatButtonComponent from './components/ui/Button'
+import ChatButtonGroupComponent from './components/ui/ButtonGroup'
 
 export default {
 
@@ -13,6 +14,12 @@ export default {
     var worker = wanderer.require('worker')
     var store = wanderer.require('store')
     var vueGraph = wanderer.require('vueGraph')
+
+    // Register chat component
+    Vue.component('wanderer-chat', ChatComponent)
+    Vue.component('chat-message', ChatMessageComponent)
+    Vue.component('chat-button', ChatButtonComponent)
+    Vue.component('chat-button-group', ChatButtonGroupComponent)
 
     // Extend vuex
     store.registerModule('wandererChat', {
@@ -92,11 +99,6 @@ export default {
         }
       }
     })
-
-    // Register chat component
-    Vue.component('wanderer-chat', ChatComponent)
-    Vue.component('chat-message', ChatMessageComponent)
-    Vue.component('chat-button', ChatButtonComponent)
 
     // Create the chat instance
     var chat = new Chat(wanderer, broadcast, worker, Vue, store, vueGraph)

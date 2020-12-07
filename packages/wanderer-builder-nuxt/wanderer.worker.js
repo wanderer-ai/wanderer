@@ -8,6 +8,7 @@ import wandererTraversal from 'wanderer-traversal'
 
 import pluginBase from 'wanderer-plugin-base-worker'
 import pluginQuestion from 'wanderer-plugin-question-worker'
+import pluginAction from 'wanderer-plugin-action-worker'
 
 // Create new Wanderer instance
 var wanderer = new Wanderer()
@@ -22,3 +23,4 @@ wanderer.use(workerThread)
 wanderer.use(builderPlugin)
 wanderer.use(pluginBase)
 wanderer.use(pluginQuestion)
+wanderer.use(pluginAction)

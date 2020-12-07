@@ -75,7 +75,8 @@ class WandererItemList {
   }
 
   clone () {
-    return new WandererItemList(this.items)
+    // Clone the data
+    return new WandererItemList({ ...this.items })
   }
 
 }
@@ -230,6 +231,38 @@ class WandererGraph {
       })
     })
 
+    this.subscriber.on('truncate', () => {
+      this.truncate()
+    })
+
+    this.subscriber.on('addVertexFromData', (data) => {
+      this.addVertexFromData(data)
+    })
+
+    this.subscriber.on('addEdgeFromData', (data) => {
+      this.addEdgeFromData(data)
+    })
+
+    this.subscriber.on('removeVertexById', (id) => {
+      this.removeVertexById(id)
+    })
+
+    this.subscriber.on('removeEdgeById', (id) => {
+      this.removeEdgeById(id)
+    })
+
+    this.subscriber.on('setVertexDataValue', ({id, key, value, language}) => {
+      this.setVertexDataValue(id, key, value, language)
+    })
+
+    this.subscriber.on('setEdgeDataValue', ({id, key, value, language}) => {
+      this.setEdgeDataValue(id, key, value, language)
+    })
+
+    this.subscriber.on('setVertexLifecycleValue', ({id, key, value}) => {
+      this.setVertexLifecycleValue(id, key, value)
+    })
+
   }
 
   getOrigin () {
@@ -269,7 +302,7 @@ class WandererGraph {
       this.origin = vertex
     }
 
-    this.subscriber.emit('addVertexFromData', data)
+    // this.subscriber.emit('addVertexFromData', data)
 
     return vertex
   }
@@ -316,7 +349,7 @@ class WandererGraph {
 
     this.edges.add(edge)
 
-    this.subscriber.emit('addEdgeFromData', data)
+    // this.subscriber.emit('addEdgeFromData', data)
 
     return edge
   }
@@ -354,7 +387,7 @@ class WandererGraph {
     })
     // Remove the vertex itself
     this.vertices.removeElementById(vertexId)
-    this.subscriber.emit('removeVertexById', vertexId)
+    // this.subscriber.emit('removeVertexById', vertexId)
   }
 
   removeEdgeById (edgeId) {
@@ -365,14 +398,14 @@ class WandererGraph {
     edge.targetVertex.inboundEdges.removeElementById(edgeId)
     // Remove the edge itself
     this.edges.removeElementById(edgeId)
-    this.subscriber.emit('removeEdgeById', edgeId)
+    // this.subscriber.emit('removeEdgeById', edgeId)
   }
 
   truncate () {
     this.origin = undefined
     this.vertices = new WandererItemList()
     this.edges = new WandererItemList()
-    this.subscriber.emit('truncate')
+    // this.subscriber.emit('truncate')
   }
 
   createItemList (items) {

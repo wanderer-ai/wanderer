@@ -182,13 +182,10 @@ export default {
           component: 'wanderer-suggestion-editor',
           canBeChild: true,
           toCytoscape: function(vertexData, language) {
-            var varname = ''
-            if(vertexData.has('name')){
-              varname = ' ('+vertexData.get('name')+')'
-            }
-            var label = 'Suggestion'+varname
+
+            var label = 'Suggestion'
             if(vertexData.has('suggestion.'+language)) {
-              label = vertexData.get('suggestion.'+language)+varname
+              label = vertexData.get('suggestion.'+language)
             }
             var priority = vertexData.get('priority')
             if (priority < 10) {

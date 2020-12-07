@@ -3,12 +3,12 @@
   <div>
 
     <chat-message from="remote">
-      <div class="question-message" v-html="question"></div>
+      <div v-html="question"></div>
     </chat-message>
 
     <chat-message from="local">
       <span>{{answers}}</span>
-      <span v-if="repeatable" v-on:click="askAgain()">↺</span>
+      <span class="cursor-pointer" v-if="repeatable" v-on:click="askAgain()">↺</span>
     </chat-message>
 
   </div>
@@ -125,12 +125,6 @@ export default {
 
 <style>
 
-.question-message p:last-of-type {
-  margin: 0;
-}
 
-.question-message a {
-  color:white;
-}
 
 </style>

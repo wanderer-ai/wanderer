@@ -122,7 +122,7 @@ export default {
       if(!fileName) {
         fileName = 'untitled.json'
       }
-      return fileName.replace(/[^\w.]+/g, "_").toLowerCase()
+      return fileName.replace(/[^\w.]+/g, "_").toLowerCase()+'.json'
     },
     version () {
       return version

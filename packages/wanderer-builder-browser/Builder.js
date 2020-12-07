@@ -97,7 +97,7 @@ export default class Builder {
   setCurrentLanguage (language) {
     this.store.commit('wandererBuilder/setCurrentLanguage', language)
     this.rebuildCytoscape()
-    this.subscriber.emit('setLanguage', language);
+    this.subscriber.emit('setLanguage', language)
   }
 
   getCurrentLanguage () {
@@ -180,13 +180,20 @@ export default class Builder {
     return selectedVertexIds
   }
 
-  getSelectedCytoscapeEdgeIds() {
+  getSelectedCytoscapeEdgeIds () {
     let selectedEdges = this.cytoscape.$('edge:selected')
     let selectedEdgeIds = []
     selectedEdges.each(function(edge){
       selectedEdgeIds.push(edge.id())
     })
     return selectedEdgeIds
+  }
+
+  unselect () {
+    this.cytoscape.$('node:selected').unselect()
+    this.cytoscape.$('edge:selected').unselect()
+    this.store.commit('wandererBuilder/setSelectedEdgeIds', [])
+    this.store.commit('wandererBuilder/setSelectedVertexIds', [])
   }
 
   vertexDataToCytoscape (vertexData) {
@@ -614,26 +621,10 @@ export default class Builder {
 
         // Override some flow values before saving it to the file
         if(this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]]['_origin']) {
-          this.store.commit('wanderer/setVertexDataValue', {
-            id: this.store.state.wandererGraph.vertexDocumentIds[i],
-            key: 'builder',
-            value: 'wanderer.ai'
-          })
-          this.store.commit('wanderer/setVertexDataValue', {
-            id: this.store.state.wandererGraph.vertexDocumentIds[i],
-            key: 'target',
-            value: 'web'
-          })
-          this.store.commit('wanderer/setVertexDataValue', {
-            id: this.store.state.wandererGraph.vertexDocumentIds[i],
-            key: 'version',
-            value: this.version
-          })
-          this.store.commit('wanderer/setVertexDataValue', {
-            id: this.store.state.wandererGraph.vertexDocumentIds[i],
-            key: 'time',
-            value: new Date()
-          })
+          this.vueGraph.setVertexDataValue(this.store.state.wandererGraph.vertexDocumentIds[i], 'builder', 'wanderer.ai')
+          this.vueGraph.setVertexDataValue(this.store.state.wandererGraph.vertexDocumentIds[i], 'target', 'web')
+          this.vueGraph.setVertexDataValue(this.store.state.wandererGraph.vertexDocumentIds[i], 'version', this.version)
+          this.vueGraph.setVertexDataValue(this.store.state.wandererGraph.vertexDocumentIds[i], 'time', new Date())
         }
 
         exportData.vertices.push(this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]])
@@ -712,13 +703,13 @@ export default class Builder {
       {
         selector: 'node.pulse',
         style: {
-          'border-color': '#FF8800'
+          'border-color': '#FEC106'
         }
       },
       {
         selector: 'edge.pulse',
         style: {
-          'line-color': '#FF8800'
+          'line-color': '#FEC106'
         }
       },
       {
@@ -886,7 +877,12 @@ export default class Builder {
           message:'You cannot move the origin node',
           type:'info'
         })
+      } else {
+        var pos = this.position();
+        builder.vueGraph.setVertexDataValue(this.id(), '_x', pos.x)
+        builder.vueGraph.setVertexDataValue(this.id(), '_y', pos.y)
       }
+
     });
 
   }

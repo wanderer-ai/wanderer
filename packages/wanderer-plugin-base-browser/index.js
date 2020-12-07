@@ -155,9 +155,9 @@ export default {
           cytoscapeStyles: [{
             selector: '.leadsTo',
             style: {
-              'line-color': '#6C757D',
-              'target-arrow-color': '#6C757D',
-              'source-arrow-color': '#6C757D',
+              'line-color': '#FEC106',
+              'target-arrow-color': '#FEC106',
+              'source-arrow-color': '#FEC106',
               'width': 'data(priority)',
               'label': 'data(label)',
               'line-style': 'data(line)'
@@ -165,17 +165,17 @@ export default {
           },{
             selector: '.leadsTo[type = "and"]',
             style: {
-              'line-color': '#FEC106',
-              'target-arrow-color': '#FEC106',
-              'source-arrow-color': '#FEC106',
+              'line-color': '#DC3545',
+              'target-arrow-color': '#DC3545',
+              'source-arrow-color': '#DC3545',
               // 'label': 'data(label)'
             }
           },{
             selector: '.leadsTo[type = "not"]',
             style: {
-              'line-color': '#DC3545',
-              'target-arrow-color': '#DC3545',
-              'source-arrow-color': '#DC3545',
+              'line-color': '#000000',
+              'target-arrow-color': '#000000',
+              'source-arrow-color': '#000000',
               // 'label': 'data(label)'
             }
           }],
@@ -200,7 +200,7 @@ export default {
             var line = 'solid'
             var label = ''
 
-            if (edgeData.has('name')) {
+            if (!edgeData.isEmpty('name')) {
               label = label+'{{'+edgeData.get('name')+'}}'
             }
 

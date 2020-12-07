@@ -127,6 +127,7 @@ export default {
         }
 
       }
+      this.$builder.unselect()
     },
     removeEdges () {
       this.showModal = false
@@ -134,6 +135,7 @@ export default {
       for (let i in edgeIds) {
         this.$wanderer.subscriber.emit('removeEdgeById', edgeIds[i])
       }
+      this.$builder.unselect()
     },
     unlinkVertices () {
 
@@ -149,6 +151,7 @@ export default {
         })
 
       }
+      this.$builder.unselect()
     }
   }
 }
