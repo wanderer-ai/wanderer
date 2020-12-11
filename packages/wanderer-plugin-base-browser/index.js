@@ -55,6 +55,37 @@ export default {
       }
     })
 
+    // Register some vertices for the builder
+    wanderer.subscriber.emit('addVertexCollectionProps', {
+      name: 'conclusion',
+      props: {
+        builder: {
+          label: 'Conclusion',
+          color: '#FEC106',
+          cytoscapeClasses: 'conclusion',
+          cytoscapeCxtMenuSelector: '.conclusion',
+          creatable: true,
+          cytoscapeStyles: [{
+            selector: '.conclusion',
+            style: {
+              'height': '50px',
+              'width': '50px',
+              'font-size': '30px',
+              'background-color': '#FEC106',
+              'border-color': '#FEC106',
+              'border-width': '5px',
+              'label': 'data(label)'
+            }
+          }],
+          toCytoscape: function(vertexData, language) {
+            return {
+              label: 'Conclusion'
+            }
+          }
+        }
+      }
+    })
+
     wanderer.subscriber.emit('addVertexCollectionProps', {
       name: 'message',
       props: {

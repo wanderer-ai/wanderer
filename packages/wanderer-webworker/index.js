@@ -13,6 +13,19 @@ export let client = {
       })
     })
 
+    subscriber.on('resetLifecycle', () => {
+      worker.postMessage({
+        'event': 'resetLifecycle'
+      })
+    })
+
+    subscriber.on('setCurrentUrl', (url) => {
+      worker.postMessage({
+        'event': 'setCurrentUrl',
+        'payload': url
+      })
+    })
+
     subscriber.on('setLanguage', (language) => {
       worker.postMessage({
         'event': 'setLanguage',
@@ -75,8 +88,14 @@ export let client = {
         case 'truncate':
           subscriber.emit('truncate')
           break;
+        case 'resetLifecycle':
+          subscriber.emit('resetLifecycle')
+          break;
         case 'setLanguage':
           subscriber.emit('setLanguage', e.data.payload)
+          break;
+        case 'setCurrentUrl':
+          subscriber.emit('setCurrentUrl', e.data.payload)
           break;
         case 'addVertexFromData':
           subscriber.emit('addVertexFromData', e.data.payload)
@@ -126,10 +145,23 @@ export let thread = {
       })
     })
 
+    subscriber.on('resetLifecycle', () => {
+      thread.postMessage({
+        'event': 'resetLifecycle'
+      })
+    })
+
     subscriber.on('setLanguage', (language) => {
       thread.postMessage({
         'event': 'setLanguage',
         'payload': language
+      })
+    })
+
+    subscriber.on('setCurrentUrl', (url) => {
+      thread.postMessage({
+        'event': 'setCurrentUrl',
+        'payload': url
       })
     })
 
@@ -198,8 +230,14 @@ export let thread = {
         case 'truncate':
           subscriber.emit('truncate')
           break;
+        case 'resetLifecycle':
+          subscriber.emit('resetLifecycle')
+          break;
         case 'setLanguage':
           subscriber.emit('setLanguage', e.data.payload)
+          break;
+        case 'setCurrentUrl':
+          subscriber.emit('setCurrentUrl', e.data.payload)
           break;
         case 'addVertexFromData':
           subscriber.emit('addVertexFromData', e.data.payload)

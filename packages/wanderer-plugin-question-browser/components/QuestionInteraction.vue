@@ -2,8 +2,8 @@
 
   <div v-if="hide">
 
-    <component from="remote" v-bind:is="(showInNavigation?'div':'chat-message')">
-      <span :class="(showInNavigation? 'h6':'')+' question-interaction'" v-html="question"></span>
+    <component from="remote" v-bind:is="(showInNavigation?'div':'chat-message')" :class="(showInNavigation? 'mb-2':'')">
+      <span class="question-interaction" v-html="question"></span>
     </component>
 
     <component from="local" v-bind:is="(showInNavigation?'div':'chat-message')">
@@ -30,7 +30,7 @@
 
       <chat-button-group :class="(showInNavigation? '':'shake')">
         <template v-for="suggestion in suggestions" >
-          <chat-button v-if="suggestion.type=='button'" :key="suggestion._id+'_button'" color="blue" :disabled="answered" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
+          <chat-button v-if="suggestion.type=='button'" :key="suggestion._id+'_button'" :disabled="answered" :theme="(showInNavigation?'secondary':'primary')" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
         </template>
       </chat-button-group>
     </component>

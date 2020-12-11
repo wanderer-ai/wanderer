@@ -14,6 +14,21 @@ export default {
     var lastTraversedForbiddenEdgeIds = []
     var typingTimeouts = {}
 
+    function truncate () {
+      // Reset the edge information
+      traversedRequiredEdgeIds = []
+      traversedForbiddenEdgeIds = []
+      lastTraversedForbiddenEdgeIds = []
+
+      // Clear all timeouts
+      for (let i in typingTimeouts) {
+        if(typingTimeouts.hasOwnProperty(i)) {
+          clearTimeout(typingTimeouts[i])
+          delete typingTimeouts[i]
+        }
+      }
+    }
+
     // Add message collection props
     wanderer.subscriber.emit('addVertexCollectionProps', {
       name: 'message',
@@ -28,7 +43,7 @@ export default {
             }
           },
           becomeReachable: function (vertex) {
-            vertex.lifecycle.set('sent', false)
+            vertex.setLifecycleValue('sent', false)
           },
           visitor: function (vertex) {
 
@@ -204,27 +219,22 @@ export default {
       lastTraversedForbiddenEdgeIds = [...traversedForbiddenEdgeIds]
     })
 
+    subscriber.on('truncateLifecycle', function() {
+      truncate()
+    })
+
+    subscriber.on('truncate', function() {
+      truncate()
+    })
+
     // Listen for thread events
-    thread.addEventListener('message', function(e) {
-      switch(e.data.event) {
-        case 'truncate':
-
-        // Reset the edge information
-        traversedRequiredEdgeIds = []
-        traversedForbiddenEdgeIds = []
-        lastTraversedForbiddenEdgeIds = []
-
-        // Clear all timeouts
-        for (let i in typingTimeouts) {
-          if(typingTimeouts.hasOwnProperty(i)) {
-            clearTimeout(typingTimeouts[i])
-            delete typingTimeouts[i]
-          }
-        }
-
-          break;
-      }
-    }, false)
+    // thread.addEventListener('message', function(e) {
+    //   switch(e.data.event) {
+    //     case 'truncate':
+    //       truncate()
+    //       break;
+    //   }
+    // }, false)
 
   } // Install
 }

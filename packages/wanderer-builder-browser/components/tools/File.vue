@@ -131,11 +131,14 @@ export default {
   methods: {
     startTutorial () {
       this.showModal = false
-      this.$wanderer.loadFromUrl('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json')
+      let url = 'https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json'
+      this.$wanderer.loadFromUrl(url)
+      this.$store.commit('wandererBuilder/setTutorialMode', true)
     },
     viewExamples () {
       this.showModal = false
       this.$wanderer.loadFromUrl('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/examples/examples.json')
+      this.$store.commit('wandererBuilder/setTutorialMode', true)
     },
     startEmptyProject () {
 
@@ -162,12 +165,15 @@ export default {
         ]
       }))
 
+      this.$store.commit('wandererBuilder/setTutorialMode', false)
+
       this.showModal = false
 
     },
     async loadFromUrl (url) {
       try {
         await this.$wanderer.loadFromUrl(url)
+        this.$store.commit('wandererBuilder/setTutorialMode', false)
         this.showModal = false
       } catch (e) {
         this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'error'})
@@ -177,6 +183,7 @@ export default {
       const file = ev.target.files[0]
       try {
         await this.$wanderer.loadFromFile(file)
+        this.$store.commit('wandererBuilder/setTutorialMode', false)
         this.showModal = false
       } catch (e) {
         this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'error'})

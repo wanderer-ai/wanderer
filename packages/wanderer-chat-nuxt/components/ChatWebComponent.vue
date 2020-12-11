@@ -1,6 +1,6 @@
 <template>
   <div>
-    <wanderer-chat/>
+    <wanderer-chat open-label="Chat" flow-url="https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json" />
   </div>
 </template>
 
@@ -16,7 +16,7 @@ import Vuex from 'vuex'
 
 import Wanderer from 'wanderer'
 import vueGraphPlugin from 'wanderer-vue-graph'
-import chatPlugin from 'wanderer-chat'
+import chatPlugin from 'wanderer-chat-browser'
 import Worker from "../wanderer.worker.js"
 import { client as workerClient } from 'wanderer-webworker'
 

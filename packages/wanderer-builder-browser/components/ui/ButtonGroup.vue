@@ -22,11 +22,11 @@ export default {
 <style>
 
 .builder-button-group {
-  @apply -mx-1;
+  @apply -m-1;
 }
 
 .builder-button-group .builder-button{
-  @apply mx-1;
+  @apply m-1;
 }
 
 </style>

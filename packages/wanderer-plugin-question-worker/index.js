@@ -151,6 +151,11 @@ export default {
       traversedQuestions = []
     })
 
+    subscriber.on('truncateLifecycle', function() {
+      openQuestions = {}
+      traversedQuestions = []
+    })
+
     // // Listen for thread events
     // thread.addEventListener('message', function(e) {
     //   switch(e.data.event) {

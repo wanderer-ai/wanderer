@@ -12,8 +12,12 @@
     <portal to="modals" :order="1">
       <builder-modal size="lg" :title="editEdgeCollection.label" :show="showEdgeEditorModal" v-on:closeButton="closeEdgeEditorModal()">
 
-        <div v-if="isImmutable" class="alert alert-warning" role="alert">
-          Warning! This edge is not part of the current flow! Maybe it was dynamically imported. You can edit this edge. But it will not be saved into your flow!
+        <div v-if="idForeign" class="mb-8 text-red" role="alert">
+          Warning! This edge is not part of the current flow! It was dynamically imported. You can edit this edge. But it will not be saved into your flow!
+        </div>
+
+        <div v-if="!editEdgeCollection" class="mb-8 text-red" role="alert">
+          You cannot edit this edge. This edge is part of an unknown collection.
         </div>
 
         <builder-text-input v-if="debug" label="ID" :disabled="true" v-model="$store.state.wandererBuilder.editEdge" />
@@ -58,9 +62,9 @@ export default {
     selectedVertices () {
       return this.$store.state.wandererBuilder.selectedVertexIds.length
     },
-    isImmutable () {
+    idForeign () {
       if (this.$store.state.wandererBuilder.editEdge !== 0) {
-        return this.$vueGraph.getEdgeDataValue(this.$store.state.wandererBuilder.editEdge, '_immutable')
+        return this.$vueGraph.getEdgeDataValue(this.$store.state.wandererBuilder.editEdge, '_foreign')
       }
     }
   },

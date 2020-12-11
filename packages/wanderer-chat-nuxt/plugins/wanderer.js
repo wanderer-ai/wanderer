@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Wanderer from 'wanderer'
 import vueGraphPlugin from 'wanderer-vue-graph'
-import chatPlugin from 'wanderer-chat'
+import chatPlugin from 'wanderer-chat-browser'
 import Worker from "../wanderer.worker.js"
 import { client as workerClient } from 'wanderer-webworker'
 

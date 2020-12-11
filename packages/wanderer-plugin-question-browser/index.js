@@ -148,12 +148,6 @@ export default {
           appendableViaCxtMenu: true,
           injectableViaCxtMenu: true,
           creatable: true,
-          // restrictIncommingConnections: [
-          //   // {
-          //   //   from: 'question',
-          //   //   through: 'isAnswerableBy'
-          //   // }
-          // ],
           restrictPossibleParents: [
             'question'
           ],

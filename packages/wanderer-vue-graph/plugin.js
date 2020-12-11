@@ -29,9 +29,11 @@ export default {
           state.vertexDocumentIds.push(vertexData._id)
           this._vm.$set(state.vertexDocumentData, vertexData._id, vertexData)
 
-          // Set origin vertex
-          if(vertexData._origin !== undefined && vertexData._origin) {
-            state.originVertexId = vertexData._id
+          // Set first found origin vertex to the main origin vertex
+          if(vertexData._foreign == undefined) {
+            if(vertexData._origin !== undefined && vertexData._origin) {
+              state.originVertexId = vertexData._id
+            }
           }
 
         },

@@ -1,7 +1,7 @@
 {
-  "name": "wanderer-chat",
+  "name": "wanderer-chat-browser",
   "version": "0.0.1",
-  "description": "Wanderer Chat",
+  "description": "Wanderer Chat browser",
   "author": "",
   "private": true,
   "module": "plugin.js",

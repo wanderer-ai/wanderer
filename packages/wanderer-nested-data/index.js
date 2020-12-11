@@ -50,7 +50,7 @@ class WandererNestedData {
   }
 
   isEmpty (name) {
-    return this.get(name) == ''
+    return this.get(name) == '' || this.get(name) == undefined
   }
 
   with (name, method) {
@@ -65,6 +65,10 @@ class WandererNestedData {
         method(this.get(key), key)
       }
     }
+  }
+
+  empty () {
+    this.data = {}
   }
 
 }

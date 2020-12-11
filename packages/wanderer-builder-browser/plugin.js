@@ -41,6 +41,8 @@ export default {
       namespaced: true,
       state: {
         debug: true,
+        tutorialMode: false,
+        currentFlowUrl: '',
         currentLanguage: 'en',
         alerts: [],
         editVertex: 0,
@@ -51,6 +53,12 @@ export default {
       mutations: {
         setCurrentLanguage (state, language) {
           state.currentLanguage = language
+        },
+        setCurrentUrl (state, url) {
+          state.currentFlowUrl = url
+        },
+        setTutorialMode (state, mode) {
+          state.tutorialMode = mode
         },
         setEditVertex (state, id) {
           state.editVertex = id
@@ -92,6 +100,7 @@ export default {
           this._vm.$set(state, 'editEdge', 0)
           this._vm.$set(state, 'selectedVertexIds', [])
           this._vm.$set(state, 'selectedEdgeIds', [])
+          this._vm.$set(state, 'currentFlowUrl', '')
         }
       },
       actions: {

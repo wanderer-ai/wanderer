@@ -37,14 +37,56 @@ export default {
               return false
             }
           },
-          visitor: function (vertex) {
+          visitor: async function (vertex) {
 
             // If this data was not imported before...
             if(!vertex.lifecycle.is('imported')) {
 
               if(!vertex.data.isEmpty('url')) {
 
-                // WandererSingleton.importJsonRemote(vertexData.url, cytoscapeVertex.id())
+                // Request the data
+                let data = await wanderer.fetchFromUrl(vertex.data.get('url'))
+
+                // Find the origin of the imported data
+                let targetVertexId = false
+
+                // For each vertex
+                for (let key in data.vertices) {
+                  // Mark the data as foreign data
+                  data.vertices[key]['_foreign'] = true
+                  // Adjust the position
+                  data.vertices[key]['_x'] = data.vertices[key]['_x'] + vertex.data.get('_x')
+                  data.vertices[key]['_y'] = data.vertices[key]['_y'] + vertex.data.get('_y')
+                  // Find the origin of the imported data
+                  if(data.vertices[key]['_origin'] !== undefined && data.vertices[key]['_origin']) {
+                    targetVertexId = data.vertices[key]['_id']
+                  }
+                }
+
+                // For each edge
+                for (let key in data.edges) {
+                  // Mark the data as foreign data
+                  data.edges[key]['_foreign'] = true
+                }
+
+                // Load the new data
+                wanderer.loadFromData(data)
+
+                // Override the target with the given vertex ID
+                if(!vertex.data.isEmpty('vertexId')) {
+                  targetVertexId = vertex.data.get('vertexId')
+                }
+
+                // Connect the imported data to the flow
+                if(targetVertexId) {
+                  wanderer.subscriber.emit('addEdgeFromData', {
+                    '_id': wanderer.getRandomId(),
+                    '_collection': 'imports',
+                    '_from': vertex.data.get('_id'),
+                    '_to': targetVertexId,
+                    '_foreign': true
+                  })
+                }
 
                 // Remember this data as imported
                 vertex.setLifecycleValue('imported', true)
@@ -94,8 +136,8 @@ export default {
       name: 'reset',
       props: {
         graph: {
-          visitor: function () {
-            subscriber.emit('truncate')
+          visitor: function (vertex, traversal) {
+            subscriber.emit('resetLifecycle')
           }
         }
       }

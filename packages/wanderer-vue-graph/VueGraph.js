@@ -18,6 +18,14 @@ export default class VueGraph {
       this.store.commit('wandererGraph/truncate')
     })
 
+    // ResetLifecycle
+    this.subscriber.on('resetLifecycle', () => {
+
+      // Clear lifecycle data
+      this.store.commit('wandererGraph/cleanVertexLifecycleData')
+
+    })
+
     // Listen for new vertices
     this.subscriber.on('addVertexFromData', (vertexData) => {
       this.store.commit('wandererGraph/addVertex', vertexData)

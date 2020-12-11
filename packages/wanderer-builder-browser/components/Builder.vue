@@ -35,6 +35,7 @@
     <language-tool />
     <!-- <chat-tool v-on:toggle="toggleChatPanel()"/>
     <restart-tool v-on:toggle="toggleChatPanel()" v-if="showChatPanel"/>-->
+    <reload-tool />
     <add-vertex-tool />
 
     <wanderer-chat/>
@@ -59,7 +60,7 @@ import FileTool from './tools/File.vue'
 import LanguageTool from './tools/Language.vue'
 // import ChatTool from './tools/Chat.vue'
 import AddVertexTool from './tools/AddVertex.vue'
-// import RestartTool from './tools/Restart.vue'
+import ReloadTool from './tools/Reload.vue'
 
 export default {
   name: 'App',
@@ -78,7 +79,7 @@ export default {
     LanguageTool,
     // ChatTool,
     AddVertexTool,
-    // RestartTool
+    ReloadTool
   },
   data: function () {
     return {

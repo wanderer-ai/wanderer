@@ -46,6 +46,13 @@ export default class Chat {
       this.store.commit('wandererChat/setTyping', false)
     })
 
+    // ResetLifecycle
+    this.subscriber.on('resetLifecycle', () => {
+      this.store.commit('wandererChat/cleanMessages')
+      this.store.commit('wandererChat/cleanInteractions')
+      this.store.commit('wandererChat/setTyping', false)
+    })
+
     // Listen for worker events
     worker.addEventListener('message', (e) => {
       switch(e.data.event) {

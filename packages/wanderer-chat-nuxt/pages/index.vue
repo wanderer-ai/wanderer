@@ -2,7 +2,7 @@
 
   <div>
 
-    <wanderer-chat />
+    <wanderer-chat flow-url="https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json" />
 
   </div>
 </template>

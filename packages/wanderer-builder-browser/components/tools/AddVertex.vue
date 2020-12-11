@@ -16,7 +16,7 @@
           <builder-button class="" v-for="(collection, name) in possibleVertexCollections" v-if="collection.creatable" v-bind:key="name" :style="'background-color:'+collection.color+';'" v-on:click="add(name)">
             <div class="flex justify-between items-center">
               <icon class="mr-2" name="plus"></icon>
-              <span class="">add {{collection.label}}</span>
+              <span class="">{{collection.label}}</span>
             </div>
           </builder-button>
         </builder-button-group>

@@ -51,7 +51,7 @@ module.exports = {
             tags: [
               {
                 name: 'WandererChat',
-                path: '@/components/Chat',
+                path: '@/components/ChatWebComponent',
                 options: {
                   props: {
                     basePath: '/'

@@ -12,12 +12,12 @@
     <portal to="modals" :order="1">
       <builder-modal size="lg" :title="(editVertexCollection?editVertexCollection.label:'Unknown collection')" :show="showVertexEditorModal" v-on:closeButton="closeVertexEditorModal()">
 
-        <div v-if="isImmutable" class="alert alert-warning" role="alert">
-          Warning! This vertex is not part of the current flow! Maybe it was dynamically imported. You can edit this node. But it will not be saved into your flow!
+        <div v-if="idForeign" class="mb-8 text-red" role="alert">
+          Warning! This vertex is not part of the current flow! It was dynamically imported. You can edit this node. But it will not be saved into your flow!
         </div>
 
-        <div v-if="!editVertexCollection" class="alert alert-warning" role="alert">
-          You cannot edit this vertex. This vertex is part of a unknown collection.
+        <div v-if="!editVertexCollection" class="mb-8 text-red" role="alert">
+          You cannot edit this vertex. This vertex is part of an unknown collection.
         </div>
 
         <builder-text-input v-if="debug" label="ID" :disabled="true" v-model="$store.state.wandererBuilder.editVertex" />
@@ -72,9 +72,9 @@ export default {
     selectedEdges () {
       return this.$store.state.wandererBuilder.selectedEdgeIds.length
     },
-    isImmutable () {
+    idForeign () {
       if (this.$store.state.wandererBuilder.editVertex !== 0) {
-        return this.$vueGraph.getVertexDataValue(this.$store.state.wandererBuilder.editVertex, '_immutable')
+        return this.$vueGraph.getVertexDataValue(this.$store.state.wandererBuilder.editVertex, '_foreign')
       }
     },
     currentLanguage () {

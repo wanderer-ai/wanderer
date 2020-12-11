@@ -4,6 +4,7 @@ import { thread as workerThread } from 'wanderer-webworker'
 
 import wandererGraph from 'wanderer-graph'
 import wandererTraversal from 'wanderer-traversal'
+import chatPlugin from 'wanderer-chat-worker'
 
 import pluginBase from 'wanderer-plugin-base-worker'
 import pluginQuestion from 'wanderer-plugin-question-worker'
@@ -19,6 +20,7 @@ wanderer.provide('thread', self)
 wanderer.use(wandererGraph)
 wanderer.use(wandererTraversal)
 wanderer.use(workerThread)
+wanderer.use(chatPlugin)
 wanderer.use(pluginBase)
 wanderer.use(pluginQuestion)
 wanderer.use(pluginAction)

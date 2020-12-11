@@ -67,85 +67,10 @@ export default class Wanderer {
     // throw('This data does not look like a wanderer flow :-(')
   }
 
-  // importFromData (data) {
-  //   if(!checkImportData(data)) {
-  //     throw('This data does not look like a wanderer flow :-(')
-  //   } else {
-  //
-  //     // Add the parent position to the children positions
-  //     let parentPosition = {
-  //       x: 0,
-  //       y: 0
-  //     }
-  //     if(parentVertexId) {
-  //       parentPosition = WandererCytoscapeSingleton.cy.getElementById( parentVertexId ).position()
-  //     }
-  //
-  //     let importFlowId = null;
-  //
-  //     // Load vertices
-  //     for (var key in data.vertices) {
-  //
-  //       // Do not import the flow vertex
-  //       if(data.vertices[key]['_collection'] != 'flow') {
-  //
-  //         // If we must import this data relative to a parent
-  //         if(parentVertexId) {
-  //           // Update the positions of the imported nodes
-  //           data.vertices[key]['_x'] = data.vertices[key]['_x'] + parentPosition.x
-  //           data.vertices[key]['_y'] = data.vertices[key]['_y'] + parentPosition.y
-  //         }
-  //
-  //         // Mark the data as immutable before loading
-  //         data.vertices[key]['_immutable'] = true
-  //
-  //         // Add the new vertex
-  //         let cyVertex = addVertex(data.vertices[key], true)
-  //
-  //         // if(parentVertexId) {
-  //         //
-  //         //   // Move the newly created vertex optically to the parent node
-  //         //   cyVertex.move({
-  //         //     parent: WandererCytoscapeSingleton.cy.getElementById( parentVertexId )
-  //         //   });
-  //         //
-  //         // }
-  //
-  //       } else {
-  //         // Remember the flow id
-  //         importFlowId = data.vertices[key]['_id']
-  //       }
-  //
-  //     }
-  //
-  //     // Load edges
-  //     for (var key in data.edges) {
-  //
-  //       // Mark the data as immutable before loading
-  //       data.edges[key]['_immutable'] = true
-  //
-  //       // Replace the flow vertex id
-  //       if(data.edges[key]['_from'] == importFlowId) {
-  //         data.edges[key]['_from'] = parentVertexId
-  //       }
-  //
-  //       if(data.edges[key]['_to'] == importFlowId) {
-  //         data.edges[key]['_to'] = parentVertexId
-  //       }
-  //
-  //       addEdge(data.edges[key], true)
-  //     }
-  //
-  //   }
-  // }
-
   loadFromData (data) {
 
     // Check the import data
     this.checkImportData(data)
-
-    // Emit truncate event
-    this.subscriber.emit('truncate')
 
     // Load vertices
     for (let key in data.vertices) {
@@ -175,19 +100,30 @@ export default class Wanderer {
     })
   }
 
-  async loadFromUrl (url) {
+  async fetchFromUrl (url) {
     return new Promise((resolve, reject) => {
       Axios.get(url).catch((e) => {
         reject('The requested file was not found: '+e.message);
       }).then((response) => {
         try {
-          this.loadFromData(response.data)
-          resolve()
+          resolve(response.data)
         } catch (e) {
-          reject(e);
+          reject(e)
         }
       })
     })
+  }
+
+  async loadFromUrl (url) {
+    let data = await this.fetchFromUrl(url)
+
+    // Emit truncate event
+    this.subscriber.emit('truncate')
+
+    // Load the data
+    this.loadFromData(data)
+
+    this.subscriber.emit('setCurrentUrl', url)
   }
 
   getLanguages() {

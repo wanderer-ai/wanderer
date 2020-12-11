@@ -1,13 +1,11 @@
 
 <template>
 
-  <!-- v-if="vertexCount" -->
-
-  <div class="chat--container">
+  <div class="chat--container" v-if="vertexCount">
 
     <div v-if="!isVisible">
       <div class="chat--opener" @click="show()" :class="(actionRequired?'chat--shake':'')">
-        Open Chat
+        {{openLabel}}
       </div>
     </div>
 
@@ -48,6 +46,8 @@
           </div>
         </div>
 
+        <div class="chat--spacer"></div>
+
       </div>
 
       <div class="chat--navigation">
@@ -70,6 +70,21 @@
 var interactionsCount = 0;
 
 export default {
+  props: {
+    flowUrl: {
+      type: String,
+      default: ''
+    },
+    openLabel: {
+      type: String,
+      default: 'Open Chat'
+    },
+  },
+  mounted: function() {
+    if(this.flowUrl != '') {
+      this.$wanderer.loadFromUrl(this.flowUrl)
+    }
+  },
   data: function () {
     return {
       scrollTimeout: false,
@@ -193,7 +208,7 @@ export default {
 }
 
 .chat--panel {
-  @apply flex h-full items-stretch flex-col rounded-md shadow-lg border-2 border-blue;
+  @apply flex h-full items-stretch flex-col rounded-md shadow-lg border-2 border-blue overflow-hidden;
   width:300px;
   height:500px;
 }
@@ -221,6 +236,10 @@ export default {
 
 .chat--messages {
 
+}
+
+.chat--spacer {
+  @apply pb-12;
 }
 
 .chat--navigation {

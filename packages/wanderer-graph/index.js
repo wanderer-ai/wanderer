@@ -244,6 +244,10 @@ class WandererGraph {
       this.truncate()
     })
 
+    this.subscriber.on('resetLifecycle', () => {
+      this.resetLifecycle()
+    })
+
     this.subscriber.on('addVertexFromData', (data) => {
       this.addVertexFromData(data)
     })
@@ -307,7 +311,8 @@ class WandererGraph {
 
     this.vertices.add(vertex)
 
-    if(vertex.data.get('_origin')) {
+    // Mark the first created origin as the main origin
+    if(vertex.data.is('_origin')&&!vertex.data.is('_foreign')) {
       this.origin = vertex
     }
 
@@ -415,6 +420,37 @@ class WandererGraph {
     this.vertices = new WandererItemList()
     this.edges = new WandererItemList()
     // this.subscriber.emit('truncate')
+  }
+
+  resetLifecycle () {
+    this.vertices.each((vertex) => {
+      vertex.lifecycle.empty()
+    })
+    this.edges.each((edge) => {
+      edge.lifecycle.empty()
+    })
+    this.removeForeignData()
+  }
+
+  removeForeignData () {
+    this.vertices.each((vertex) => {
+      if(vertex.data.is('_foreign')) {
+        this.removeVertexById(vertex.data.get('_id'))
+
+        // Lets emit this in here
+        // So I dont have to delete the data from the other modules manually (builder, cytoscape, ...)
+        this.subscriber.emit('removeVertexById', vertex.data.get('_id'))
+      }
+    })
+    this.edges.each((edge) => {
+      if(edge.data.is('_foreign')) {
+        this.removeEdgeById(edge.data.get('_id'))
+
+        // Lets emit this in here
+        // So I dont have to delete the data from the other modules manually (builder, cytoscape, ...)
+        this.subscriber.emit('removeEdgeById', edge.data.get('_id'))
+      }
+    })
   }
 
   createItemList (items) {

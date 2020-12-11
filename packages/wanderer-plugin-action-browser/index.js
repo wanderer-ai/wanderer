@@ -70,7 +70,8 @@ export default {
           canBeChild: true,
           defaultFields: {
             url: '',
-            label: '',
+            vertexId: '',
+            label: ''
           },
           cytoscapeStyles: [
             {
@@ -125,6 +126,33 @@ export default {
               label: 'imported'
             }
           }
+        }
+      }
+    })
+
+    wanderer.subscriber.emit('addEdgeCollectionProps', {
+      name: 'imports',
+      props: {
+        builder: {
+          label: 'imports',
+          cytoscapeClasses: 'imports',
+          creatable: false,
+          defaultFields: function () {
+            return {
+
+            }
+          },
+          restrictSourceVertices: [
+            'import'
+          ],
+          cytoscapeStyles: [{
+            selector: '.imports',
+            style: {
+              'line-color': '#cccccc',
+              'target-arrow-color': '#cccccc',
+              'source-arrow-color': '#cccccc',
+            }
+          }]
         }
       }
     })

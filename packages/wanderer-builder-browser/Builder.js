@@ -43,6 +43,11 @@ export default class Builder {
       this.rebuildCytoscape()
     })
 
+    // Load from URL
+    this.subscriber.on('setCurrentUrl', (url) => {
+      this.store.commit('wandererBuilder/setCurrentUrl', url)
+    })
+
     // Truncate
     this.subscriber.on('truncate', () => {
       this.cytoscape.remove( '*' )
@@ -283,7 +288,7 @@ export default class Builder {
     this.vertexDataToCytoscape(vertexData)
 
     // Center cytoscape to origin
-    if (vertexData.is('_origin')) {
+    if (vertexData.is('_origin')&&!vertexData.is('_foreign')) {
       this.cytoscape.center(vertexData.get('_id'))
       this.cytoscape.zoom(1)
     }
@@ -860,7 +865,7 @@ export default class Builder {
     this.cytoscape.on('drop','node', function() {
       // Check if this is a origin vertex
       // We cannot disable drag for this vertex but we can set it back to coordinates 0,0
-      if(builder.vueGraph.getVertexDataValue(this.id(), '_origin') == true) {
+      if(builder.vueGraph.getVertexDataValue(this.id(), '_origin') == true && builder.vueGraph.getVertexDataValue(this.id(), '_foreign') == undefined) {
         this.position({x: 0, y: 0});
         builder.store.dispatch('wandererBuilder/addAlert', {
           message:'You cannot move the origin node',
