@@ -7,7 +7,7 @@
       </label>
     </div>
     <div class="md:w-4/5">
-      <textarea v-model="inputVal" :placeholder="placeholder" :id="_uid" :type="type" class="bg-gray-200 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-white focus:border-blue"></textarea>
+      <textarea v-model="inputVal" :placeholder="placeholder" :id="_uid" :type="type" class="builder--input-textarea bg-gray-200 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-white focus:border-blue"></textarea>
     </div>
   </div>
 
@@ -49,5 +49,8 @@ export default {
 
 <style>
 
+.builder--input-textarea {
+  min-height: 150px;
+}
 
 </style>

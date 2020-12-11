@@ -84,20 +84,29 @@ export default class Wanderer {
 
   }
 
-  async loadFromFile (file) {
+  async fetchFromFile (file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = e => {
         try {
           var data = JSON.parse(e.target.result)
-          this.loadFromData(data)
-          resolve()
+          resolve(data)
         } catch (e) {
           reject('This file is not a wanderer .json file! '+e)
         }
       }
       reader.readAsText(file)
     })
+  }
+
+  async loadFromFile (file) {
+    let data = await this.fetchFromFile(file)
+    // Emit truncate event
+    this.subscriber.emit('truncate')
+    // Load the data
+    this.loadFromData(data)
+    // Unset current url
+    this.subscriber.emit('setCurrentUrl', '')
   }
 
   async fetchFromUrl (url) {
@@ -116,14 +125,44 @@ export default class Wanderer {
 
   async loadFromUrl (url) {
     let data = await this.fetchFromUrl(url)
+    // Emit truncate event
+    this.subscriber.emit('truncate')
+    // Load the data
+    this.loadFromData(data)
+    // Set current url
+    this.subscriber.emit('setCurrentUrl', url)
+  }
+
+  startEmptyProject () {
 
     // Emit truncate event
     this.subscriber.emit('truncate')
 
-    // Load the data
-    this.loadFromData(data)
+    this.loadFromData(this.regenerateJsonDataIds({
+      "vertices": [
+        {
+          "_collection": "flow",
+          "_id": "d3fab08d-e05e-4885-8eba-f1e86a374c98",
+          "_origin": true,
+          "_x": 0,
+          "_y": 0,
+          "languages": ["en", "de"],
+          "topic": {
+            "en": "New chat flow",
+            "de": "Neuer Chat-Flow"
+          },
+          "author": "Unknown",
+          "license": "MIT",
+          "builder": "wanderer.ai",
+          "target": "web",
+          "version": this.version,
+          "time": ""
+        }
+      ]
+    }))
 
-    this.subscriber.emit('setCurrentUrl', url)
+    this.subscriber.emit('setCurrentUrl', '')
+
   }
 
   getLanguages() {

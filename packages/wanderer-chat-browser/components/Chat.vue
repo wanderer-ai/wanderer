@@ -15,11 +15,16 @@
         <div class="chat--title">
           {{name}}
         </div>
-        <div class="chat--close" @click="hide()">
-          <svg class="chat--close-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
-          </svg>
+
+        <div class="chat--controls">
+          <div class="chat--controls-icon chat--restart" @click="restart()">
+            <icon name="sync"></icon>
+          </div>
+          <div class="chat--controls-icon chat--close" @click="hide()">
+            <icon name="times"></icon>
+          </div>
         </div>
+
       </div>
 
       <div class="chat--body" ref="chatbody">
@@ -67,9 +72,16 @@
 
 <script>
 
+import 'vue-awesome/icons/sync'
+import 'vue-awesome/icons/times'
+import Icon from 'vue-awesome/components/Icon'
+
 var interactionsCount = 0;
 
 export default {
+  components: {
+    Icon
+  },
   props: {
     flowUrl: {
       type: String,
@@ -88,13 +100,15 @@ export default {
   data: function () {
     return {
       scrollTimeout: false,
-      isVisible: false,
       actionRequired: false
     }
   },
   computed: {
+    isVisible () {
+      return this.$store.state.wandererChat.isVisible
+    },
     vertexCount () {
-      return this.$store.state.wandererGraph.vertexDocumentIds.length;
+      return this.$store.state.wandererGraph.vertexDocumentIds.length
     },
     name () {
       return this.$chat.getTranslatableOriginDataValue('topic')
@@ -136,16 +150,19 @@ export default {
     }
   },
   methods: {
-    show() {
-      this.isVisible = true
+    show () {
+      this.$store.commit('wandererChat/setVisible', true)
       this.actionRequired = false
     },
-    hide() {
-      this.isVisible = false
+    hide () {
+      this.$store.commit('wandererChat/setVisible', false)
     },
-    focus() {
+    focus () {
       this.unreadMessages = false
       this.actionRequired = false
+    },
+    restart () {
+      this.$wanderer.subscriber.emit('resetLifecycle')
     },
     // getMessagePayloadByMessageId (messageId) {
     //   var messageData = this.$chat.getMessageDataById(messageId)
@@ -221,12 +238,20 @@ export default {
   @apply font-bold;
 }
 
-.chat--close {
+.chat--controls {
+  @apply -m-1 flex justify-between;
+}
+
+.chat--controls-icon {
+  @apply m-1;
+}
+
+.chat--restart {
   @apply cursor-pointer;
 }
 
-.chat--close-icon path {
-  fill: white;
+.chat--close {
+  @apply cursor-pointer;
 }
 
 .chat--body {

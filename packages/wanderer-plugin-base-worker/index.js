@@ -191,6 +191,7 @@ export default {
                 }
               }
               if (edge.data.get('type') == 'not') {
+
                 // Have I not visited this forbidden edge before?
                 if (traversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1) {
                   return false

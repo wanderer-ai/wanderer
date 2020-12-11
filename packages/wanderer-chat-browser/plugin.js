@@ -3,6 +3,7 @@ import ChatComponent from './components/Chat'
 import ChatMessageComponent from './components/ui/Message'
 import ChatButtonComponent from './components/ui/Button'
 import ChatButtonGroupComponent from './components/ui/ButtonGroup'
+import ChatContentComponent from './components/ui/Content'
 
 export default {
 
@@ -20,11 +21,13 @@ export default {
     Vue.component('chat-message', ChatMessageComponent)
     Vue.component('chat-button', ChatButtonComponent)
     Vue.component('chat-button-group', ChatButtonGroupComponent)
+    Vue.component('chat-content', ChatContentComponent)
 
     // Extend vuex
     store.registerModule('wandererChat', {
       namespaced: true,
       state: {
+        isVisible: false,
         currentLanguage: 'en',
         // messageVertexIds: [],
         messageIds: [],
@@ -34,6 +37,9 @@ export default {
         interactionVertexIds : []
       },
       mutations: {
+        setVisible (state, value) {
+          state.isVisible = value
+        },
         setCurrentLanguage (state, language) {
           state.currentLanguage = language
         },

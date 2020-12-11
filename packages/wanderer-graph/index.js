@@ -41,7 +41,11 @@ class WandererItemList {
   each (callback) {
     for (const i in this.itemIds) {
       if(this.items[this.itemIds[i]] != undefined) {
-        callback(this.items[this.itemIds[i]])
+        let returnValue = callback(this.items[this.itemIds[i]])
+        if(returnValue === false) {
+          console.log('breaking')
+          break
+        }
       }
     }
   }

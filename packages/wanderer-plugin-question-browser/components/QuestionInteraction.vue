@@ -3,7 +3,9 @@
   <div v-if="hide">
 
     <component from="remote" v-bind:is="(showInNavigation?'div':'chat-message')" :class="(showInNavigation? 'mb-2':'')">
-      <span class="question-interaction" v-html="question"></span>
+      <chat-content>
+        <span class="question-interaction" v-html="question"></span>
+      </chat-content>
     </component>
 
     <component from="local" v-bind:is="(showInNavigation?'div':'chat-message')">
@@ -113,7 +115,7 @@ export default {
 
               returnData.push({
                 _id: suggestionIds[i],
-                suggestion: this.$chat.evaluateVertexDataValue(suggestionIds[i], 'suggestion'),
+                suggestion: this.$chat.evaluateVertexDataValue(suggestionIds[i], 'suggestion', true),
                 type: this.$vueGraph.getVertexDataValue(suggestionIds[i],'type'),
                 priority: this.$vueGraph.getVertexDataValue(suggestionIds[i],'priority')
               })

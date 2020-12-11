@@ -20,16 +20,18 @@ class Traversal {
     var inboundEdges = vertex.getInboundEdges()
 
     inboundEdges.each((edge) => {
-      edge.collection.with('allowTargetTraversal', (allowTargetTraversal) => {
 
+      edge.collection.with('allowTargetTraversal', (allowTargetTraversal) => {
         vertexTraversable = allowTargetTraversal(
           vertex,
           edge
         )
-        // If one of the inbound edges says NO...
-        return vertexTraversable
-
       })
+
+      // If one of the inbound edges says NO...
+      // Break the loop by returning false to the each callback
+      return vertexTraversable
+
     })
 
     return vertexTraversable

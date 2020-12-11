@@ -134,36 +134,17 @@ export default {
       let url = 'https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json'
       this.$wanderer.loadFromUrl(url)
       this.$store.commit('wandererBuilder/setTutorialMode', true)
+      this.$store.commit('wandererChat/setVisible', true)
     },
     viewExamples () {
       this.showModal = false
       this.$wanderer.loadFromUrl('https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/examples/examples.json')
       this.$store.commit('wandererBuilder/setTutorialMode', true)
+      this.$store.commit('wandererChat/setVisible', true)
     },
     startEmptyProject () {
 
-      this.$wanderer.loadFromData(this.$wanderer.regenerateJsonDataIds({
-        "vertices": [
-          {
-            "_collection": "flow",
-            "_id": "d3fab08d-e05e-4885-8eba-f1e86a374c98",
-            "_origin": true,
-            "_x": 0,
-            "_y": 0,
-            "languages": ["en", "de"],
-            "topic": {
-              "en": "New chat flow",
-              "de": "Neuer Chat-Flow"
-            },
-            "author": "Unknown",
-            "license": "MIT",
-            "builder": "wanderer.ai",
-            "target": "web",
-            "version": this.version,
-            "time": ""
-          }
-        ]
-      }))
+      this.$wanderer.startEmptyProject()
 
       this.$store.commit('wandererBuilder/setTutorialMode', false)
 

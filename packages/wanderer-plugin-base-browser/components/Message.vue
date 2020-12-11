@@ -1,6 +1,8 @@
 <template>
   <chat-message from="remote">
-    <div class="message" v-html="message"></div>
+    <chat-content>
+      <div class="message" v-html="message"></div>
+    </chat-content>
   </chat-message>
 </template>
 

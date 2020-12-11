@@ -1,12 +1,12 @@
 <template>
 
-  <div class="message">
+  <div class="chat--message">
 
     <div
-      class="message--bubble"
+      class="chat--message-bubble"
       v-bind:class="{
-        'message--bubble-local': from=='local',
-        'message--bubble-remote': from=='remote'
+        'chat--message-bubble-local': from=='local',
+        'chat--message-bubble-remote': from=='remote'
       }">
 
       <slot>
@@ -34,25 +34,25 @@ export default {
 
 <style>
 
-  .message {
+  .chat--message {
     width:100%;
     display: flex;
     flex-direction: column;
   }
 
-  .message--bubble {
+  .chat--message-bubble {
     @apply bg-gray-dark p-2 text-white text-sm mb-2;
     display: inline-block;
     width:auto;
     position: relative;
   }
 
-  .message--bubble-local {
+  .chat--message-bubble-local {
     border-radius: 0.5rem 0.5rem 0 0.5rem;
     align-self: flex-end;
   }
 
-  .message--bubble-remote {
+  .chat--message-bubble-remote {
     border-radius: 0.5rem 0.5rem 0.5rem 0;
     align-self: flex-start;
   }
