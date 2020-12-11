@@ -2,7 +2,9 @@ import WandererNestedData from 'wanderer-nested-data'
 
 import Mustache from 'mustache'
 
-var md = require('markdown-it')({
+import Markdown from 'markdown-it'
+
+var md = Markdown({
   html:         false,       // Enable HTML tags in source
   breaks:       true,        // Convert '\n' in paragraphs into <br>
   linkify:      false        // Autoconvert URL-like text to links
@@ -38,7 +40,7 @@ export default class Chat {
     })
 
     // Truncate
-    this.subscriber.on('truncate', (vertexData) => {
+    this.subscriber.on('truncate', () => {
       this.store.commit('wandererChat/cleanMessages')
       this.store.commit('wandererChat/cleanInteractions')
       this.store.commit('wandererChat/setTyping', false)
@@ -103,7 +105,7 @@ export default class Chat {
   }
 
   getTranslatableOriginDataValue (key) {
-    var currentLanguage = this.store.state.wandererBuilder.currentLanguage
+    var currentLanguage = this.store.state.wandererChat.currentLanguage
     return this.vueGraph.getOriginDataValue(key, currentLanguage)
   }
 
@@ -112,15 +114,13 @@ export default class Chat {
     // Get the template string
     var template = this.getTranslatableVertexDataValue(vertexId, templateKey)
 
-    // Render mustache
+    // Render template
     if(typeof template === 'string') {
       var data = this.vueGraph.getVertexLifecycleValuesById(vertexId)
-      try {
-        template = Mustache.render(template, data);
-        template = md.renderInline(template)
-      } catch {
 
-      }
+      template = Mustache.render(template, data)
+      template = md.renderInline(template)
+
     }
 
     return template

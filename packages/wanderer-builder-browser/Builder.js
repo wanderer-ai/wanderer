@@ -44,7 +44,7 @@ export default class Builder {
     })
 
     // Truncate
-    this.subscriber.on('truncate', (vertexData) => {
+    this.subscriber.on('truncate', () => {
       this.cytoscape.remove( '*' )
       this.store.commit('wandererBuilder/truncate')
     })
@@ -74,12 +74,12 @@ export default class Builder {
     })
 
     // Listen for vertex data changes
-    this.subscriber.on('setVertexDataValue', ({id, key, value, language}) => {
+    this.subscriber.on('setVertexDataValue', () => {
 
     })
 
     // Listen for edge data changes
-    this.subscriber.on('setEdgeDataValue', ({id, key, value, language}) => {
+    this.subscriber.on('setEdgeDataValue', () => {
 
     })
 
@@ -276,22 +276,16 @@ export default class Builder {
       cyData.classes = cytoscapeClasses
     })
 
-    try {
+    // Add vertex to Cytoscape
+    this.cytoscape.add(cyData)
 
-      // Add vertex to Cytoscape
-      let cyVertex = this.cytoscape.add(cyData)
+    // Convert data to Cytoscape if needed
+    this.vertexDataToCytoscape(vertexData)
 
-      // Convert data to Cytoscape if needed
-      this.vertexDataToCytoscape(vertexData)
-
-      // Center cytoscape to origin
-      if (vertexData.is('_origin')) {
-        this.cytoscape.center(vertexData.get('_id'))
-        this.cytoscape.zoom(1)
-      }
-
-    } catch (e) {
-
+    // Center cytoscape to origin
+    if (vertexData.is('_origin')) {
+      this.cytoscape.center(vertexData.get('_id'))
+      this.cytoscape.zoom(1)
     }
 
   }
@@ -311,16 +305,11 @@ export default class Builder {
       cyData.classes = cytoscapeClasses
     })
 
-    try {
+    this.cytoscape.add(cyData)
 
-      let cytoscapeEdge = this.cytoscape.add(cyData)
+    // Convert data to Cytoscape
+    this.edgeDataToCytoscape(edgeData)
 
-      // Convert data to Cytoscape
-      this.edgeDataToCytoscape(edgeData)
-
-    } catch (e) {
-
-    }
   }
 
   addVertex (vertexCollectionName, x, y) {
@@ -388,7 +377,7 @@ export default class Builder {
     var y = position.y + (Math.floor(Math.random() * (100 - 50 + 1) + 50))
 
     var newVertexId = this.addVertex(vertexCollectionName, x, y)
-    var newEdgeId = this.addEdge(edgeCollectionName, cytoscapeNodeId, newVertexId)
+    this.addEdge(edgeCollectionName, cytoscapeNodeId, newVertexId)
 
   }
 
@@ -582,12 +571,12 @@ export default class Builder {
 
       var animateItems = this.cytoscape.collection()
 
-      for(var i in traversedVertexIds) {
-        animateItems = animateItems.union(this.cytoscape.getElementById(traversedVertexIds[i]))
+      for(var v in traversedVertexIds) {
+        animateItems = animateItems.union(this.cytoscape.getElementById(traversedVertexIds[v]))
       }
 
-      for(var i in traversedEdgeIds) {
-        animateItems = animateItems.union(this.cytoscape.getElementById(traversedEdgeIds[i]))
+      for(var e in traversedEdgeIds) {
+        animateItems = animateItems.union(this.cytoscape.getElementById(traversedEdgeIds[e]))
       }
 
       animateItems.addClass('pulse')
@@ -815,7 +804,7 @@ export default class Builder {
     });
 
     // Select vertices
-    this.cytoscape.on('select', 'node', function(evt){
+    this.cytoscape.on('select', 'node', function(){
       let lastSelectedVerticesIds = builder.getSelectedCytoscapeVertexIds()
       builder.store.commit('wandererBuilder/setSelectedVertexIds',lastSelectedVerticesIds);
     });
@@ -826,13 +815,13 @@ export default class Builder {
     });
 
     // Unselect vertices
-    this.cytoscape.on('unselect', 'node', function(evt){
+    this.cytoscape.on('unselect', 'node', function(){
       let lastSelectedVerticesIds = builder.getSelectedCytoscapeVertexIds()
       builder.store.commit('wandererBuilder/setSelectedVertexIds',lastSelectedVerticesIds);
     });
 
     // Select edge(s)
-    this.cytoscape.on('select', 'edge', function(evt) {
+    this.cytoscape.on('select', 'edge', function() {
       let lastSelectedEdgesIds = builder.getSelectedCytoscapeEdgeIds()
       builder.store.commit('wandererBuilder/setSelectedEdgeIds',lastSelectedEdgesIds)
     })
@@ -843,7 +832,7 @@ export default class Builder {
     })
 
     // Unselect edge(s)
-    this.cytoscape.on('unselect', 'edge', function(evt) {
+    this.cytoscape.on('unselect', 'edge', function() {
       let lastSelectedEdgesIds = builder.getSelectedCytoscapeEdgeIds()
       builder.store.commit('wandererBuilder/setSelectedEdgeIds',lastSelectedEdgesIds)
     })
@@ -855,7 +844,7 @@ export default class Builder {
 
     // Implement drop event
     let dropTimer = null;
-    this.cytoscape.on('drag', 'node', function(event) {
+    this.cytoscape.on('drag', 'node', function() {
       if(dropTimer){clearTimeout(dropTimer);} // Clear the timeout if set
       // get all grabbed nodes
       var lastGrabbedNodes = builder.cytoscape.$('node:grabbed');
@@ -868,7 +857,7 @@ export default class Builder {
     });
 
     // On drop
-    this.cytoscape.on('drop','node', function(evt) {
+    this.cytoscape.on('drop','node', function() {
       // Check if this is a origin vertex
       // We cannot disable drag for this vertex but we can set it back to coordinates 0,0
       if(builder.vueGraph.getVertexDataValue(this.id(), '_origin') == true) {

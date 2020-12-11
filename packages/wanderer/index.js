@@ -1,4 +1,4 @@
-const uuidv4 = require('uuid/v4')
+import uuidv4 from 'uuid/v4'
 import WandererBroadcast from 'wanderer-broadcast'
 import Axios from 'axios'
 
@@ -41,14 +41,14 @@ export default class Wanderer {
     for(let i in data.vertices){
       let oldId = data.vertices[i]._id
       let newId = this.getRandomId()
-      var re = new RegExp(oldId, 'g')
+      let re = new RegExp(oldId, 'g')
       dataString = dataString.replace(re,newId)
     }
 
     for(let i in data.edges){
       let oldId = data.edges[i]._id
       let newId = this.getRandomId()
-      var re = new RegExp(oldId, 'g')
+      let re = new RegExp(oldId, 'g')
       dataString = dataString.replace(re,newId)
     }
 
@@ -148,12 +148,12 @@ export default class Wanderer {
     this.subscriber.emit('truncate')
 
     // Load vertices
-    for (var key in data.vertices) {
+    for (let key in data.vertices) {
       this.subscriber.emit('addVertexFromData', data.vertices[key])
     }
 
     // Load edges
-    for (var key in data.edges) {
+    for (let key in data.edges) {
       this.subscriber.emit('addEdgeFromData', data.edges[key])
     }
 

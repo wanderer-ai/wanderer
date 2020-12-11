@@ -8,7 +8,6 @@ export default {
 
     // Require some dependencys from wanderer
     var Vue = wanderer.require('vue')
-    var builder = wanderer.require('builder')
 
     // Register some vue components
     Vue.component('wanderer-flow-editor', FlowEditor)
@@ -124,7 +123,7 @@ export default {
           label: 'leads to',
           cytoscapeClasses: 'leadsTo',
           creatable: true,
-          defaultFields: function (sourceCollectionProps, targetCollectionProps) {
+          defaultFields: function (sourceCollectionProps) {
 
             var defaultData = {
               type: 'or',
@@ -180,7 +179,7 @@ export default {
             }
           }],
           component: 'wanderer-leads-to-editor',
-          toCytoscape: function(edgeData, sourceCollectionProps, targetCollectionProps, language) {
+          toCytoscape: function(edgeData, sourceCollectionProps, targetCollectionProps) {
 
             var defaultCondition = false
 
@@ -198,16 +197,16 @@ export default {
             }
 
             var line = 'solid'
-            var label = ''
+            var displayLabel = ''
 
             if (!edgeData.isEmpty('name')) {
-              label = label+'{{'+edgeData.get('name')+'}}'
+              displayLabel = displayLabel+'{{'+edgeData.get('name')+'}}'
             }
 
             edgeData.with('condition', (condition) => {
               if(defaultCondition!=condition) {
                 sourceCollectionProps.with('edgeConditions.'+condition+'.label', (label) => {
-                  label = label+' ['+label+']'
+                  displayLabel = displayLabel+' ['+label+']'
                 })
               }
               line = 'dashed'
@@ -216,14 +215,14 @@ export default {
             edgeData.with('method', (method) => {
               if(targetCollectionProps) {
                 targetCollectionProps.with('edgeMethods.'+method+'.label', (label) => {
-                  label = label+' ('+label+')'
+                  displayLabel = displayLabel+' ('+label+')'
                 })
               }
             })
 
             return {
               line: line,
-              label: label,
+              label: displayLabel,
               type: edgeData.get('type'),
               priority: priority
             }

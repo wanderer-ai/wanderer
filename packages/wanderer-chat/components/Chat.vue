@@ -1,6 +1,9 @@
 
 <template>
-  <div class="chat--container" v-if="vertexCount">
+
+  <!-- v-if="vertexCount" -->
+
+  <div class="chat--container">
 
     <div v-if="!isVisible">
       <div class="chat--opener" @click="show()" :class="(actionRequired?'chat--shake':'')">
@@ -97,13 +100,13 @@ export default {
   watch: {
     // Lets watch the message ids
     // So we can detect if a new message will income at the stack
-    messages: function (newObj, oldObj) {
+    messages: function () {
       this.scrollToBottom()
       if(this.messages.length) {
         this.actionRequired = true
       }
     },
-    interactions: function (newObj, oldObj) {
+    interactions: function () {
       // This object will be completely overidden on every cycle. So lets watch the length only.
       if(interactionsCount!=this.interactions.length) {
         interactionsCount = this.interactions.length
@@ -111,7 +114,7 @@ export default {
         this.actionRequired = true
       }
     },
-    typing: function (newObj, oldObj) {
+    typing: function (newObj) {
       if(newObj) {
         this.scrollToBottom()
       }

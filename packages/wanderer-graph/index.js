@@ -33,7 +33,7 @@ class WandererItemList {
     return false
   }
 
-  empty (item) {
+  empty () {
     this.itemIds = []
     this.items = {}
   }
@@ -115,16 +115,16 @@ class WandererVertex extends WandererItem {
   }
 
   addInboundEdge (edge) {
-    if(! edge instanceof WandererEdge) {
-      throw 'Edge must be instance of WandererEdge!';
-    }
+    // if(! edge instanceof WandererEdge) {
+    //   throw 'Edge must be instance of WandererEdge!';
+    // }
     this.inboundEdges.add(edge)
   }
 
   addOutboundEdge (edge) {
-    if(! edge instanceof WandererEdge) {
-      throw 'Edge must be instance of WandererEdge!';
-    }
+    // if(! edge instanceof WandererEdge) {
+    //   throw 'Edge must be instance of WandererEdge!';
+    // }
     this.outboundEdges.add(edge)
   }
 
@@ -138,6 +138,7 @@ class WandererVertex extends WandererItem {
 
   setDataValue (key, value, language) {
     super.setDataValue(key, value, language)
+
     this.subscriber.emit('setVertexDataValue', {
       id: this.data.get('_id'),
       key: key,
@@ -148,11 +149,13 @@ class WandererVertex extends WandererItem {
 
   setLifecycleValue (key, value) {
     super.setLifecycleValue(key, value)
+
     this.subscriber.emit('setVertexLifecycleValue', {
       id: this.data.get('_id'),
       key: key,
       value: value
     })
+
   }
 
 }
@@ -168,12 +171,14 @@ class WandererEdge extends WandererItem {
 
   setSourceVertex (vertex) {
     this.sourceVertex = vertex
-    this.setDataValue('_from', vertex.data.get('_id'))
+    // Note: Use super here because I dont want to trigger the emit
+    super.setDataValue('_from', vertex.data.get('_id'))
   }
 
   setTargetVertex (vertex) {
     this.targetVertex = vertex
-    this.setDataValue('_to', vertex.data.get('_id'))
+    // Note: Use super here because I dont want to trigger the emit
+    super.setDataValue('_to', vertex.data.get('_id'))
   }
 
   getSourceVertex () {
@@ -186,21 +191,25 @@ class WandererEdge extends WandererItem {
 
   setDataValue (key, value, language) {
     super.setDataValue(key, value, language)
+
     this.subscriber.emit('setEdgeDataValue', {
       id: this.data.get('_id'),
       key: key,
       value: value,
       language: language
     })
+
   }
 
   setLifecycleValue (key, value) {
     super.setLifecycleValue(key, value)
+
     this.subscriber.emit('setEdgeLifecycleValue', {
       id: this.data.get('_id'),
       key: key,
       value: value
     })
+
   }
 
 }

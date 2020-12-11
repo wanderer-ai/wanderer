@@ -16,8 +16,8 @@
 
           <builder-button class="mb-4" color="green" v-on:click="startTutorial()">
             <div class="flex w-full justify-between items-center">
-              <icon name="book"></icon>
-              <span>Start tutorial</span>
+              <icon name="robot"></icon>
+              <span>Start tutorial bot</span>
               <icon name="arrow-right"></icon>
             </div>
           </builder-button>
@@ -83,7 +83,7 @@ import Icon from 'vue-awesome/components/Icon'
 // Icons
 import 'vue-awesome/icons/save'
 import 'vue-awesome/icons/download'
-import 'vue-awesome/icons/book'
+import 'vue-awesome/icons/robot'
 import 'vue-awesome/icons/file'
 import 'vue-awesome/icons/upload'
 import 'vue-awesome/icons/globe'
@@ -109,7 +109,7 @@ export default {
     }
   },
   watch: {
-    show: function (newValue, oldValue) {
+    show: function (newValue) {
       this.showModal = newValue
     }
   },

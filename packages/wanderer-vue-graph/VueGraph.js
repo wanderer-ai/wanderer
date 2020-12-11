@@ -14,7 +14,7 @@ export default class VueGraph {
     this.subscriber = this.broadcast.subscribe('vueGraph')
 
     // Truncate
-    this.subscriber.on('truncate', (vertexData) => {
+    this.subscriber.on('truncate', () => {
       this.store.commit('wandererGraph/truncate')
     })
 
@@ -79,12 +79,12 @@ export default class VueGraph {
 
   removeVertex (vertexId) {
     this.store.commit('wandererGraph/removeVertex', vertexId)
-    subscriber.emit('removeVertex', vertexId)
+    this.subscriber.emit('removeVertex', vertexId)
   }
 
   removeEdge (edgeId) {
     this.store.commit('wandererGraph/removeEdge', edgeId)
-    subscriber.emit('removeEdge', edgeId)
+    this.subscriber.emit('removeEdge', edgeId)
   }
 
   getAllVertexData () {

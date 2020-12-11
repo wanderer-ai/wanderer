@@ -50,4 +50,4 @@ class WandererBroadcast {
 
 }
 
-module.exports = WandererBroadcast
+export default WandererBroadcast

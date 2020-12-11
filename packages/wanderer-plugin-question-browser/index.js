@@ -9,7 +9,6 @@ export default {
 
     // Require some dependencys from wanderer
     var Vue = wanderer.require('vue')
-    var builder = wanderer.require('builder')
     var store = wanderer.require('store')
     var worker = wanderer.require('worker')
 
@@ -223,7 +222,7 @@ export default {
           label: 'is answerable by',
           cytoscapeClasses: 'isAnswerableBy',
           creatable: true,
-          defaultFields: function (fromVertexCollection, toVertexCollection) {
+          defaultFields: function () {
             return {
 
             }

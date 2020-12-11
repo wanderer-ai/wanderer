@@ -7,9 +7,6 @@ export default {
 
     // Require some dependencys from wanderer
     var Vue = wanderer.require('vue')
-    var builder = wanderer.require('builder')
-    var store = wanderer.require('store')
-    var worker = wanderer.require('worker')
 
     // Register vue components
     Vue.component('wanderer-import-editor', ImportEditor)
@@ -41,13 +38,13 @@ export default {
             }
           }],
           component: 'wanderer-jump-editor',
-          toCytoscape: function(vertexData, language) {
+          toCytoscape: function(vertexData) {
 
             var label = 'Jump'
             var base = ''
 
             if(!vertexData.isEmpty('url')) {
-              var base = new String(vertexData.get('url')).substring(vertexData.get('url').lastIndexOf('/') + 1)
+              base = new String(vertexData.get('url')).substring(vertexData.get('url').lastIndexOf('/') + 1)
               if(base.lastIndexOf(".") != -1)
               label = label+' ('+base.substring(0, base.lastIndexOf("."))+')'
             }
@@ -100,13 +97,13 @@ export default {
             }
           ],
           component: 'wanderer-import-editor',
-          toCytoscape: function(vertexData, language) {
+          toCytoscape: function(vertexData) {
 
             var label = 'Import'
             var base = ''
 
             if(!vertexData.isEmpty('url')) {
-              var base = new String(vertexData.get('url')).substring(vertexData.get('url').lastIndexOf('/') + 1)
+              base = new String(vertexData.get('url')).substring(vertexData.get('url').lastIndexOf('/') + 1)
               if(base.lastIndexOf(".") != -1)
               label = label+' ('+base.substring(0, base.lastIndexOf("."))+')'
             }
@@ -152,13 +149,12 @@ export default {
               'width': '100px',
               'font-size': '20px',
               'background-color': '#DC3545',
-              'background-color': '#DC3545',
               'border-color': '#DC3545',
               'label': 'data(label)'
             }
           }],
           component: 'wanderer-language-editor',
-          toCytoscape: function(vertexData, language) {
+          toCytoscape: function(vertexData) {
 
             var label = 'Language ('+vertexData.get('switchToLanguage')+')'
 
@@ -206,7 +202,7 @@ export default {
             }
           }],
           component: 'wanderer-reset-editor',
-          toCytoscape: function(vertexData, language) {
+          toCytoscape: function() {
             return {
               label: 'Reset'
             }

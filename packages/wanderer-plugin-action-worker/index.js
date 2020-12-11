@@ -3,7 +3,6 @@ export default {
   install (wanderer) {
 
     // Grap some dependencys
-    var thread = wanderer.require('thread')
     var broadcast = wanderer.require('broadcast')
 
     // Subscribe to the broadcast
@@ -16,12 +15,9 @@ export default {
       name: 'jump',
       props: {
         graph: {
-          visitor: function (vertex, traversal) {
+          visitor: function (vertex) {
             if(!vertex.data.isEmpty('url')) {
-              // if(!vertex.lifecycle.is('requesting')) {
-              //   vertex.lifecycle.set('requesting', true)
-                wanderer.loadFromUrl(vertex.data.get('url'))
-              // }
+              wanderer.loadFromUrl(vertex.data.get('url'))
             }
           }
         }
@@ -98,7 +94,7 @@ export default {
       name: 'reset',
       props: {
         graph: {
-          visitor: function (vertex) {
+          visitor: function () {
             subscriber.emit('truncate')
           }
         }

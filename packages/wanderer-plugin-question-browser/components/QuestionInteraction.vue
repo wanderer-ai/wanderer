@@ -29,7 +29,9 @@
       </div>
 
       <chat-button-group :class="(showInNavigation? '':'shake')">
-        <chat-button v-for="suggestion in suggestions" :key="suggestion._id+'_button'" v-if="suggestion.type=='button'" color="blue" :disabled="answered" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
+        <template v-for="suggestion in suggestions" >
+          <chat-button v-if="suggestion.type=='button'" :key="suggestion._id+'_button'" color="blue" :disabled="answered" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
+        </template>
       </chat-button-group>
     </component>
 
@@ -55,21 +57,25 @@ export default {
       if(this.vertexId != undefined) {
         return this.$chat.evaluateVertexDataValue(this.vertexId,'question')
       }
+      return false
     },
     showInNavigation: function () {
       if(this.vertexId != undefined) {
         return this.$vueGraph.getVertexDataValue(this.vertexId, 'showInNavigation')
       }
+      return false
     },
     hideMessages: function () {
       if(this.vertexId != undefined) {
         return this.$vueGraph.getVertexDataValue(this.vertexId, 'hideMessages')
       }
+      return false
     },
     answered: function () {
       if(this.vertexId != undefined) {
         return this.$vueGraph.getVertexLifecycleValue(this.vertexId, 'answered')
       }
+      return false
     },
     hide: function () {
       // Wenn die Frage beantwortet ist ...
@@ -84,10 +90,10 @@ export default {
           return false
         }
       // Wenn die Frage noch nicht beantwortet ist ...
-      } else {
-        // immer anzeigen
-        return true
       }
+
+      return true
+
     },
     suggestions: function () {
 

@@ -113,10 +113,10 @@ export default {
           becomeReachable: function (vertex) {
             vertex.setLifecycleValue('answered', false)
           },
-          visitor: function (vertex) {
+          visitor: function () {
 
           },
-          expander: function (vertex) {
+          expander: function () {
             // Never expand your edges since the question vertex will do this within its own expander
             return false
           }

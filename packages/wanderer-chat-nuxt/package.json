@@ -1,0 +1,34 @@
+{
+  "name": "wanderer-chat-nuxt",
+  "version": "0.0.1",
+  "description": "Wanderer.ai Builder Nuxt.js App",
+  "author": "",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "nuxt": "latest",
+    "nuxt-custom-elements": "latest",
+    "worker-loader": "latest",
+    "vuex": "latest",
+    "wanderer": "^0.0.1",
+    "wanderer-webworker": "^0.0.1",
+    "wanderer-vue-graph": "^0.0.1",
+    "wanderer-graph": "^0.0.1",
+    "wanderer-traversal": "^0.0.1",
+    "wanderer-chat": "^0.0.1",
+    "wanderer-plugin-base-browser": "^0.0.1",
+    "wanderer-plugin-base-worker": "^0.0.1",
+    "wanderer-plugin-question-browser": "^0.0.1",
+    "wanderer-plugin-question-worker": "^0.0.1",
+    "wanderer-plugin-action-browser": "^0.0.1",
+    "wanderer-plugin-action-worker": "^0.0.1"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^3.1.0"
+  }
+}

@@ -69,4 +69,4 @@ class WandererNestedData {
 
 }
 
-module.exports = WandererNestedData
+export default WandererNestedData
