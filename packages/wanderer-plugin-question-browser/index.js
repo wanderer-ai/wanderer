@@ -65,7 +65,8 @@ export default {
               de: 'Neue Frage'
             },
             hideMessages: false,
-            showInNavigation: false
+            showInNavigation: false,
+            forgetful: false
           },
           cytoscapeStyles: [
             {
@@ -116,6 +117,10 @@ export default {
             answered: {
               label: 'read',
               exposeDefault: true
+            },
+            invalid: {
+              label: 'invalid',
+              exposeDefault: false
             }
           },
           edgeConditions: {
@@ -125,6 +130,9 @@ export default {
             },
             notAnswered: {
               label: 'not answered'
+            },
+            invalid: {
+              label: 'invalid'
             }
           }
         },
@@ -158,7 +166,8 @@ export default {
             },
             'type': 'button',
             'name': '',
-            'priority': 50
+            'priority': 50,
+            'required': true
           },
           cytoscapeStyles: [{
             selector: '.suggestion',

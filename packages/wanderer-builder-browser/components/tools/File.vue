@@ -109,8 +109,13 @@ export default {
     }
   },
   watch: {
-    show: function (newValue) {
-      this.showModal = newValue
+    showModal: function (showModal) {
+
+      // Unselect all items because I dont want to trigger the delete key event inside the file tool because we have a text input in here
+      if(showModal) {
+        this.$builder.unselect()
+      }
+
     }
   },
   computed: {

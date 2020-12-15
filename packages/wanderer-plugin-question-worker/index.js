@@ -31,20 +31,33 @@ export default {
                 return true
               }
               return false
+            },
+            invalid: function (vertex) {
+              console.log(vertex.lifecycle.get('validationAttempts'))
+              console.log(vertex.lifecycle.is('invalid'))
+              if(vertex.lifecycle.get('validationAttempts') > 0 && vertex.lifecycle.is('invalid')) {
+                return true
+              }
+              return false
             }
           },
           becomeReachable: function (vertex) {
 
-            // Reset the lifecycle data
-            vertex.setLifecycleValue('answered', false)
+            if(vertex.data.is('forgetful')) {
 
-            // Reset all suggestions
-            vertex.outboundEdges.each((edge) => {
-              var target = edge.targetVertex
-              if(target.data.get('_collection') == 'suggestion') {
-                target.setLifecycleValue('answered', false)
-              }
-            })
+              // Reset the lifecycle data
+              vertex.setLifecycleValue('answered', false)
+              vertex.setLifecycleValue('invalid', false)
+
+              // Reset all suggestions
+              vertex.outboundEdges.each((edge) => {
+                var target = edge.targetVertex
+                if(target.data.get('_collection') == 'suggestion') {
+                  target.setLifecycleValue('answered', false)
+                }
+              })
+
+            }
 
           },
           visitor: function (vertex) {

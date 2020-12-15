@@ -129,13 +129,18 @@ export default class Chat {
     if(typeof template === 'string') {
       var data = this.vueGraph.getVertexLifecycleValuesById(vertexId)
 
-      template = Mustache.render(template, data)
+      try {
+        template = Mustache.render(template, data)
 
-      if(inline) {
-        template = md.renderInline(template)
-      } else {
-        template = md.render(template)
+        if(inline) {
+          template = md.renderInline(template)
+        } else {
+          template = md.render(template)
+        }
+      } catch (error) {
+
       }
+
 
     }
 

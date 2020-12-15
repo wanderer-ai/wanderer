@@ -6,6 +6,8 @@
     <builder-checkbox-input label="Hide suggestion messages in chat" v-model="hideMessages" />
 
     <builder-checkbox-input label="Show in navigation" v-model="showInNavigation" />
+    
+    <builder-checkbox-input label="Forget on inactive" v-model="forgetful" />
 
   </div>
 </template>
@@ -36,6 +38,14 @@ export default {
       },
       set: function (value) {
         this.$builder.setVertexDataValue('showInNavigation', value)
+      }
+    },
+    forgetful: {
+      get: function () {
+        return this.$builder.getVertexDataValue('forgetful')
+      },
+      set: function (value) {
+        this.$builder.setVertexDataValue('forgetful', value)
       }
     }
   }

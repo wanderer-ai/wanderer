@@ -87,6 +87,22 @@ export default {
       showFileTool: true
     }
   },
+  mounted () {
+
+    // Note: URLSearchParams is not available on InternetExplorer
+    // Note: Use a urlEncoder for this to work: https://meyerweb.com/eric/tools/dencoder/
+    const urlParams = new URLSearchParams(window.location.search)
+    const flowUrl = urlParams.get('flow')
+
+    if(flowUrl) {
+      this.$wanderer.loadFromUrl(flowUrl)
+      this.$store.commit('wandererChat/setVisible', true)
+
+      this.showFileTool = false
+
+    }
+
+  },
   methods: {
     // toggleChatPanel () {
     //   if(this.showChatPanel){

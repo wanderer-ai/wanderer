@@ -12,7 +12,7 @@ export default {
     var traversedRequiredEdgeIds = []
     var traversedForbiddenEdgeIds = []
     var lastTraversedForbiddenEdgeIds = []
-    var typingTimeouts = {}
+    var typingTimeout = false
 
     function truncate () {
       // Reset the edge information
@@ -20,13 +20,7 @@ export default {
       traversedForbiddenEdgeIds = []
       lastTraversedForbiddenEdgeIds = []
 
-      // Clear all timeouts
-      for (let i in typingTimeouts) {
-        if(typingTimeouts.hasOwnProperty(i)) {
-          clearTimeout(typingTimeouts[i])
-          delete typingTimeouts[i]
-        }
-      }
+      clearTimeout(typingTimeout)
     }
 
     // Add message collection props
@@ -43,13 +37,19 @@ export default {
             }
           },
           becomeReachable: function (vertex) {
-            vertex.setLifecycleValue('sent', false)
+            // Am I forgetful?
+            if(vertex.data.is('forgetful')) {
+              // Ok. Please reset my lifecycle data
+              vertex.setLifecycleValue('sent', false)
+            }
           },
           visitor: function (vertex) {
 
             // If this message was not send before
             if(!vertex.lifecycle.is('sent')) {
-              if(typingTimeouts[vertex.data.get('_id')] === undefined) {
+
+              // If no other message is typing
+              if(!typingTimeout) {
 
                 // Send a typing signal to the chat
                 thread.postMessage({
@@ -59,7 +59,7 @@ export default {
 
                 // Now send the message after a while
                 // And set the timeout
-                typingTimeouts[vertex.data.get('_id')] = setTimeout(() => {
+                typingTimeout = setTimeout(() => {
 
                   thread.postMessage({
                     'event': 'sendChatMessage',
@@ -71,8 +71,8 @@ export default {
                   // Remember the message now as sent
                   vertex.setLifecycleValue('sent', true)
 
-                  // Remove the message from the typing object
-                  delete typingTimeouts[vertex.data.get('_id')]
+                  // Free the traversal for other messages
+                  typingTimeout = false
 
                 }, 1000)
 
@@ -107,6 +107,24 @@ export default {
               if (edge.data.get('type') == 'not') {
                 traversedForbiddenEdgeIds.push(edge.data.get('_id'))
               }
+
+              // Get the source expose data and copy it to the target lifecycle
+              edge.data.with('expose', (exposeKey) => {
+                if(edge.sourceVertex.lifecycle.has(exposeKey)) {
+
+                  // Get the expose value
+                  let exposeValue = edge.sourceVertex.lifecycle.get(exposeKey)
+
+                  // Set alias
+                  if(!edge.data.isEmpty('name')) {
+                    exposeKey = edge.data.get('name')
+                  }
+
+                  // Set target lifecycle value
+                  edge.targetVertex.setLifecycleValue(exposeKey, exposeValue)
+                }
+              })
+
             },
             allowTraversal: function (edge, vertex) {
 

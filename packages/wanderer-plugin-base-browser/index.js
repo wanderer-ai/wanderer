@@ -65,6 +65,7 @@ export default {
           cytoscapeClasses: 'conclusion',
           cytoscapeCxtMenuSelector: '.conclusion',
           creatable: true,
+          appendableViaCxtMenu: true,
           cytoscapeStyles: [{
             selector: '.conclusion',
             style: {
@@ -96,13 +97,13 @@ export default {
           cytoscapeCxtMenuSelector: '.message',
           creatable: true,
           appendableViaCxtMenu: true,
-          injectableViaCxtMenu: true,
           ctxMenuAllowedEdge: 'leadsTo',
           defaultFields: {
             message: {
               en: 'New message',
               de: 'Neue Nachricht'
-            }
+            },
+            forgetful: false
           },
           cytoscapeStyles: [{
             selector: '.message',
@@ -161,7 +162,7 @@ export default {
               priority: 10,
               name: '',
               expose: '',
-              method: false,
+              // method: false,
               condition: 'none'
             }
 
@@ -243,13 +244,13 @@ export default {
               line = 'dashed'
             })
 
-            edgeData.with('method', (method) => {
-              if(targetCollectionProps) {
-                targetCollectionProps.with('edgeMethods.'+method+'.label', (label) => {
-                  displayLabel = displayLabel+' ('+label+')'
-                })
-              }
-            })
+            // edgeData.with('method', (method) => {
+            //   if(targetCollectionProps) {
+            //     targetCollectionProps.with('edgeMethods.'+method+'.label', (label) => {
+            //       displayLabel = displayLabel+' ('+label+')'
+            //     })
+            //   }
+            // })
 
             return {
               line: line,

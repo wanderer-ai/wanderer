@@ -51,7 +51,8 @@ export default {
   },
   data: function() {
     return {
-      values: {}
+      values: {},
+      validationAttempts: {}
     }
   },
   computed: {
@@ -117,7 +118,8 @@ export default {
                 _id: suggestionIds[i],
                 suggestion: this.$chat.evaluateVertexDataValue(suggestionIds[i], 'suggestion', true),
                 type: this.$vueGraph.getVertexDataValue(suggestionIds[i],'type'),
-                priority: this.$vueGraph.getVertexDataValue(suggestionIds[i],'priority')
+                priority: this.$vueGraph.getVertexDataValue(suggestionIds[i],'priority'),
+                required: this.$vueGraph.getVertexDataValue(suggestionIds[i],'required')
               })
 
             }
@@ -133,64 +135,117 @@ export default {
 
     answer (suggestionVertexId) {
 
-      // Mark question as answered in store
-      this.$vueGraph.setVertexLifecycleValue(this.vertexId, 'answered', true)
+      // Validate all suggestions
+      let valid = true
 
-      // Remember the answered suggestions
-      var answeredSuggestionVertexIds = []
+      // Count up validation attempts for the entire question
+      if(this.validationAttempts[this.vertexId] == undefined) {
+        this.validationAttempts[this.vertexId] = 1
+      } else {
+        this.validationAttempts[this.vertexId]++
+      }
+
+      this.$vueGraph.setVertexLifecycleValue(this.vertexId, 'validationAttempts', this.validationAttempts[this.vertexId])
 
       // For each suggestion
       for(var s in this.suggestions) {
 
-        // Answere the direct button suggestion
-        // Was the button itself a suggestion?
-        if(suggestionVertexId != undefined && suggestionVertexId==this.suggestions[s]._id) {
+        // If this is not a button
+        if(this.suggestions[s].type != 'button') {
 
-          // Mark also this suggestion as answered in the store
-          this.$vueGraph.setVertexLifecycleValue(suggestionVertexId, 'answered', true)
+          // Count up validation attempts for the suggestion
+          if(this.validationAttempts[this.suggestions[s]._id] == undefined) {
+            this.validationAttempts[this.suggestions[s]._id] = 1
+          } else {
+            this.validationAttempts[this.suggestions[s]._id]++
+          }
 
-          answeredSuggestionVertexIds.push(suggestionVertexId)
+          this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'validationAttempts', this.validationAttempts[this.suggestions[s]._id])
 
-        } else {
+          // If this field is required
+          if(this.suggestions[s].required) {
 
-          // Answer the other suggestions
-          // Check the values
-          // There must be a value. Values like "" or false(bool) will not answere the suggestion
-          if (this.values[this.suggestions[s]._id] != undefined && this.values[this.suggestions[s]._id]) {
+            if (this.values[this.suggestions[s]._id] != undefined && this.values[this.suggestions[s]._id]) {
+              this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'invalid', false)
+            } else {
+              // Mark the suggestion as invalid
+              this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'invalid', true)
+              valid = false
+            }
 
-            // Answer the suggestion
-            this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'answered', true)
+          }
 
-            // Store the input value inside the lifecycle data of this node
-            this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'value', this.values[this.suggestions[s]._id])
+        }
+      }
 
-            answeredSuggestionVertexIds.push(this.suggestions[s]._id)
+      if(valid) {
+
+        // Mark question as answered in store
+        this.$vueGraph.setVertexLifecycleValue(this.vertexId, 'answered', true)
+        this.$vueGraph.setVertexLifecycleValue(this.vertexId, 'invalid', false)
+
+        // Remember the answered suggestions
+        var answeredSuggestionVertexIds = []
+
+        // For each suggestion
+        for(var s in this.suggestions) {
+
+          // Answere the direct button suggestion
+          // Was the button itself a suggestion?
+          if(suggestionVertexId != undefined && suggestionVertexId==this.suggestions[s]._id) {
+
+            // Mark also this suggestion as answered in the store
+            this.$vueGraph.setVertexLifecycleValue(suggestionVertexId, 'answered', true)
+
+            answeredSuggestionVertexIds.push(suggestionVertexId)
 
           } else {
 
-            // Mark other suggestions as not answered
-            this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'answered', false)
+            // Answer the other suggestions
+            // Check the values
+            // There must be a value. Values like "" or false(bool) will not answere the suggestion
+            if (this.values[this.suggestions[s]._id] != undefined && this.values[this.suggestions[s]._id]) {
+
+              // Answer the suggestion
+              this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'answered', true)
+
+              // Store the input value inside the lifecycle data of this node
+              this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'value', this.values[this.suggestions[s]._id])
+
+              answeredSuggestionVertexIds.push(this.suggestions[s]._id)
+
+            } else {
+
+              // Mark other suggestions as not answered
+              this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'answered', false)
+
+            }
 
           }
 
         }
 
-      }
-
-      // Sort answered suggestions by priority
-      // We want to persist them in the history of the chat
-      answeredSuggestionVertexIds = answeredSuggestionVertexIds.sort((a, b) => {
-        return this.$vueGraph.getVertexDataValue(a, 'priority')-this.$vueGraph.getVertexDataValue(b, 'priority')
-      })
-
-      // Create question and suggestion messages
-      if(!this.hideMessages) {
-        this.$store.commit('wandererChat/addMessage', {
-          vertexId: this.vertexId,
-          payload: {
-            answeredSuggestionVertexIds: answeredSuggestionVertexIds
-          },
+        // Sort answered suggestions by priority
+        // We want to persist them in the history of the chat
+        answeredSuggestionVertexIds = answeredSuggestionVertexIds.sort((a, b) => {
+          return this.$vueGraph.getVertexDataValue(a, 'priority')-this.$vueGraph.getVertexDataValue(b, 'priority')
         })
+
+        // Create question and suggestion messages
+        if(!this.hideMessages) {
+          this.$store.commit('wandererChat/addMessage', {
+            vertexId: this.vertexId,
+            payload: {
+              answeredSuggestionVertexIds: answeredSuggestionVertexIds
+            },
+          })
+        }
+
+      } else {
+
+        // Mark the entire question as invalid
+        this.$vueGraph.setVertexLifecycleValue(this.vertexId, 'invalid', true)
+
       }
 
     }

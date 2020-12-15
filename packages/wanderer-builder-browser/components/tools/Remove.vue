@@ -55,37 +55,38 @@ export default {
     }
   },
   mounted: function () {
-    var that = this
+
+    var component = this
 
     // Add event for delete key
     document.addEventListener("keydown", event => {
       if (event.isComposing || event.keyCode === 46) {
-
         // Make sure no edit vertex was set
         // So we can make sure we are not in an edit field
         // Additionally this should only work if one ore more vertices are selected
-        if(!that.isEditVertexSet&&that.selectedVertexIds.length) {
-          that.showModal = true
+        if(!component.isEditVertexSet&&component.selectedVertexIds.length) {
+          component.showModal = true
         }
 
-        return;
+        if(!component.isEditEdgeSet&&component.selectedEdgeIds.length) {
+          component.showModal = true
+        }
+
+        return
       }
-    });
+    })
 
     // Add enter key event
-    // Add event for delete key
     document.addEventListener("keydown", event => {
-
       if (event.isComposing || event.keyCode === 13) {
-
-        if(that.showModal) {
-          that.removeVertices()
-          that.showModal = false
+        if(component.showModal) {
+          component.removeEdges()
+          component.removeVertices()
+          component.showModal = false
         }
-
-        return;
+        return
       }
-    });
+    })
 
   },
   computed: {
