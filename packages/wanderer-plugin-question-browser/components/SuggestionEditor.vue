@@ -7,9 +7,11 @@
 
     <builder-range-input label="Priority" type="range" v-model="priority" min="0" max="100" />
 
-    <div v-if="type!='button'">
+    <builder-checkbox-group v-if="type!='button'">
+
       <builder-checkbox-input label="Required" v-model="required" />
-    </div>
+
+    </builder-checkbox-group>
 
   </div>
 </template>

@@ -27,8 +27,8 @@
             Check out the <a target="_blank" href="https://github.com/wanderer-ai">repositories</a> or open a new issue on <a target="_blank" href="https://github.com/wanderer-ai">GitHub</a>.
           </p>
           <p>
-            <strong>Important information:</strong> This software is experimental! Currently you should not use Wanderer.ai for production projects!
-            The project is in a early stage of development. So your conversation flows could break in the future.
+            <strong>Important information:</strong> This software is currently in rapid development state. That means that some features will change very frequently.
+            At the moment you should not use Wanderer.ai for production projects!
           </p>
           <p>
             Version {{version}}

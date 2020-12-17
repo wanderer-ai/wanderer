@@ -5,25 +5,16 @@
 
     <builder-range-input label="Priority" type="range" v-model="priority" min="0" max="100" />
 
+    <builder-select-input label="Condition" v-model="condition" :options="edgeConditions"/>
+
     <div v-if="type!='not'">
       <builder-select-input label="Expose" v-model="expose" :options="lifecycleData"/>
 
-      <builder-text-input label="Expose Alias" v-model="name" />
+      <div v-if="expose!='none'">
+        <builder-text-input label="Expose Alias" v-model="name" />
+      </div>
 
-      <builder-select-input label="Condition" v-model="condition" :options="edgeConditions"/>
     </div>
-
-    <!--
-
-    <div class="form-group">
-      <label for="edgeMethod">Invoke method</label>
-      <select id="edgeMethod" class="form-control" v-model="method">
-        <option :value="false">none</option>
-        <option
-          v-for="edgeMethod, name in edgeMethods"
-          :value="name">{{edgeMethod.label}}</option>
-      </select>
-    </div> -->
 
   </div>
 </template>

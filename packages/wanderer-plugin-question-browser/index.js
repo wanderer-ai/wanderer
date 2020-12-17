@@ -53,7 +53,6 @@ export default {
           cytoscapeClasses: 'question',
           cytoscapeCxtMenuSelector: '.question',
           appendableViaCxtMenu: true,
-          injectableViaCxtMenu: true,
           ctxMenuAllowedEdge: 'leadsTo',
           creatable: true,
           restrictPossibleChildren: [
@@ -66,7 +65,9 @@ export default {
             },
             hideMessages: false,
             showInNavigation: false,
-            forgetful: false
+            forgetful: false,
+            repeatable: true,
+            showAlways: false
           },
           cytoscapeStyles: [
             {
@@ -154,7 +155,6 @@ export default {
           cytoscapeCxtMenuSelector: '.suggestion',
           ctxMenuAllowedEdge: 'isAnswerableBy',
           appendableViaCxtMenu: true,
-          injectableViaCxtMenu: true,
           creatable: true,
           restrictPossibleParents: [
             'question'

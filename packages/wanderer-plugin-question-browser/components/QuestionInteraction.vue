@@ -4,7 +4,7 @@
 
     <component from="remote" v-bind:is="(showInNavigation?'div':'chat-message')" :class="(showInNavigation? 'mb-2':'')">
       <chat-content>
-        <span class="question-interaction" v-html="question"></span>
+        <span class="" v-html="question"></span>
       </chat-content>
     </component>
 
@@ -12,25 +12,28 @@
       <div v-for="suggestion in suggestions" :key="suggestion._id">
 
         <div class="mb-2" v-if="suggestion.type=='checkbox'">
-          <label class="form-check-label" v-if="suggestion.suggestion">
-            <input class="form-check-input" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]">
-            {{suggestion.suggestion}}
+          <label class="chat--checkbox">
+            <div class="chat--checkicon">
+              <icon name="check text-black" v-if="values[suggestion._id]"></icon>
+              <input class="" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]">
+            </div>
+            <div>{{suggestion.suggestion}}</div>
           </label>
         </div>
 
         <div class="mb-2" v-if="suggestion.type=='text'">
           <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
-          <input type="text" class="w-full text-black p-2" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
+          <input type="text" :class="'chat--input'+(suggestion.invalid?' chat--invalid':'')" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
         </div>
 
         <div class="mb-2" v-if="suggestion.type=='textarea'">
-          <label  v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
-          <textarea class="w-full text-black p-2" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
+          <label v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
+          <textarea :class="'chat--input'+(suggestion.invalid?' chat--invalid':'')" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
         </div>
 
       </div>
 
-      <chat-button-group :class="(showInNavigation? '':'shake')">
+      <chat-button-group :class="(showInNavigation? '':'chat--shake')">
         <template v-for="suggestion in suggestions" >
           <chat-button v-if="suggestion.type=='button'" :key="suggestion._id+'_button'" :disabled="answered" :theme="(showInNavigation?'secondary':'primary')" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
         </template>
@@ -43,7 +46,13 @@
 
 <script>
 
+import 'vue-awesome/icons/check'
+import Icon from 'vue-awesome/components/Icon'
+
 export default {
+  components: {
+    Icon
+  },
   props: {
     vertexId: {
       type: String
@@ -119,7 +128,8 @@ export default {
                 suggestion: this.$chat.evaluateVertexDataValue(suggestionIds[i], 'suggestion', true),
                 type: this.$vueGraph.getVertexDataValue(suggestionIds[i],'type'),
                 priority: this.$vueGraph.getVertexDataValue(suggestionIds[i],'priority'),
-                required: this.$vueGraph.getVertexDataValue(suggestionIds[i],'required')
+                required: this.$vueGraph.getVertexDataValue(suggestionIds[i],'required'),
+                invalid: this.$vueGraph.getVertexLifecycleValue(suggestionIds[i],'invalid')
               })
 
             }
@@ -256,19 +266,29 @@ export default {
 
 <style>
 
-.question-interaction p:last-of-type {
-  margin: 0;
+.chat--input {
+  @apply w-full text-black p-2;
 }
 
-.question-interaction a {
-  color:white;
+.chat--invalid {
+  @apply border-2 border-red;
 }
 
-.btn-group.has-wrap {
-  flex-wrap: wrap;
+.chat--checkbox {
+  @apply flex;
 }
 
-.shake {
+.chat--checkicon {
+  @apply bg-white border-black border-2 flex items-center justify-center cursor-pointer mr-2;
+  height: 2rem;
+  width: 2rem;
+}
+
+.chat--checkicon input {
+  display: none;
+}
+
+.chat--shake {
   /* Start the shake animation and make the animation last for 0.5 seconds */
   animation: shake 5s;
 

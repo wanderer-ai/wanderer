@@ -2,10 +2,10 @@
 
   <div class="builder--checkbox-group flex flex-wrap">
 
-    <div class="md:w-1/5">
+    <div class="w-1/5">
 
     </div>
-    <div class="md:w-4/5 flex flex-wrap">
+    <div class="w-4/5 flex flex-wrap">
 
       <slot></slot>
 
@@ -30,12 +30,12 @@ export default {
 
 <style>
 
-.builder--checkbox-group {
+/* .builder--checkbox-group {
   @apply -m-1;
 }
 
 .builder--checkbox-group .builder--checkbox{
   @apply m-1;
-}
+} */
 
 </style>

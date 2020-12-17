@@ -7,7 +7,7 @@
       </label>
     </div>
     <div class="md:w-4/5">
-      <input v-model="inputVal" :id="_uid" :min="min" :max="max" type="range" class="bg-gray-200 appearance-none w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-white focus:border-blue">
+      <input v-model="inputVal" :id="_uid" :min="min" :max="max" type="range" class="rounded bg-gray-200 appearance-none w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-black focus:border-blue">
     </div>
   </div>
 
@@ -18,7 +18,7 @@
 export default {
   props: {
     value: {
-      
+
     },
     label: {
       type: String,

@@ -13,6 +13,8 @@ export default {
     // Define some variables for collecting some data while traversing
     var openQuestions = {}
     var traversedQuestions = []
+    var foundQuestionForChat = false
+    var foundQuestionForNavigation = false
 
     // Add collection props
     subscriber.emit('addVertexCollectionProps', {
@@ -33,9 +35,7 @@ export default {
               return false
             },
             invalid: function (vertex) {
-              console.log(vertex.lifecycle.get('validationAttempts'))
-              console.log(vertex.lifecycle.is('invalid'))
-              if(vertex.lifecycle.get('validationAttempts') > 0 && vertex.lifecycle.is('invalid')) {
+              if(vertex.lifecycle.is('invalid')) {
                 return true
               }
               return false
@@ -44,6 +44,8 @@ export default {
           becomeReachable: function (vertex) {
 
             if(vertex.data.is('forgetful')) {
+
+              console.log('forgetting everything...')
 
               // Reset the lifecycle data
               vertex.setLifecycleValue('answered', false)
@@ -61,10 +63,29 @@ export default {
 
           },
           visitor: function (vertex) {
+
+            // Add this to result if not already answered
             if(!vertex.lifecycle.is('answered')) {
-              openQuestions[vertex.data.get('_id')] = []
+
+              // Add only one question to navigation and chat
+              if(vertex.data.is('showInNavigation')) {
+                if(!foundQuestionForNavigation||vertex.data.is('showAlways')) {
+                  foundQuestionForNavigation = true
+                  openQuestions[vertex.data.get('_id')] = []
+                }
+              } else {
+                if(!foundQuestionForChat||vertex.data.is('showAlways')) {
+                  foundQuestionForChat = true
+                  openQuestions[vertex.data.get('_id')] = []
+                }
+              }
+
+
             }
+
+            // Always add this question to the traversed result
             traversedQuestions.push(vertex.data.get('_id'))
+
           },
           expander: function (vertex, traversal) {
 
@@ -88,7 +109,7 @@ export default {
                   })
 
                   // Add this suggestion to question result
-                  if(openQuestions[vertex.data.get('_id')]) {
+                  if(openQuestions[vertex.data.get('_id')] != undefined) {
                     openQuestions[vertex.data.get('_id')].push(suggestionVertex.data.get('_id'))
                   }
 
@@ -124,7 +145,8 @@ export default {
             }
           },
           becomeReachable: function (vertex) {
-            vertex.setLifecycleValue('answered', false)
+            // It makes not much sense to forget olny one single suggestion in context of a question
+            // vertex.setLifecycleValue('answered', false)
           },
           visitor: function () {
 
@@ -156,6 +178,8 @@ export default {
 
       openQuestions = {}
       traversedQuestions = []
+      foundQuestionForNavigation = false
+      foundQuestionForChat = false
 
     })
 

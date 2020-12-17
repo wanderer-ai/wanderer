@@ -586,12 +586,14 @@ export default class Builder {
 
       animateItems.addClass('pulse')
 
+      // Clear pulse after
       setTimeout(() => {
-
         animateItems.removeClass('pulse')
+      }, 500)
 
+      // Allow new pulses after
+      setTimeout(() => {
         this.animatingTraversal = false
-
       }, 1500)
 
     }
@@ -661,9 +663,9 @@ export default class Builder {
           'label': 'data(label)',
           'text-wrap': 'ellipsis',
           'text-max-width': '500px',
-          'border-width': 5,
+          'border-width': 2,
           'transition-property': 'border-color',
-          'transition-duration': '0.5s',
+          'transition-duration': '0.2s',
         }
       },
       {
@@ -674,7 +676,7 @@ export default class Builder {
           'source-arrow-shape': 'circle',
           'text-rotation': 'autorotate',
           'transition-property': 'line-color',
-          'transition-duration': '0.5s'
+          'transition-duration': '0.2s'
         }
       }
     )

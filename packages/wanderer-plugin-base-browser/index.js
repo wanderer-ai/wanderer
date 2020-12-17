@@ -65,6 +65,7 @@ export default {
           cytoscapeClasses: 'conclusion',
           cytoscapeCxtMenuSelector: '.conclusion',
           creatable: true,
+          ctxMenuAllowedEdge: 'leadsTo',
           appendableViaCxtMenu: true,
           cytoscapeStyles: [{
             selector: '.conclusion',
@@ -161,7 +162,7 @@ export default {
               type: 'or',
               priority: 10,
               name: '',
-              expose: '',
+              expose: 'none',
               // method: false,
               condition: 'none'
             }

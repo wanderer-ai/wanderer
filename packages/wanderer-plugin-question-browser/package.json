@@ -5,6 +5,6 @@
   "author": "",
   "main": "index.js",
   "dependencies": {
-
+    "vue-awesome": "^3.1.3"
   }
 }

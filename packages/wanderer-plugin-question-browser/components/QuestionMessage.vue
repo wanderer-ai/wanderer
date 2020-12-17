@@ -95,8 +95,12 @@ export default {
       return message
     },
     repeatable: function () {
-      // Check if this question is still part of the current traversal
-      if(this.$store.state.wandererQuestion.traversedQuestions.indexOf(this.messageData.vertexId) !== -1) {
+      if(
+        // Check if this question is still part of the current traversal
+        this.$store.state.wandererQuestion.traversedQuestions.indexOf(this.messageData.vertexId) !== -1 &&
+        // Check if its repeatable in general
+        this.$vueGraph.getVertexDataValue(this.messageData.vertexId, 'repeatable')
+      ) {
         return true
       }
       return false
