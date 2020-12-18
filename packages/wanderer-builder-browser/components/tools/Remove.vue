@@ -17,15 +17,15 @@
         </div>
 
         <builder-button-group>
-          <builder-button color="red" v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeVertices()">
+          <builder-button color="red" v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeSelectedVertices()">
             Remove {{selectedVertexIds.length}} vertices
           </builder-button>
 
-          <builder-button color="red" v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="unlinkVertices()">
+          <builder-button color="red" v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="unlink()">
             Unlink {{selectedVertexIds.length}} vertices
           </builder-button>
 
-          <builder-button color="red" v-if="selectedEdgeIds.length" class="btn btn-danger" v-on:click="removeEdges()" >
+          <builder-button color="red" v-if="selectedEdgeIds.length" class="btn btn-danger" v-on:click="removeSelectedEdges()" >
             Remove {{selectedEdgeIds.length}} edges
           </builder-button>
         </builder-button-group>
@@ -82,6 +82,7 @@ export default {
         if(component.showModal) {
           component.removeEdges()
           component.removeVertices()
+          component.unselect()
           component.showModal = false
         }
         return
@@ -104,6 +105,10 @@ export default {
     },
   },
   methods: {
+    removeSelectedVertices () {
+      this.removeVertices()
+      this.unselect()
+    },
     removeVertices () {
       this.showModal = false
       var component = this
@@ -128,7 +133,10 @@ export default {
         }
 
       }
-      this.$builder.unselect()
+    },
+    removeSelectedEdges () {
+      this.removeEdges()
+      this.unselect()
     },
     removeEdges () {
       this.showModal = false
@@ -136,9 +144,11 @@ export default {
       for (let i in edgeIds) {
         this.$wanderer.subscriber.emit('removeEdgeById', edgeIds[i])
       }
+    },
+    unselect () {
       this.$builder.unselect()
     },
-    unlinkVertices () {
+    unlink () {
 
       this.showModal = false
       var component = this

@@ -15,7 +15,7 @@ export default {
       name: 'jump',
       props: {
         graph: {
-          visitor: function (vertex) {
+          action: function (vertex) {
             if(!vertex.data.isEmpty('url')) {
               wanderer.loadFromUrl(vertex.data.get('url'))
             }
@@ -37,7 +37,7 @@ export default {
               return false
             }
           },
-          visitor: async function (vertex) {
+          action: async function (vertex) {
 
             // If this data was not imported before...
             if(!vertex.lifecycle.is('imported')) {
@@ -105,7 +105,7 @@ export default {
       name: 'language',
       props: {
         graph: {
-          becomeReachable: function (vertex) {
+          activator: function (vertex) {
             vertex.setLifecycleValue('switched', false)
           },
           edgeConditions: {
@@ -116,7 +116,7 @@ export default {
               return false
             }
           },
-          visitor: function (vertex) {
+          action: function (vertex) {
             // Switch the language
             if(!vertex.lifecycle.is('switched')) {
               // Don't switch the language if its the same as before
@@ -136,7 +136,7 @@ export default {
       name: 'reset',
       props: {
         graph: {
-          visitor: function (vertex, traversal) {
+          action: function (vertex, traversal) {
             subscriber.emit('resetLifecycle')
           }
         }

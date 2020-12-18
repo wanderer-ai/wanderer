@@ -22,13 +22,13 @@
             </div>
           </builder-button>
 
-          <builder-button class="mb-4" color="green" v-on:click="viewExamples()">
+          <!-- <builder-button class="mb-4" color="green" v-on:click="viewExamples()">
             <div class="flex w-full justify-between items-center">
               <icon name="lightbulb"></icon>
               <span>View examples</span>
               <icon name="arrow-right"></icon>
             </div>
-          </builder-button>
+          </builder-button> -->
 
           <builder-button v-if="vertexCount" class="mb-4" color="yellow" v-on:click="downloadFile()">
             <div class="flex w-full justify-between items-center">

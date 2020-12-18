@@ -3,7 +3,9 @@
 
     <builder-textarea-input label="Message" placeholder="Message" v-model="message" />
 
-    <builder-checkbox-input label="Forget on inactive" v-model="forgetful" />
+    <builder-checkbox-group>
+      <builder-checkbox-input label="Forget on inactive" v-model="forgetful" />
+    </builder-checkbox-group>
 
   </div>
 </template>

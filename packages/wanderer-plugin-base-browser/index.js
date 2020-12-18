@@ -164,7 +164,7 @@ export default {
               name: '',
               expose: 'none',
               // method: false,
-              condition: 'none'
+              condition: 'active'
             }
 
             // Check the source node collection for default edge conditions
@@ -214,8 +214,11 @@ export default {
           component: 'wanderer-leads-to-editor',
           toCytoscape: function(edgeData, sourceCollectionProps, targetCollectionProps) {
 
-            var defaultCondition = false
+            // "Active" is the default condition for all vertices
+            var defaultCondition = 'active'
 
+            // But it can be overridden by other conditions of this vertex
+            // Get the default condition
             sourceCollectionProps.with('edgeConditions', (edgeConditions) => {
               edgeConditions.each((edgeCondition, conditionName) => {
                 if(edgeCondition.is('default')) {
@@ -238,6 +241,12 @@ export default {
 
             edgeData.with('condition', (condition) => {
               if(defaultCondition!=condition) {
+
+                if(condition == 'inactive') {
+                  displayLabel = displayLabel+' [inactive]'
+                }
+
+                // Get the custom condition name
                 sourceCollectionProps.with('edgeConditions.'+condition+'.label', (label) => {
                   displayLabel = displayLabel+' ['+label+']'
                 })

@@ -217,11 +217,11 @@ export let thread = {
     subscriber.on('traversalFinished', (data) => {
       thread.postMessage({
         'event': 'setTraversedVertices',
-        'payload': data.traversedVertexIds
+        'payload': data.activatedVertexIds
       })
       thread.postMessage({
         'event': 'setTraversedEdges',
-        'payload': data.traversedEdgeIds
+        'payload': data.activatedEdgeIds
       })
     })
 

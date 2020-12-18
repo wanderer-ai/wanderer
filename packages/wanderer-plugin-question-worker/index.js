@@ -41,7 +41,7 @@ export default {
               return false
             }
           },
-          becomeReachable: function (vertex) {
+          activator: function (vertex) {
 
             if(vertex.data.is('forgetful')) {
 
@@ -62,7 +62,7 @@ export default {
             }
 
           },
-          visitor: function (vertex) {
+          action: function (vertex) {
 
             // Add this to result if not already answered
             if(!vertex.lifecycle.is('answered')) {
@@ -98,7 +98,7 @@ export default {
               if(edge.data.get('_collection') == 'isAnswerableBy') {
 
                 var suggestionVertex = edge.targetVertex
-                if (traversal.isVertexTraversable(suggestionVertex)) {
+                if (traversal.isVertexActionAllowed(suggestionVertex)) {
 
                   // For each outbound child edge
                   var suggestionVertexOutboundEdges = suggestionVertex.getOutboundEdges()
@@ -144,11 +144,11 @@ export default {
               return false
             }
           },
-          becomeReachable: function (vertex) {
+          activator: function (vertex) {
             // It makes not much sense to forget olny one single suggestion in context of a question
             // vertex.setLifecycleValue('answered', false)
           },
-          visitor: function () {
+          action: function () {
 
           },
           expander: function () {

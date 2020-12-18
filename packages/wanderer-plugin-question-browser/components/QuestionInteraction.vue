@@ -12,10 +12,10 @@
       <div v-for="suggestion in suggestions" :key="suggestion._id">
 
         <div class="mb-2" v-if="suggestion.type=='checkbox'">
-          <label class="chat--checkbox">
-            <div class="chat--checkicon">
-              <icon name="check text-black" v-if="values[suggestion._id]"></icon>
-              <input class="" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]">
+          <label class="chat-checkinput">
+            <div :class="'chat-checkinput--box'+(suggestion.invalid?' chat--invalid':'')">
+              <icon name="check" class="chat-checkinput--icon" v-if="values[suggestion._id]"></icon>
+              <input class="chat-checkinput--checkbox" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]">
             </div>
             <div>{{suggestion.suggestion}}</div>
           </label>
@@ -274,17 +274,22 @@ export default {
   @apply border-2 border-red;
 }
 
-.chat--checkbox {
-  @apply flex;
+.chat-checkinput {
+  @apply flex items-center;
 }
 
-.chat--checkicon {
-  @apply bg-white border-black border-2 flex items-center justify-center cursor-pointer mr-2;
-  height: 2rem;
-  width: 2rem;
+.chat-checkinput--box {
+  @apply bg-white flex flex-shrink-0 flex-grow-0 items-center justify-center cursor-pointer mr-2;
+  height: 1rem;
+  width: 1rem;
+  padding: 0.05rem;
 }
 
-.chat--checkicon input {
+.chat-checkinput--icon {
+  @apply text-black;
+}
+
+.chat-checkinput--checkbox {
   display: none;
 }
 

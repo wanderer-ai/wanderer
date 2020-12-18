@@ -14,7 +14,7 @@ export default {
 
       // Send a animation request to the builder
       // Only send it if the animation can be handled by the client
-      if(payload.traversedVertexIds.length+payload.traversedEdgeIds.length <= 100) {
+      if(payload.activatedVertexIds.length+payload.activatedEdgeIds.length <= 100) {
         worker.postMessage({
           'event': 'animateTraversal',
           'payload': payload

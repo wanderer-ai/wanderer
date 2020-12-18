@@ -5,48 +5,105 @@ class Traversal {
     this.graph = graph
     this.subscriber = subscriber
     this.traversing = false
-    this.traversedVertexIds = []
-    this.traversedEdgeIds = []
-    this.lastReachableVertexIds = []
-    this.reachableVertexIds = []
+
+    this.activatedEdgeIds = []
+
+    this.lastActivatedVertexIds = []
+    this.activatedVertexIds = []
+
+    this.traversedRequiredEdgeIds = []
+    this.traversedForbiddenEdgeIds = []
+    this.lastTraversedForbiddenEdgeIds = []
+
+    subscriber.on('truncateLifecycle', () => {
+      this.truncate()
+    })
+
+    subscriber.on('truncate', () => {
+      this.truncate()
+    })
+  }
+
+  truncate () {
+    // Reset the edge information
+    this.traversedRequiredEdgeIds = []
+    this.traversedForbiddenEdgeIds = []
+    this.lastTraversedForbiddenEdgeIds = []
   }
 
   // Check for a given vertex, if all inbound edges will allow to enter this vertex
-  isVertexTraversable (vertex) {
+  isVertexActionAllowed (vertex) {
 
     // Check for every edge if there is a allowTargetTraversal function that would allow or restrict the traversal of the current vertex
-    var vertexTraversable = true
+    var actionAllowed = true
 
     var inboundEdges = vertex.getInboundEdges()
 
     inboundEdges.each((edge) => {
 
-      edge.collection.with('allowTargetTraversal', (allowTargetTraversal) => {
-        vertexTraversable = allowTargetTraversal(
-          vertex,
-          edge
-        )
-      })
+      if (edge.data.has('type')) {
+        if (edge.data.get('type') == 'and') {
+          // Have I already visited this required edge?
+          if (this.traversedRequiredEdgeIds.indexOf(edge.data.get('_id')) === -1) {
+            actionAllowed = false
+          }
+        }
+        if (edge.data.get('type') == 'not') {
+
+          // Have I not visited this forbidden edge before?
+          if (this.traversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1) {
+            actionAllowed = false
+          }
+          // Have I not visited this forbidden edges one cycle before?
+          // So I can check if there was an forbidden edge to a node after I have visited this node
+          if (this.lastTraversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1) {
+            actionAllowed = false
+          }
+        }
+      }
 
       // If one of the inbound edges says NO...
       // Break the loop by returning false to the each callback
-      return vertexTraversable
+      return actionAllowed
 
     })
 
-    return vertexTraversable
+    return actionAllowed
 
   }
 
   isEdgeTraversable (edge, vertex) {
-    var edgeTraversable = true
-    edge.collection.with('allowTraversal', (allowTraversal) => {
-      edgeTraversable = allowTraversal(
-        edge,
-        vertex
-      )
-    })
-    return edgeTraversable
+    var allow = true
+
+    // Is there a condition available in this edge
+    if (edge.data.has('condition')) {
+
+      // Check custom vertex conditions
+      vertex.collection.with('edgeConditions.'+edge.data.get('condition'), (condition) => {
+        allow = condition(vertex)
+      })
+
+      // Check active condition
+      if(edge.data.get('condition')=='active') {
+        if(!vertex.lifecycle.is('active')) {
+          allow = false
+        } else {
+          allow = true
+        }
+      }
+
+      // Check inactive condition
+      if(edge.data.get('condition')=='inactive') {
+        if(vertex.lifecycle.is('active')) {
+          allow = false
+        } else {
+          allow = true
+        }
+      }
+
+    }
+
+    return allow
   }
 
   start () {
@@ -84,106 +141,125 @@ class Traversal {
 
     if(vertex != undefined) {
 
-      if(explore) {
-        // console.log('vertex '+vertex.data.get('_id'))
-        // console.log(this.graph.vertices)
-      }
-
       // This is the first call of the recursive stack
       if (!recursive) {
 
         this.subscriber.emit('traversalStarted')
 
-        // traversedEdges = WandererCytoscapeSingleton.cy.collection()
-        // traversedVertices = WandererCytoscapeSingleton.cy.collection()
-        this.traversedEdgeIds = []
-        this.traversedVertexIds = []
+        this.activatedVertexIds = []
+
+        this.activatedEdgeIds = []
+
+        this.traversedRequiredEdgeIds = []
+        this.traversedForbiddenEdgeIds = []
 
       }
 
-      if (this.isVertexTraversable(vertex)) {
+      if (this.isVertexActionAllowed(vertex)) {
 
-        // Remember this vertex as reachable in the current traversal
-        this.reachableVertexIds.push(vertex.data.get('_id'))
+        // Remember this vertex as activated in the current traversal
+        this.activatedVertexIds.push(vertex.data.get('_id'))
 
         // Check if the node was also reachable within the last traversal
-        if(this.lastReachableVertexIds.indexOf(vertex.data.get('_id'))==-1) {
+        if(this.lastActivatedVertexIds.indexOf(vertex.data.get('_id'))==-1) {
           // If this node was not reachable during the last traversal...
-          vertex.collection.with('becomeReachable', (becomeReachable) => {
-            becomeReachable(vertex)
+          vertex.collection.with('activator', (activator) => {
+            activator(vertex)
           })
         }
 
-        // Remember this vertex as visited
-        // traversedVertices = traversedVertices.union(currentCytoscapeVertex);
-        this.traversedVertexIds.push(vertex.data.get('_id'))
-
-        // Is there a visitor available for this kind of node?
-        // Only execute the visitor if we are not in test mode
+        // Is there a action available for this kind of node?
+        // Only execute the action if we are not in exploration mode
         if (!explore) {
-          vertex.collection.with('visitor', (visitor) => {
-            visitor(vertex, this)
+
+          vertex.collection.with('action', (action) => {
+
+            action(vertex, this)
           })
         }
 
-        var outboundEdges = vertex.getOutboundEdges()
+        if(explore) {
+          // Note: Only set the active state inside the exploration cycle
+          // This is important because the active state is only clear at the end of a cycle
+          // Because Required or Forbid edges will controll the activity of the vertex
+          vertex.setLifecycleValue('active', true)
+        }
 
-        // Is there a expander available for this kind of node which will alter the expand edges?
-        vertex.collection.with('expander', (expander) => {
-          outboundEdges = expander(vertex, this)
-          if(!outboundEdges) {
-            outboundEdges = this.graph.createItemList()
-          }
-        })
+      } else {
 
-        // Sort the outbound edges
-        outboundEdges = outboundEdges.sort('priority')
-
-        // For each outbound edge
-        outboundEdges.each((edge) => {
-
-          if(this.isEdgeTraversable(edge, vertex)) {
-
-            // Remember this edge
-            // traversedEdges = traversedEdges.union(expandEdges[i]);
-            this.traversedEdgeIds.push(edge.data.get('_id'))
-            // WandererStoreSingleton.store.commit('wanderer/rememberTraversedEdge', expandEdges[i].id())
-
-            // Call the visitor for this edge if present
-            if(explore) {
-              edge.collection.with('explorer', (explorer) => {
-                explorer(edge)
-              })
-            } else {
-              edge.collection.with('visitor', (visitor) => {
-                visitor(edge)
-              })
-            }
-
-            // Call the selected target node edge method
-            if (explore) {
-              // edge.collection.with('method', (method) => {
-              //   this.invokeVertexMethod(edge, method)
-              // })
-            }
-
-            // Traverse the connected node
-            // But only visit this node if it was not visited already before in traversal!
-            // We don't want to build a infinite recursion!
-            var targetVertex = edge.getTargetVertex()
-            if(this.traversedVertexIds.indexOf(targetVertex.data.get('_id')) == -1) {
-              // Traverse into deep
-              this.traverse(targetVertex, true, explore)
-            }
-
-            // Store this into the vuex store
-            // relatedVertexIds.push(expandEdges[i].target().id());
-
-          }
-
-        })
-
+        if(explore) {
+          // Note: Only set the active state inside the exploration cycle
+          // This is important because the active state is only clear at the end of a cycle
+          // Because Required or Forbid edges will controll the activity of the vertex
+          vertex.setLifecycleValue('active', false)
+        }
       }
+
+      var outboundEdges = vertex.getOutboundEdges()
+
+      // Is there a expander available for this kind of node which will alter the expand edges?
+      vertex.collection.with('expander', (expander) => {
+        outboundEdges = expander(vertex, this)
+        if(!outboundEdges) {
+          outboundEdges = this.graph.createItemList()
+        }
+      })
+
+      // Sort the outbound edges
+      outboundEdges = outboundEdges.sort('priority')
+
+      // For each outbound edge
+      outboundEdges.each((edge) => {
+
+        if(this.isEdgeTraversable(edge, vertex)) {
+
+          // Remember this edges in case they have defined types
+          this.activatedEdgeIds.push(edge.data.get('_id'))
+
+          if(edge.data.has('type')) {
+            // Just remember this edges
+            if (edge.data.get('type') == 'and') {
+              this.traversedRequiredEdgeIds.push(edge.data.get('_id'))
+            }
+            // Use the action to get a List of all the NOT edges
+            if (edge.data.get('type') == 'not') {
+              this.traversedForbiddenEdgeIds.push(edge.data.get('_id'))
+            }
+          }
+
+          // Get the source expose data and copy it to the target lifecycle
+          edge.data.with('expose', (exposeKey) => {
+            if(edge.sourceVertex.lifecycle.has(exposeKey)) {
+
+              // Get the expose value
+              let exposeValue = edge.sourceVertex.lifecycle.get(exposeKey)
+
+              // Set alias
+              if(!edge.data.isEmpty('name')) {
+                exposeKey = edge.data.get('name')
+              }
+
+              // Set target lifecycle value
+              edge.targetVertex.setLifecycleValue(exposeKey, exposeValue)
+            }
+          })
+
+          // Traverse the connected node
+          // But only visit this node if it was not visited already before in traversal!
+          // We don't want to build a infinite recursion!
+          var targetVertex = edge.getTargetVertex()
+          if(this.activatedVertexIds.indexOf(targetVertex.data.get('_id')) == -1) {
+            // Traverse into deep
+            this.traverse(targetVertex, true, explore)
+          }
+
+          // Store this into the vuex store
+          // relatedVertexIds.push(expandEdges[i].target().id());
+
+        }
+
+      }) // each outbound edge
+
 
     } else {
 
@@ -200,20 +276,17 @@ class Traversal {
         this.traverse(vertex, false, false)
       } else {
 
-        // console.log('Traversed '+this.traversedVertexIds.length+' vertices')
-
-        // Update the last reachable vertices
-        this.lastReachableVertexIds = [...this.reachableVertexIds]
-        this.reachableVertexIds = []
-
-        // console.log(lastReachableVertexIds)
-        // console.log(this.traversedVertexIds.length+' '+this.traversedEdgeIds.length)
-
         // Finish the current traversal by emittig the event
         this.subscriber.emit('traversalFinished', {
-          traversedVertexIds: this.traversedVertexIds,
-          traversedEdgeIds: this.traversedEdgeIds
+          activatedVertexIds: this.activatedVertexIds,
+          activatedEdgeIds: this.activatedEdgeIds
         })
+
+        // Update the last reachable vertices
+        this.lastActivatedVertexIds = [...this.activatedVertexIds]
+
+        // Remember the forbidden Edges for one more cycle
+        this.lastTraversedForbiddenEdgeIds = [...this.traversedForbiddenEdgeIds]
 
         // Start the next traversal tick
         setTimeout(() => {

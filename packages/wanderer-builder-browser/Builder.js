@@ -568,7 +568,7 @@ export default class Builder {
     return possibleEdgeCollections
   }
 
-  animateTraversal ({traversedVertexIds, traversedEdgeIds}) {
+  animateTraversal ({activatedVertexIds, activatedEdgeIds}) {
 
     if(!this.animatingTraversal) {
 
@@ -576,12 +576,12 @@ export default class Builder {
 
       var animateItems = this.cytoscape.collection()
 
-      for(var v in traversedVertexIds) {
-        animateItems = animateItems.union(this.cytoscape.getElementById(traversedVertexIds[v]))
+      for(var v in activatedVertexIds) {
+        animateItems = animateItems.union(this.cytoscape.getElementById(activatedVertexIds[v]))
       }
 
-      for(var e in traversedEdgeIds) {
-        animateItems = animateItems.union(this.cytoscape.getElementById(traversedEdgeIds[e]))
+      for(var e in activatedEdgeIds) {
+        animateItems = animateItems.union(this.cytoscape.getElementById(activatedEdgeIds[e]))
       }
 
       animateItems.addClass('pulse')
