@@ -319,8 +319,6 @@ class WandererGraph {
       this.origin = vertex
     }
 
-    // this.subscriber.emit('addVertexFromData', data)
-
     return vertex
   }
 
@@ -366,29 +364,27 @@ class WandererGraph {
 
     this.edges.add(edge)
 
-    // this.subscriber.emit('addEdgeFromData', data)
-
     return edge
   }
 
   setVertexDataValue (id, key, value, language) {
     var vertex = this.vertices.getElementById(id)
     if(vertex) {
-      vertex.setDataValue(key, value, language)
+      vertex.data.set(key, value, language)
     }
   }
 
   setEdgeDataValue (id, key, value, language) {
     var edge = this.edges.getElementById(id)
     if(edge) {
-      edge.setDataValue(key, value, language)
+      edge.data.set(key, value, language)
     }
   }
 
   setVertexLifecycleValue (id, key, value) {
     var vertex = this.vertices.getElementById(id)
     if(vertex) {
-      vertex.setLifecycleValue(key, value)
+      vertex.lifecycle.set(key, value)
     }
   }
 

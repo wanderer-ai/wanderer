@@ -131,14 +131,14 @@ export default {
             }
           },
           lifecycleData: {
-            sent: {
-              label: 'sent',
-              exposeDefault: false
-            }
+            // sent: {
+            //   label: 'sent',
+            //   exposeDefault: false
+            // }
           },
           edgeConditions: {
             sent: {
-              default: true,
+              default: false,
               label: 'sent'
             }
           },

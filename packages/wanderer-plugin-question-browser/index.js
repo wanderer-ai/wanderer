@@ -115,14 +115,14 @@ export default {
             }
           },
           lifecycleData: {
-            answered: {
-              label: 'read',
-              exposeDefault: true
-            },
-            invalid: {
-              label: 'invalid',
-              exposeDefault: false
-            }
+            // answered: {
+            //   label: 'answered',
+            //   exposeDefault: false
+            // },
+            // invalid: {
+            //   label: 'invalid',
+            //   exposeDefault: false
+            // }
           },
           edgeConditions: {
             answered: {
