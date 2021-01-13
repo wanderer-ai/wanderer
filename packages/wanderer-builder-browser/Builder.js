@@ -618,8 +618,8 @@ export default class Builder {
     // export vertices
     for(let i in this.store.state.wandererGraph.vertexDocumentIds) {
       if(
-        this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]]['_immutable'] === undefined ||
-        this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]]['_immutable'] === false
+        this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]]['_foreign'] === undefined ||
+        this.store.state.wandererGraph.vertexDocumentData[this.store.state.wandererGraph.vertexDocumentIds[i]]['_foreign'] === false
       ) {
 
         // Override some flow values before saving it to the file
@@ -637,8 +637,8 @@ export default class Builder {
     // export edges
     for(let i in this.store.state.wandererGraph.edgeDocumentIds) {
       if(
-        this.store.state.wandererGraph.edgeDocumentData[this.store.state.wandererGraph.edgeDocumentIds[i]]['_immutable'] === undefined ||
-        this.store.state.wandererGraph.edgeDocumentData[this.store.state.wandererGraph.edgeDocumentIds[i]]['_immutable'] === false
+        this.store.state.wandererGraph.edgeDocumentData[this.store.state.wandererGraph.edgeDocumentIds[i]]['_foreign'] === undefined ||
+        this.store.state.wandererGraph.edgeDocumentData[this.store.state.wandererGraph.edgeDocumentIds[i]]['_foreign'] === false
       ) {
         exportData.edges.push(this.store.state.wandererGraph.edgeDocumentData[this.store.state.wandererGraph.edgeDocumentIds[i]])
       }

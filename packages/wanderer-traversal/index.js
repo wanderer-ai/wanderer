@@ -75,35 +75,37 @@ class Traversal {
   isEdgeTraversable (edge, vertex) {
     var allow = true
 
-    // Is there a condition available in this edge
-    if (edge.data.has('condition')) {
+    var condition = edge.data.get('condition')
 
-      // Check active condition
-      if(edge.data.get('condition')=='active') {
-        if(!vertex.lifecycle.is('active')) {
-          allow = false
-        } else {
-          allow = true
-
-          // Check custom vertex conditions
-          // Check the custom conditions only if the vertex is active!
-          vertex.collection.with('edgeConditions.'+edge.data.get('condition'), (condition) => {
-            allow = condition(vertex)
-          })
-
-        }
-      }
-
-      // Check inactive condition
-      if(edge.data.get('condition')=='inactive') {
-        if(vertex.lifecycle.is('active')) {
-          allow = false
-        } else {
-          allow = true
-        }
-      }
-
+    // The default condition is always 'active' in case there is no condition set
+    if(condition === undefined) {
+      condition = 'active'
     }
+
+    // Check active condition
+    if(condition=='active') {
+      if(!vertex.lifecycle.is('active')) {
+        allow = false
+      }
+    }
+
+    // Check inactive condition
+    if(condition=='inactive') {
+      if(vertex.lifecycle.is('active')) {
+        allow = false
+      }
+    }
+
+    // Check custom vertex conditions
+    vertex.collection.with('edgeConditions.'+condition, (condition) => {
+      // Check the custom conditions only if the vertex is active!
+      if(vertex.lifecycle.is('active')) {
+        allow = condition(vertex)
+      } else {
+        // The custom condition cannot be true if the vertex is inactive
+        allow = false
+      }
+    })
 
     return allow
   }

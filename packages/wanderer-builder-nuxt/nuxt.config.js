@@ -1,10 +1,11 @@
 const pkg = require('./package')
 
 module.exports = {
+  target: 'static',
   router: {
     base: '/builder/'
   },
-  mode: 'spa',
+  ssr: false,
 
   /*
   ** Headers of the page
@@ -62,7 +63,7 @@ module.exports = {
   buildModules: [
     '@nuxtjs/tailwindcss'
   ],
-  purgeCSS: {
-    whitelist: [],
-  },
+  // purgeCSS: {
+  //   whitelist: [],
+  // },
 }
