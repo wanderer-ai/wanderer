@@ -4,7 +4,374 @@
 0 silly argv   '$0': 'node_modules/.bin/lerna'
 0 silly argv }
 1 notice cli v3.22.1
-2 verbose rootPath /mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer
-3 error JSONError: Unexpected token } in JSON at position 214 while parsing near '...data": "^0.0.1",  }}' in packages/wanderer-chat/package.json
-3 error     at module.exports (/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/node_modules/parse-json/index.js:26:19)
-3 error     at parse (/mnt/datadisk/projects-steampixel/wanderer/Repositories/wanderer/node_modules/load-json-file/index.js:15:9)
+2 verbose rootPath /home/karotte/projects-steampixel/wanderer/Repositories/wanderer
+3 silly npmConfig {
+3 silly npmConfig   registry: undefined,
+3 silly npmConfig   npmClient: 'npm',
+3 silly npmConfig   npmClientArgs: [],
+3 silly npmConfig   mutex: undefined
+3 silly npmConfig }
+4 info Bootstrapping 20 packages
+5 verbose lifecycle preinstall
+6 silly lifecycle No script for "preinstall" in "wanderer-broadcast", continuing
+7 silly lifecycle No script for "preinstall" in "wanderer-builder-worker", continuing
+8 silly lifecycle No script for "preinstall" in "wanderer-chat-worker", continuing
+9 silly lifecycle No script for "preinstall" in "wanderer-nested-data", continuing
+10 silly lifecycle No script for "preinstall" in "wanderer-plugin-action-browser", continuing
+11 silly lifecycle No script for "preinstall" in "wanderer-plugin-action-worker", continuing
+12 silly lifecycle No script for "preinstall" in "wanderer-plugin-base-browser", continuing
+13 silly lifecycle No script for "preinstall" in "wanderer-plugin-base-worker", continuing
+14 silly lifecycle No script for "preinstall" in "wanderer-plugin-question-browser", continuing
+15 silly lifecycle No script for "preinstall" in "wanderer-plugin-question-worker", continuing
+16 silly lifecycle No script for "preinstall" in "wanderer-traversal", continuing
+17 silly lifecycle No script for "preinstall" in "wanderer-webworker", continuing
+18 silly lifecycle No script for "preinstall" in "wanderer-builder-browser", continuing
+19 silly lifecycle No script for "preinstall" in "wanderer-chat-browser", continuing
+20 silly lifecycle No script for "preinstall" in "wanderer-graph", continuing
+21 silly lifecycle No script for "preinstall" in "wanderer-vue-graph", continuing
+22 silly lifecycle No script for "preinstall" in "wanderer", continuing
+23 silly lifecycle No script for "preinstall" in "wanderer-builder-nuxt", continuing
+24 silly lifecycle No script for "preinstall" in "wanderer-chat-nuxt", continuing
+25 silly lifecycle No script for "preinstall" in "wanderer-chat-webcomponent", continuing
+26 silly hasDependencyInstalled wanderer-builder-browser vue-awesome
+27 silly hasDependencyInstalled wanderer-chat-browser vue-awesome
+28 silly hasDependencyInstalled wanderer-plugin-question-browser vue-awesome
+29 silly hasDependencyInstalled wanderer-vue-graph vue-awesome
+30 silly hasDependencyInstalled wanderer-builder-browser portal-vue
+31 silly hasDependencyInstalled wanderer-vue-graph portal-vue
+32 silly hasDependencyInstalled wanderer-builder-browser cytoscape
+33 silly hasDependencyInstalled wanderer-vue-graph cytoscape
+34 silly hasDependencyInstalled wanderer-builder-browser cytoscape-cxtmenu
+35 silly hasDependencyInstalled wanderer-vue-graph cytoscape-cxtmenu
+36 silly hasDependencyInstalled wanderer-builder-nuxt @nuxtjs/tailwindcss
+37 silly hasDependencyInstalled wanderer-chat-nuxt @nuxtjs/tailwindcss
+38 silly hasDependencyInstalled wanderer-builder-nuxt nuxt
+39 silly hasDependencyInstalled wanderer-chat-nuxt nuxt
+40 silly hasDependencyInstalled wanderer-builder-nuxt worker-loader
+41 silly hasDependencyInstalled wanderer-chat-nuxt worker-loader
+42 silly hasDependencyInstalled wanderer-builder-nuxt vuex
+43 silly hasDependencyInstalled wanderer-chat-nuxt vuex
+44 silly hasDependencyInstalled wanderer-chat-webcomponent vuex
+45 silly hasDependencyInstalled wanderer-chat-browser mustache
+46 silly hasDependencyInstalled wanderer-chat-browser markdown-it
+47 silly hasDependencyInstalled wanderer-chat-nuxt nuxt-custom-elements
+48 silly hasDependencyInstalled wanderer-chat-webcomponent @vue/cli-plugin-babel
+49 silly hasDependencyInstalled wanderer-chat-webcomponent @vue/cli-plugin-vuex
+50 silly hasDependencyInstalled wanderer-chat-webcomponent @vue/cli-service
+51 silly hasDependencyInstalled wanderer-chat-webcomponent vue-template-compiler
+52 silly hasDependencyInstalled wanderer-chat-webcomponent core-js
+53 silly hasDependencyInstalled wanderer-chat-webcomponent autoprefixer
+54 silly hasDependencyInstalled wanderer-chat-webcomponent postcss
+55 silly hasDependencyInstalled wanderer-chat-webcomponent postcss-import
+56 silly hasDependencyInstalled wanderer-chat-webcomponent tailwindcss
+57 silly hasDependencyInstalled wanderer-chat-webcomponent vue
+58 silly hasDependencyInstalled wanderer-vue-graph vue
+59 silly hasDependencyInstalled wanderer axios
+60 silly hasDependencyInstalled wanderer uuid
+61 silly root dependencies {}
+62 silly leaf dependencies {}
+63 info Installing external dependencies
+64 verbose actions 5 actions, concurrency 12
+65 silly npmInstallDependencies wanderer-chat-browser [ 'vue-awesome@^3.1.3', 'mustache@latest', 'markdown-it@latest' ]
+66 silly npmInstallDependencies backup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-browser/package.json
+67 silly npmInstallDependencies wanderer-builder-nuxt [
+67 silly npmInstallDependencies   '@nuxtjs/tailwindcss@^3.1.0',
+67 silly npmInstallDependencies   'nuxt@latest',
+67 silly npmInstallDependencies   'worker-loader@latest',
+67 silly npmInstallDependencies   'vuex@latest'
+67 silly npmInstallDependencies ]
+68 silly npmInstallDependencies backup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/package.json
+69 silly npmInstallDependencies wanderer-chat-nuxt [
+69 silly npmInstallDependencies   '@nuxtjs/tailwindcss@^3.1.0',
+69 silly npmInstallDependencies   'nuxt@latest',
+69 silly npmInstallDependencies   'worker-loader@latest',
+69 silly npmInstallDependencies   'vuex@latest',
+69 silly npmInstallDependencies   'nuxt-custom-elements@latest'
+69 silly npmInstallDependencies ]
+70 silly npmInstallDependencies backup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-nuxt/package.json
+71 silly npmInstallDependencies wanderer-chat-webcomponent [
+71 silly npmInstallDependencies   'vuex@^3.4.0',
+71 silly npmInstallDependencies   '@vue/cli-plugin-babel@~4.5.0',
+71 silly npmInstallDependencies   '@vue/cli-plugin-vuex@~4.5.0',
+71 silly npmInstallDependencies   '@vue/cli-service@~4.5.0',
+71 silly npmInstallDependencies   'vue-template-compiler@^2.6.11',
+71 silly npmInstallDependencies   'core-js@^3.6.5',
+71 silly npmInstallDependencies   'autoprefixer@^9.8.6',
+71 silly npmInstallDependencies   'postcss@^7.0.35',
+71 silly npmInstallDependencies   'postcss-import@latest',
+71 silly npmInstallDependencies   'tailwindcss@npm:@tailwindcss/postcss7-compat@^2.0.1',
+71 silly npmInstallDependencies   'vue@^2.6.11'
+71 silly npmInstallDependencies ]
+72 silly npmInstallDependencies backup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-webcomponent/package.json
+73 silly npmInstallDependencies wanderer [ 'axios@latest', 'uuid@latest' ]
+74 silly npmInstallDependencies backup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer/package.json
+75 silly npmInstallDependencies writing tempJson {
+75 silly npmInstallDependencies   name: 'wanderer-chat-browser',
+75 silly npmInstallDependencies   version: '0.0.1',
+75 silly npmInstallDependencies   description: 'Wanderer Chat browser',
+75 silly npmInstallDependencies   author: '',
+75 silly npmInstallDependencies   private: true,
+75 silly npmInstallDependencies   module: 'plugin.js',
+75 silly npmInstallDependencies   dependencies: {
+75 silly npmInstallDependencies     'vue-awesome': '^3.1.3',
+75 silly npmInstallDependencies     mustache: 'latest',
+75 silly npmInstallDependencies     'markdown-it': 'latest'
+75 silly npmInstallDependencies   }
+75 silly npmInstallDependencies }
+76 silly npmInstallDependencies writing tempJson {
+76 silly npmInstallDependencies   name: 'wanderer-builder-nuxt',
+76 silly npmInstallDependencies   version: '0.0.1',
+76 silly npmInstallDependencies   description: 'Wanderer.ai Builder Nuxt.js App',
+76 silly npmInstallDependencies   author: '',
+76 silly npmInstallDependencies   private: true,
+76 silly npmInstallDependencies   dependencies: { nuxt: 'latest', 'worker-loader': 'latest', vuex: 'latest' },
+76 silly npmInstallDependencies   devDependencies: { '@nuxtjs/tailwindcss': '^3.1.0' }
+76 silly npmInstallDependencies }
+77 silly npmInstallDependencies writing tempJson {
+77 silly npmInstallDependencies   name: 'wanderer-chat-nuxt',
+77 silly npmInstallDependencies   version: '0.0.1',
+77 silly npmInstallDependencies   description: 'Wanderer.ai Builder Nuxt.js App',
+77 silly npmInstallDependencies   author: '',
+77 silly npmInstallDependencies   private: true,
+77 silly npmInstallDependencies   dependencies: {
+77 silly npmInstallDependencies     nuxt: 'latest',
+77 silly npmInstallDependencies     'nuxt-custom-elements': 'latest',
+77 silly npmInstallDependencies     'worker-loader': 'latest',
+77 silly npmInstallDependencies     vuex: 'latest'
+77 silly npmInstallDependencies   },
+77 silly npmInstallDependencies   devDependencies: { '@nuxtjs/tailwindcss': '^3.1.0' }
+77 silly npmInstallDependencies }
+78 silly npmInstallDependencies writing tempJson {
+78 silly npmInstallDependencies   name: 'wanderer-chat-webcomponent',
+78 silly npmInstallDependencies   version: '0.0.1',
+78 silly npmInstallDependencies   private: true,
+78 silly npmInstallDependencies   dependencies: {
+78 silly npmInstallDependencies     'core-js': '^3.6.5',
+78 silly npmInstallDependencies     autoprefixer: '^9.8.6',
+78 silly npmInstallDependencies     postcss: '^7.0.35',
+78 silly npmInstallDependencies     'postcss-import': 'latest',
+78 silly npmInstallDependencies     tailwindcss: 'npm:@tailwindcss/postcss7-compat@^2.0.1',
+78 silly npmInstallDependencies     vue: '^2.6.11',
+78 silly npmInstallDependencies     vuex: '^3.4.0'
+78 silly npmInstallDependencies   },
+78 silly npmInstallDependencies   devDependencies: {
+78 silly npmInstallDependencies     '@vue/cli-plugin-babel': '~4.5.0',
+78 silly npmInstallDependencies     '@vue/cli-plugin-vuex': '~4.5.0',
+78 silly npmInstallDependencies     '@vue/cli-service': '~4.5.0',
+78 silly npmInstallDependencies     'vue-template-compiler': '^2.6.11'
+78 silly npmInstallDependencies   }
+78 silly npmInstallDependencies }
+79 silly npmInstallDependencies writing tempJson {
+79 silly npmInstallDependencies   name: 'wanderer',
+79 silly npmInstallDependencies   version: '0.0.1',
+79 silly npmInstallDependencies   description: 'Wanderer.ai',
+79 silly npmInstallDependencies   main: 'index.js',
+79 silly npmInstallDependencies   author: '',
+79 silly npmInstallDependencies   dependencies: { axios: 'latest', uuid: 'latest' }
+79 silly npmInstallDependencies }
+80 silly getExecOpts /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-browser undefined
+81 silly npmInstall [ 'npm', [ 'install' ] ]
+82 silly getExecOpts /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-nuxt undefined
+83 silly npmInstall [ 'npm', [ 'install' ] ]
+84 silly getExecOpts /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt undefined
+85 silly npmInstall [ 'npm', [ 'install' ] ]
+86 silly getExecOpts /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-webcomponent undefined
+87 silly npmInstall [ 'npm', [ 'install' ] ]
+88 silly getExecOpts /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer undefined
+89 silly npmInstall [ 'npm', [ 'install' ] ]
+90 silly npmInstallDependencies cleanup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-browser/package.json
+91 verbose installed leaf wanderer-chat-browser
+92 silly npmInstallDependencies cleanup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer/package.json
+93 verbose installed leaf wanderer
+94 silly npmInstallDependencies cleanup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-webcomponent/package.json
+95 verbose installed leaf wanderer-chat-webcomponent
+96 silly npmInstallDependencies cleanup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-nuxt/package.json
+97 verbose installed leaf wanderer-chat-nuxt
+98 silly npmInstallDependencies cleanup /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/package.json
+99 verbose installed leaf wanderer-builder-nuxt
+100 info Symlinking packages and binaries
+101 silly actions finished wanderer-broadcast
+102 silly resolveSymlink /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-browser/node_modules/wanderer-nested-data
+103 verbose resolveSymlink [
+103 verbose resolveSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-browser/node_modules/wanderer-nested-data',
+103 verbose resolveSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-nested-data'
+103 verbose resolveSymlink ]
+104 silly createSymlink [
+104 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-nested-data',
+104 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-browser/node_modules/wanderer-nested-data',
+104 silly createSymlink   'junction'
+104 silly createSymlink ]
+105 silly createSymbolicLink [
+105 silly createSymbolicLink   '../../wanderer-nested-data',
+105 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-browser/node_modules/wanderer-nested-data',
+105 silly createSymbolicLink   'junction'
+105 silly createSymbolicLink ]
+106 silly actions finished wanderer-builder-browser
+107 silly createSymlink [
+107 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer',
+107 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer',
+107 silly createSymlink   'junction'
+107 silly createSymlink ]
+108 silly createSymbolicLink [
+108 silly createSymbolicLink   '../../wanderer',
+108 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer',
+108 silly createSymbolicLink   'junction'
+108 silly createSymbolicLink ]
+109 silly createSymlink [
+109 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-vue-graph',
+109 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-vue-graph',
+109 silly createSymlink   'junction'
+109 silly createSymlink ]
+110 silly createSymbolicLink [
+110 silly createSymbolicLink   '../../wanderer-vue-graph',
+110 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-vue-graph',
+110 silly createSymbolicLink   'junction'
+110 silly createSymbolicLink ]
+111 silly createSymlink [
+111 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-webworker',
+111 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-webworker',
+111 silly createSymlink   'junction'
+111 silly createSymlink ]
+112 silly createSymbolicLink [
+112 silly createSymbolicLink   '../../wanderer-webworker',
+112 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-webworker',
+112 silly createSymbolicLink   'junction'
+112 silly createSymbolicLink ]
+113 silly createSymlink [
+113 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-graph',
+113 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-graph',
+113 silly createSymlink   'junction'
+113 silly createSymlink ]
+114 silly createSymbolicLink [
+114 silly createSymbolicLink   '../../wanderer-graph',
+114 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-graph',
+114 silly createSymbolicLink   'junction'
+114 silly createSymbolicLink ]
+115 silly createSymlink [
+115 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-traversal',
+115 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-traversal',
+115 silly createSymlink   'junction'
+115 silly createSymlink ]
+116 silly createSymbolicLink [
+116 silly createSymbolicLink   '../../wanderer-traversal',
+116 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-traversal',
+116 silly createSymbolicLink   'junction'
+116 silly createSymbolicLink ]
+117 silly createSymlink [
+117 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-browser',
+117 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-builder-browser',
+117 silly createSymlink   'junction'
+117 silly createSymlink ]
+118 silly createSymbolicLink [
+118 silly createSymbolicLink   '../../wanderer-builder-browser',
+118 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-builder-browser',
+118 silly createSymbolicLink   'junction'
+118 silly createSymbolicLink ]
+119 silly createSymlink [
+119 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-worker',
+119 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-builder-worker',
+119 silly createSymlink   'junction'
+119 silly createSymlink ]
+120 silly createSymbolicLink [
+120 silly createSymbolicLink   '../../wanderer-builder-worker',
+120 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-builder-worker',
+120 silly createSymbolicLink   'junction'
+120 silly createSymbolicLink ]
+121 silly createSymlink [
+121 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-browser',
+121 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-chat-browser',
+121 silly createSymlink   'junction'
+121 silly createSymlink ]
+122 silly createSymbolicLink [
+122 silly createSymbolicLink   '../../wanderer-chat-browser',
+122 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-chat-browser',
+122 silly createSymbolicLink   'junction'
+122 silly createSymbolicLink ]
+123 silly createSymlink [
+123 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-worker',
+123 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-chat-worker',
+123 silly createSymlink   'junction'
+123 silly createSymlink ]
+124 silly createSymbolicLink [
+124 silly createSymbolicLink   '../../wanderer-chat-worker',
+124 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-chat-worker',
+124 silly createSymbolicLink   'junction'
+124 silly createSymbolicLink ]
+125 silly createSymlink [
+125 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-base-worker',
+125 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-base-worker',
+125 silly createSymlink   'junction'
+125 silly createSymlink ]
+126 silly createSymbolicLink [
+126 silly createSymbolicLink   '../../wanderer-plugin-base-worker',
+126 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-base-worker',
+126 silly createSymbolicLink   'junction'
+126 silly createSymbolicLink ]
+127 silly createSymlink [
+127 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-base-browser',
+127 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-base-browser',
+127 silly createSymlink   'junction'
+127 silly createSymlink ]
+128 silly createSymbolicLink [
+128 silly createSymbolicLink   '../../wanderer-plugin-base-browser',
+128 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-base-browser',
+128 silly createSymbolicLink   'junction'
+128 silly createSymbolicLink ]
+129 silly createSymlink [
+129 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-question-browser',
+129 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-question-browser',
+129 silly createSymlink   'junction'
+129 silly createSymlink ]
+130 silly createSymbolicLink [
+130 silly createSymbolicLink   '../../wanderer-plugin-question-browser',
+130 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-question-browser',
+130 silly createSymbolicLink   'junction'
+130 silly createSymbolicLink ]
+131 silly createSymlink [
+131 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-question-worker',
+131 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-question-worker',
+131 silly createSymlink   'junction'
+131 silly createSymlink ]
+132 silly createSymbolicLink [
+132 silly createSymbolicLink   '../../wanderer-plugin-question-worker',
+132 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-question-worker',
+132 silly createSymbolicLink   'junction'
+132 silly createSymbolicLink ]
+133 silly createSymlink [
+133 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-action-browser',
+133 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-action-browser',
+133 silly createSymlink   'junction'
+133 silly createSymlink ]
+134 silly createSymbolicLink [
+134 silly createSymbolicLink   '../../wanderer-plugin-action-browser',
+134 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-action-browser',
+134 silly createSymbolicLink   'junction'
+134 silly createSymbolicLink ]
+135 silly createSymlink [
+135 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-plugin-action-worker',
+135 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-action-worker',
+135 silly createSymlink   'junction'
+135 silly createSymlink ]
+136 silly createSymbolicLink [
+136 silly createSymbolicLink   '../../wanderer-plugin-action-worker',
+136 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-builder-nuxt/node_modules/wanderer-plugin-action-worker',
+136 silly createSymbolicLink   'junction'
+136 silly createSymbolicLink ]
+137 silly actions finished wanderer-builder-nuxt
+138 silly actions finished wanderer-builder-worker
+139 silly resolveSymlink /home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-browser/node_modules/wanderer-nested-data
+140 verbose resolveSymlink [
+140 verbose resolveSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-browser/node_modules/wanderer-nested-data',
+140 verbose resolveSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-nested-data'
+140 verbose resolveSymlink ]
+141 silly createSymlink [
+141 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-nested-data',
+141 silly createSymlink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-browser/node_modules/wanderer-nested-data',
+141 silly createSymlink   'junction'
+141 silly createSymlink ]
+142 silly createSymbolicLink [
+142 silly createSymbolicLink   '../../wanderer-nested-data',
+142 silly createSymbolicLink   '/home/karotte/projects-steampixel/wanderer/Repositories/wanderer/packages/wanderer-chat-browser/node_modules/wanderer-nested-data',
+142 silly createSymbolicLink   'junction'
+142 silly createSymbolicLink ]
+143 error

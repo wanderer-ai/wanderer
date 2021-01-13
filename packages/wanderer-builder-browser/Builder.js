@@ -212,6 +212,10 @@ export default class Builder {
     if(this.store.state.wandererBuilder.debug) {
       cytoscapeData.label = cytoscapeData.label+' ('+vertexData.get('_id')+')'
     }
+
+    // Erase label
+    // cytoscapeData.label = ''
+
     // Set the data
     this.cytoscape.getElementById(vertexData.get('_id')).data(cytoscapeData)
   }
@@ -222,11 +226,14 @@ export default class Builder {
     var sourceCollectionProps = this.getVertexCollectionPropsById(edgeData.get('_from'))
     var targetCollectionProps = this.getVertexCollectionPropsById(edgeData.get('_to'))
 
-
     var cytoscapeData = {}
     this.edgeCollectionProps.with(edgeData.get('_collection')+'.toCytoscape', (toCytoscape) => {
       cytoscapeData = toCytoscape(edgeData, sourceCollectionProps, targetCollectionProps, this.store.state.wandererBuilder.currentLanguage)
     })
+
+    // Erase label
+    // cytoscapeData.label = ''
+
     // You cannot override the id
     cytoscapeData.id = edgeData.get('_id')
     // Add debug information

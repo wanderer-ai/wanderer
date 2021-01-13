@@ -78,17 +78,19 @@ class Traversal {
     // Is there a condition available in this edge
     if (edge.data.has('condition')) {
 
-      // Check custom vertex conditions
-      vertex.collection.with('edgeConditions.'+edge.data.get('condition'), (condition) => {
-        allow = condition(vertex)
-      })
-
       // Check active condition
       if(edge.data.get('condition')=='active') {
         if(!vertex.lifecycle.is('active')) {
           allow = false
         } else {
           allow = true
+
+          // Check custom vertex conditions
+          // Check the custom conditions only if the vertex is active!
+          vertex.collection.with('edgeConditions.'+edge.data.get('condition'), (condition) => {
+            allow = condition(vertex)
+          })
+
         }
       }
 

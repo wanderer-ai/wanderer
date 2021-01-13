@@ -42,7 +42,7 @@ export default {
     store.registerModule('wandererBuilder', {
       namespaced: true,
       state: {
-        debug: true,
+        debug: false,
         tutorialMode: false,
         currentFlowUrl: '',
         currentLanguage: 'en',

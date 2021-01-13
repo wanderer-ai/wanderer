@@ -1,5 +1,12 @@
 
 module.exports = {
+  purge: {
+    enabled_: process.env.NODE_ENV === 'production',
+    enabled: false,
+    content: [
+      './dist/*.html'
+    ]
+  },
   theme: {
     container: {
       center: true
