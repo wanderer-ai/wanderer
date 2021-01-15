@@ -1,5 +1,3 @@
-# Wanderer
-This is an important core package for the entire wanderer system. It provides the following functions:
-* Basic plugin and dependency management
-* Events and messages between plugins
-* Some other important core functionalities
+# wanderer
+This package is part of the wanderer.ai monorepository.
+Please read the [docs](wanderer.ai/docs) for a detailed description.

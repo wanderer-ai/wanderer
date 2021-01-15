@@ -1,5 +1,3 @@
-# Wanderer.ai Chat
-
-## User guide
-
-## Integration guide
+# wanderer-chat-nuxt
+This package is part of the wanderer.ai monorepository.
+Please read the [docs](wanderer.ai/docs) for a detailed description.

@@ -1,2 +1,3 @@
-# Wanderer chat browser
-This package contains the vue componet for the wanderer chat.
+# wanderer-chat-browser
+This package is part of the wanderer.ai monorepository.
+Please read the [docs](wanderer.ai/docs) for a detailed description.

@@ -1,2 +1,3 @@
-# Wanderer broadcast
-The broadcast package provides an event bus between several plugins.
+# wanderer-broadcast
+This package is part of the wanderer.ai monorepository.
+Please read the [docs](wanderer.ai/docs) for a detailed description.

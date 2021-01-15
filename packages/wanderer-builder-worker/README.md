@@ -1,2 +1,3 @@
-# Wanderer builder worker
-This package is a wanderer plugin that enables some webworker features for the conversation builder
+# wanderer-builder-worker
+This package is part of the wanderer.ai monorepository.
+Please read the [docs](wanderer.ai/docs) for a detailed description.

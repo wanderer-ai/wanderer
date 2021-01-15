@@ -1,7 +1,7 @@
 {
-  "name": "docs",
+  "name": "wanderer-docs",
   "version": "0.0.1",
-  "description": "",
+  "description": "Wanderer.ai documentation",
   "main": "index.js",
   "authors": {
     "name": "",

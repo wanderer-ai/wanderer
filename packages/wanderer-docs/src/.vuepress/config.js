@@ -64,10 +64,11 @@ module.exports = {
         {
           title: 'Developer guide',
           collapsable: false,
-          // children: [
-          //   '',
-          //   'using-vue',
-          // ]
+          children: [
+            'packages',
+            'dev-environment',
+            'flow-files'
+          ]
         },
       ],
     }

@@ -1,3 +1,3 @@
-# Wanderer builder browser
-This package provides the basic vue component for the builder.
-So the builder can easily consumed by other apps.
+# wanderer-builder-browser
+This package is part of the wanderer.ai monorepository.
+Please read the [docs](wanderer.ai/docs) for a detailed description.
