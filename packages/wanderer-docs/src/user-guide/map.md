@@ -1,5 +1,5 @@
 # The map
-The whole conversation builder is optimized to edit and view the chat flow graph. Imagine the graph like some kind of a mind map. A graph in general consist of vertices and edges. Vertices for example are questions and answers. Edges are the connections between them.
+The whole conversation builder is optimized to edit and view the chat flow graph. Imagine the graph like some kind of a mind map.
 
 ## Zoom and pan
 Use you mousewheel to zoom in and out of your graph. Grap the flow at some white area and use the mouse to pan the map.
