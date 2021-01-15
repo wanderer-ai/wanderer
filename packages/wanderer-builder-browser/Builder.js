@@ -15,6 +15,8 @@ export default class Builder {
     this.cytoscape = undefined
 
     this.animatingTraversal = false
+    this.animationEdgeOffset = 0
+    this.animatingEdges = false
 
     this.vertexCollectionProps = new WandererNestedData()
     this.edgeCollectionProps = new WandererNestedData()
@@ -575,9 +577,22 @@ export default class Builder {
     return possibleEdgeCollections
   }
 
+  // animateEdges () {
+  //   if(this.animatingEdges) {
+  //     animationEdgeOffset++
+  //     this.cytoscape.edges().animate({
+  //      style: {'line-dash-offset': -animationEdgeOffset}
+  //     });
+  //     requestAnimationFrame(this.animateEdges);
+  //   }
+  // }
+
   animateTraversal ({activatedVertexIds, activatedEdgeIds}) {
 
     if(!this.animatingTraversal) {
+
+      // this.animatingEdges = true
+      // animateEdges()
 
       this.animatingTraversal = true
 

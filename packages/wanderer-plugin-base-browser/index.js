@@ -138,7 +138,7 @@ export default {
           },
           edgeConditions: {
             sent: {
-              default: false,
+              default: true,
               label: 'sent'
             }
           },
