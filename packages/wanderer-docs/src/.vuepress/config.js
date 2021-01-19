@@ -56,7 +56,9 @@ module.exports = {
             'toolbar',
             'map',
             'map-tools',
-            'first-bot'
+            'first-bot',
+            'nodes',
+            'node-lifecycle'
           ]
         },
       ],

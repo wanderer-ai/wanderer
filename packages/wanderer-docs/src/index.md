@@ -1,15 +1,15 @@
 ---
 home: true
-heroImage: https://v1.vuepress.vuejs.org/hero.png
+_heroImage: https://v1.vuepress.vuejs.org/hero.png
 tagline:
 actionText: Quick Start →
 actionLink: /user-guide/
 features:
-- title: Feature 1 Title
-  details: Feature 1 Description
-- title: Feature 2 Title
-  details: Feature 2 Description
-- title: Feature 3 Title
-  details: Feature 3 Description
-footer: Made by  with ❤️
+- title: Privacy by design
+  details: A chatbot that respects privacy
+- title: Infrastructureless
+  details: Run your bot without server infrastructure
+- title: Multi language
+  details: Supports many languages out of the box
+footer: Made by Steampixel with ❤️
 ---
