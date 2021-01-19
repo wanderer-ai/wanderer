@@ -58,7 +58,9 @@ module.exports = {
             'map-tools',
             'first-bot',
             'nodes',
-            'node-lifecycle'
+            'node-lifecycle',
+            'edge-logic',
+            'working-with-data'
           ]
         },
       ],

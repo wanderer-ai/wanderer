@@ -38,3 +38,29 @@ __Fields in detail:__
 
 ## Conclusion
 A conclusion has no special setting options. This node can be used to bundle and simplify logical facts in the flow. For example, these nodes could only become active when one or more other conditions are met. For example, the node can be set so that it only becomes active when two or three questions have received specific answers. Bundled from this node, further questions can then be asked or messages sent.
+
+## Jump
+A jump node gives you the opportunity to jump from your current flow into another flow. In this way you can connect flows with each other. This allows you to break your conversation down into smaller chunks that are easier to maintain. It also makes your flows easier to recycle.
+
+__Fields in detail:__
+* __Jump Url:__ Enter the full URL of the flow you want to jump to.
+
+Warning: A jump node jumps immediately as soon as it becomes active. Therefore, you should make sure that the jump is always dependent on a condition. For example, you could ask the user before jumping.
+
+## Import
+An IMport node helps you to break down your flow into smaller reusable units, similar to a jump node. But instead of jumping to the target, the target is loaded into the current conversation. In this way you can reload smaller components and connect them to several edges. A flow can be imported multiple times. In this way you can build up several edges and conditions to the imported structure and exchange data.
+
+__Fields in detail:__
+* __Import URL:__ Enter the full URL of the flow you want to import.
+* __Vertex ID:__ Optionally, you can enter the ID of a vertex within the FLow to be imported to which you want to connect.
+
+## Language
+A language node can change the language of the chat within the conversation. The account changes the set language immediately after it becomes active. This node only changes the language once. If it becomes inactive, it can change the language again.
+
+__Fields in detail:__
+* __Language:__ Select the language the node should activate
+
+## Reset
+A reset node does what it says. It resets the current chat flow and starts the chat again. This node has no setting options.
+
+Warning: This node resets the conversation as soon as it becomes active. Therefore, you should make sure that it always dependents on a condition. For example, you could ask the user before resetting.
