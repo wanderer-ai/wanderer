@@ -58,6 +58,7 @@ module.exports = {
             'map-tools',
             'first-bot',
             'nodes',
+            'understand-the-flow',
             'node-lifecycle',
             'edge-logic',
             'working-with-data'
@@ -69,9 +70,10 @@ module.exports = {
           title: 'Developer guide',
           collapsable: false,
           children: [
-            'packages',
+            'website-integration',
             'dev-environment',
-            'flow-files'
+            'flow-files',
+            'packages'
           ]
         },
       ],

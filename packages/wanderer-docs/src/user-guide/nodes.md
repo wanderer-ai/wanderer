@@ -27,6 +27,9 @@ __Fields in detail:__
 * __Show in navigation:__ If active, the question is not shown in the chat but further down in a global navigation and is therefore always visible.
 * __Show always:__ Usually only one question is displayed in the chat. If this option is set, this question is always displayed if it is active and has not been answered. So many questions can be displayed at once.
 
+Note: A question and its suggestions are treated as a single super node. Connections can start directly from the question but also from the suggestions.
+A possible weighting of the edges therefore applies to all nodes in this micro network.
+
 ## Suggestion
 A suggestion is an answer to a question. A question can have several suggestions. SUggestions together generate a kind of form for answering a question. Suggestions can be buttons as well as text fields or checkboxes. In order to be able to answer a question, you need at least one button suggestion.
 

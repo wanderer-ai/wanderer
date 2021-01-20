@@ -1,7 +1,7 @@
 const pkg = require('./package')
 
 module.exports = {
-  target: 'static',
+  // target: 'static', // Habe das hier mal deaktiviert. Hat beim generaten trotz änderungen plötzlich behauptet: Skipping webpack build as no changes detected
   router: {
     base: '/builder/'
   },
