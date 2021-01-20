@@ -22,11 +22,17 @@ export default {
       props: {
         graph: {
           edgeConditions: {
-          sent: function (vertex) {
+            sent: function (vertex) {
               if(vertex.lifecycle.is('sent')) {
                 return true
               }
               return false
+            },
+            notSent: function (vertex) {
+              if(vertex.lifecycle.is('sent')) {
+                return false
+              }
+              return true
             }
           },
           activator: function (vertex) {

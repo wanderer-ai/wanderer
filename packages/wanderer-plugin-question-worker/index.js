@@ -142,6 +142,12 @@ export default {
                 return true
               }
               return false
+            },
+            invalid: function (vertex) {
+              if(vertex.lifecycle.is('invalid')) {
+                return true
+              }
+              return false
             }
           },
           activator: function (vertex) {

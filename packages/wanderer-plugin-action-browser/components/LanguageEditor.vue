@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <builder-select-input label="Language" v-model="type" :options="languages"/>
+    <builder-select-input label="Language" v-model="language" :options="languages"/>
 
   </div>
 </template>

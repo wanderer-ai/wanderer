@@ -212,6 +212,9 @@ export default {
             },
             notAnswered: {
               label: 'not answered'
+            },
+            invalid: {
+              label: 'invalid'
             }
           }
         }

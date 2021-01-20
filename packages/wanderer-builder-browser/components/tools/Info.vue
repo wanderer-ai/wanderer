@@ -18,12 +18,11 @@
             <a target="_blank" href="https://wanderer.ai/pricing/">licensing model</a>.
           </p>
           <p>
-            Are you interested in the technology behind?
-            Visit <a target="_blank" href="https://wanderer.ai">Wanderer.ai</a> and read <a target="_blank" href="https://steampixel.de/en/tag/lets-build-an-open-source-chatbot-builder/">SteamPixel's blog series</a> about this topic.
+            Do you have any questions? Do you need help and support? Then take a look at the [documentation](https://wanderer.ai/docs/user-guide/) or start a tutorial.
           </p>
           <p>
-            Are you interested in developing applications like this? Are you an open source enthusiast?
-            Help me to improve this software!
+            Are you interested in the technology behind?
+            Visit <a target="_blank" href="https://wanderer.ai">Wanderer.ai</a> and read <a target="_blank" href="https://steampixel.de/en/tag/lets-build-an-open-source-chatbot-builder/">SteamPixel's blog series</a> about this topic.
             Check out the <a target="_blank" href="https://github.com/wanderer-ai">repositories</a> or open a new issue on <a target="_blank" href="https://github.com/wanderer-ai">GitHub</a>.
           </p>
           <p>

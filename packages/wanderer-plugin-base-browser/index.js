@@ -140,6 +140,10 @@ export default {
             sent: {
               default: true,
               label: 'sent'
+            },
+            notSent: {
+              default: false,
+              label: 'not sent'
             }
           },
         },
@@ -187,9 +191,9 @@ export default {
           cytoscapeStyles: [{
             selector: '.leadsTo',
             style: {
-              'line-color': '#FEC106',
-              'target-arrow-color': '#FEC106',
-              'source-arrow-color': '#FEC106',
+              'line-color': '#6c757d',
+              'target-arrow-color': '#6c757d',
+              'source-arrow-color': '#6c757d',
               'width': 'data(priority)',
               'label': 'data(label)',
               'line-style': 'data(line)'
@@ -197,17 +201,17 @@ export default {
           },{
             selector: '.leadsTo[type = "and"]',
             style: {
-              'line-color': '#DC3545',
-              'target-arrow-color': '#DC3545',
-              'source-arrow-color': '#DC3545',
+              'line-color': '#FEC106',
+              'target-arrow-color': '#FEC106',
+              'source-arrow-color': '#FEC106',
               // 'label': 'data(label)'
             }
           },{
-            selector: '.leadsTo[type = "not"]',
+            selector: '.leadsTo[DC3545 = "not"]',
             style: {
-              'line-color': '#000000',
-              'target-arrow-color': '#000000',
-              'source-arrow-color': '#000000',
+              'line-color': '#DC3545',
+              'target-arrow-color': '#DC3545',
+              'source-arrow-color': '#DC3545',
               // 'label': 'data(label)'
             }
           }],
