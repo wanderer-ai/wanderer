@@ -7,7 +7,7 @@
       </label>
     </div>
     <div class="md:w-4/5">
-      <select v-model="inputVal" class="rounded w-full py-2 px-4 leading-tight focus:outline-none bg-white border-2 border-black focus:border-blue" :id="_uid">
+      <select v-model="inputVal" class="rounded w-full py-2 px-4 leading-tight focus:outline-none bg-white border-2 border-gray-dark focus:border-blue" :id="_uid">
         <option v-for="label, key in options" :value="key">{{label}}</option>
       </select>
     </div>

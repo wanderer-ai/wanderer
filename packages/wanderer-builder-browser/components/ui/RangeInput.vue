@@ -7,7 +7,7 @@
       </label>
     </div>
     <div class="md:w-4/5">
-      <input v-model="inputVal" :id="_uid" :min="min" :max="max" type="range" class="rounded bg-gray-200 appearance-none w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-black focus:border-blue">
+      <input v-model="inputVal" :id="_uid" :min="min" :max="max" type="range" class="rounded appearance-none w-full py-2 px-4 leading-tight focus:outline-none border-2 border-gray-dark focus:border-blue">
     </div>
   </div>
 

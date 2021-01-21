@@ -67,19 +67,24 @@ export default {
             // Add this to result if not already answered
             if(!vertex.lifecycle.is('answered')) {
 
-              // Add only one question to navigation and chat
+              // Add to navigation?
               if(vertex.data.is('showInNavigation')) {
+
+                // Add only one question to navigation and chat
                 if(!foundQuestionForNavigation||vertex.data.is('showAlways')) {
                   foundQuestionForNavigation = true
                   openQuestions[vertex.data.get('_id')] = []
                 }
+
               } else {
+
+                // Add only one question to navigation and chat
                 if(!foundQuestionForChat||vertex.data.is('showAlways')) {
                   foundQuestionForChat = true
                   openQuestions[vertex.data.get('_id')] = []
                 }
-              }
 
+              }
 
             }
 

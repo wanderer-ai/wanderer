@@ -53,7 +53,7 @@ export default {
                 // Send a typing signal to the chat
                 thread.postMessage({
                   'event': 'sendChatTyping',
-                  'payload': 1000
+                  'payload': 2000
                 })
 
                 // Now send the message after a while
@@ -71,9 +71,10 @@ export default {
                   vertex.setLifecycleValue('sent', true)
 
                   // Free the traversal for other messages
+                  clearTimeout(typingTimeout)
                   typingTimeout = false
 
-                }, 1000)
+                }, 2000)
 
               }
             }

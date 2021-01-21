@@ -18,7 +18,7 @@
             <a target="_blank" href="https://wanderer.ai/pricing/">licensing model</a>.
           </p>
           <p>
-            Do you have any questions? Do you need help and support? Then take a look at the [documentation](https://wanderer.ai/docs/user-guide/) or start a tutorial.
+            Do you have any questions? Do you need help and support? Then take a look at the <a target="_blank" href="https://wanderer.ai/docs/user-guide/">documentation</a> or start a tutorial.
           </p>
           <p>
             Are you interested in the technology behind?

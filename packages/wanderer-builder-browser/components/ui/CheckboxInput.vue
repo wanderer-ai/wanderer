@@ -6,7 +6,7 @@
 
       <label class="builder--checkicon">
         <icon name="check" v-if="inputVal"></icon>
-        <input v-model="inputVal" :id="_uid" type="checkbox" class="py-2 px-4 leading-tight focus:outline-none focus:bg-white border-2 border-white focus:border-blue">
+        <input v-model="inputVal" :id="_uid" type="checkbox" class="py-2 px-4 leading-tight focus:outline-none focus:bg-white border-2 border-gray-dark focus:border-blue">
       </label>
 
     </div>
@@ -58,7 +58,7 @@ export default {
 <style>
 
 .builder--checkicon {
-  @apply bg-white border-black border-2 flex items-center justify-center cursor-pointer;
+  @apply bg-white border-gray-dark border-2 flex items-center justify-center cursor-pointer;
   height: 2rem;
   width: 2rem;
 }

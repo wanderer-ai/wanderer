@@ -23,6 +23,8 @@ export default {
     Vue.component('chat-button-group', ChatButtonGroupComponent)
     Vue.component('chat-content', ChatContentComponent)
 
+    var typingTimeout = false
+
     // Extend vuex
     store.registerModule('wandererChat', {
       namespaced: true,
@@ -98,9 +100,17 @@ export default {
       },
       actions: {
         async setTyping(context, time) {
+          // Clear the timeout if already running...
+          if(typingTimeout) {
+            clearTimeout(typingTimeout)
+          }
+          // Set typing to true
           context.commit('setTyping', true)
-          setTimeout(()=>{
+          typingTimeout = setTimeout(()=>{
+            // Remove the typing after the given time
             context.commit('setTyping', false)
+            clearTimeout(typingTimeout)
+            typingTimeout = false
           }, time)
         }
       }

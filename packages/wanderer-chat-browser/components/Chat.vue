@@ -226,8 +226,10 @@ export default {
 
 .chat--panel {
   @apply flex h-full items-stretch flex-col rounded-md shadow-lg border-2 border-blue overflow-hidden;
-  width:300px;
-  height:500px;
+  width:400px;
+  height:700px;
+  max-height:100vh;
+  max-width:100vw;
 }
 
 .chat--header {
@@ -239,11 +241,11 @@ export default {
 }
 
 .chat--controls {
-  @apply -m-1 flex justify-between;
+  @apply -m-2 flex justify-between;
 }
 
 .chat--controls-icon {
-  @apply m-1;
+  @apply m-2;
 }
 
 .chat--restart {
@@ -255,8 +257,9 @@ export default {
 }
 
 .chat--body {
-  @apply flex-grow bg-gray p-2;
+  @apply flex-grow bg-gray p-4;
   overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 .chat--messages {
