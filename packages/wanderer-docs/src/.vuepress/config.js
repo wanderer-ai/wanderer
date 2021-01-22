@@ -59,7 +59,6 @@ module.exports = {
             'first-bot',
             'nodes',
             'understand-the-flow',
-            'node-lifecycle',
             'edge-logic',
             'working-with-data'
           ]

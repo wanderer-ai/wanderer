@@ -25,16 +25,12 @@
     <alerts />
 
     <file-tool :show="showFileTool" v-on:startTutorial="startTutorial()" v-on:viewExamples="viewExamples()"/>
-
     <info-tool />
     <edit-vertex-tool />
     <edit-edge-tool />
     <remove-tool />
-    <!-- <unlink-tool />-->
     <connect-tool />
     <language-tool />
-    <!-- <chat-tool v-on:toggle="toggleChatPanel()"/>
-    <restart-tool v-on:toggle="toggleChatPanel()" v-if="showChatPanel"/>-->
     <reload-tool />
     <add-vertex-tool />
 
@@ -47,18 +43,15 @@
 
 import Toolbar from './Toolbar.vue'
 import Cytoscape from './Cytoscape.vue'
-// import ChatPanel from './ChatPanel.vue'
 import Alerts from './Alerts.vue'
-//
+
 import InfoTool from './tools/Info.vue'
 import EditVertexTool from './tools/EditVertex.vue'
 import EditEdgeTool from './tools/EditEdge.vue'
 import RemoveTool from './tools/Remove.vue'
-// import UnlinkTool from './tools/Unlink.vue'
 import ConnectTool from './tools/Connect.vue'
 import FileTool from './tools/File.vue'
 import LanguageTool from './tools/Language.vue'
-// import ChatTool from './tools/Chat.vue'
 import AddVertexTool from './tools/AddVertex.vue'
 import ReloadTool from './tools/Reload.vue'
 
@@ -67,17 +60,14 @@ export default {
   components: {
     Toolbar,
     Cytoscape,
-    // ChatPanel,
     Alerts,
     InfoTool,
     EditVertexTool,
     EditEdgeTool,
     RemoveTool,
-    // UnlinkTool,
     ConnectTool,
     FileTool,
     LanguageTool,
-    // ChatTool,
     AddVertexTool,
     ReloadTool
   },
@@ -87,7 +77,7 @@ export default {
       showFileTool: true
     }
   },
-  mounted () {
+  async mounted () {
 
     // Note: URLSearchParams is not available on InternetExplorer
     // Note: Use a urlEncoder for this to work: https://meyerweb.com/eric/tools/dencoder/
@@ -95,22 +85,16 @@ export default {
     const flowUrl = urlParams.get('flow')
 
     if(flowUrl) {
-      this.$wanderer.loadFromUrl(flowUrl)
-      this.$store.commit('wandererChat/setVisible', true)
 
-      this.showFileTool = false
+      try {
+        await this.$wanderer.loadFromUrl(flowUrl)
+        this.$store.commit('wandererChat/setVisible', true)
+        this.showFileTool = false
+      } catch (e) {
+        this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'error'})
+      }
 
     }
-
-  },
-  methods: {
-    // toggleChatPanel () {
-    //   if(this.showChatPanel){
-    //     this.showChatPanel = false
-    //   }else{
-    //     this.showChatPanel = true
-    //   }
-    // },
 
   }
 }

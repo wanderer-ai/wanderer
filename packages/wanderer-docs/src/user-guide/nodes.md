@@ -16,6 +16,12 @@ __Fields in detail:__
 * __Message:__ This is the message that will be sent to the chat. Change the language to save it in several languages.
 * __Forget on inactive:__ The node will forget that the message has already been sent to the chat if it should become inactive during the course of the conversation.
 
+__Custom internal states:__
+* __sent:__ This state is true, if the message was send to chat
+* __not sent:__ This state is true, if the message was not send to the chat
+
+[Take a look at the messages example.](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fmessages.json)
+
 ## Question
 A question is one of the central elements of interaction available. A question can only ever appear together with suggestions. If a question is activated, it is sent to the chat in the form of a message. All active interaction options are then displayed as an interactive form. A question is only shown if it has active suggestions, if it has not yet been answered and if it is active itself.
 
@@ -27,17 +33,31 @@ __Fields in detail:__
 * __Show in navigation:__ If active, the question is not shown in the chat but further down in a global navigation and is therefore always visible.
 * __Show always:__ Usually only one question is displayed in the chat. If this option is set, this question is always displayed if it is active and has not been answered. So many questions can be displayed at once.
 
+__Custom internal states:__
+* __answered:__ This state is true, if the question was answered
+* __not answered:__ This state is true, if the question was not answered
+* __invalid:__ This state is true, if one of the suggestions is invalid
+
+[Take a look at the question example.](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fquestions.json)
+
 Note: A question and its suggestions are treated as a single super node. Connections can start directly from the question but also from the suggestions.
 A possible weighting of the edges therefore applies to all nodes in this micro network.
 
 ## Suggestion
-A suggestion is an answer to a question. A question can have several suggestions. SUggestions together generate a kind of form for answering a question. Suggestions can be buttons as well as text fields or checkboxes. In order to be able to answer a question, you need at least one button suggestion.
+A suggestion is an answer to a question. A question can have several suggestions. Suggestions together generate a kind of form for answering a question. Suggestions can be buttons as well as text fields or checkboxes. In order to be able to answer a question, you need at least one button suggestion.
 
 __Fields in detail:__
 * __Suggestion:__ That is the suggestion message. This is displayed either in the form of a button or as a label on an INput field. It also appears later in the chat as an answer bubble.
 * __Type:__ The type determines the appearance of the suggestion. You can choose between various input styles. Note: Your suggestion always needs an additional button suggestion if, for example, you have only created a text field as a suggestion. This is the only way you can answer the question.
 * __Priority:__ The priority determines in which order the suggestions are shown in the question form. The higher the value, the greater the suggestion is shown on the map and the further it wanders up in the question form.
 * __Required:__ If checked, the suggestion must be filled in or checked so that the question can be answered.
+
+__Custom internal states:__
+* __answered:__ This state is true, if the suggestion was answered
+* __not answered:__ This state is true, if the suggestion was not answered
+* __invalid:__ This state is true, if the suggestions is invalid
+
+[Take a look at the suggestion example.](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fsuggestions.json)
 
 ## Conclusion
 A conclusion has no special setting options. This node can be used to bundle and simplify logical facts in the flow. For example, these nodes could only become active when one or more other conditions are met. For example, the node can be set so that it only becomes active when two or three questions have received specific answers. Bundled from this node, further questions can then be asked or messages sent.
