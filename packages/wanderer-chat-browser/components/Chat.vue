@@ -5,7 +5,7 @@
 
     <div v-if="!isVisible" class="chat--opener">
       <div class="chat--opener-button" @click="show()" :class="(actionRequired?'chat--shake':'')">
-        {{openLabel}}
+        <icon name="robot" scale="2"></icon>
       </div>
     </div>
 
@@ -14,6 +14,10 @@
       <div class="chat--stack">
 
         <div class="chat--header">
+          <div class="chat--avatar">
+            <icon name="robot" scale="2"></icon>
+          </div>
+
           <div class="chat--title">
             {{name}}
           </div>
@@ -78,6 +82,7 @@
 
 import 'vue-awesome/icons/sync'
 import 'vue-awesome/icons/times'
+import 'vue-awesome/icons/robot'
 import Icon from 'vue-awesome/components/Icon'
 
 var interactionsCount = 0;
@@ -245,11 +250,11 @@ export default {
 }
 
 .chat--header {
-  @apply flex justify-between bg-blue p-4 text-white;
+  @apply flex justify-between items-center bg-blue p-4 text-white;
 }
 
 .chat--title {
-  @apply font-bold;
+  @apply flex-grow font-bold pl-2;
 }
 
 .chat--controls {
