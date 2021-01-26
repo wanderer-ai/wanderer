@@ -2,6 +2,7 @@ import FlowEditor from './components/FlowEditor.vue'
 import MessageEditor from './components/MessageEditor.vue'
 import LeadsToEditor from './components/LeadsToEditor.vue'
 import Message from './components/Message.vue'
+import ConclusionEditor from './components/ConclusionEditor.vue'
 
 export default {
   install (wanderer) {
@@ -14,6 +15,7 @@ export default {
     Vue.component('wanderer-leads-to-editor', LeadsToEditor)
     Vue.component('wanderer-message-editor', MessageEditor)
     Vue.component('wanderer-message', Message)
+    Vue.component('wanderer-conclusion-editor', ConclusionEditor)
 
     // Register some vertices for the builder
     wanderer.subscriber.emit('addVertexCollectionProps', {
@@ -67,6 +69,13 @@ export default {
           creatable: true,
           ctxMenuAllowedEdge: 'leadsTo',
           appendableViaCxtMenu: true,
+          defaultFields: {
+            conclusion: {
+              en: 'New conclusion',
+              de: 'Neue Schlussfolgerung'
+            },
+            forgetful: false
+          },
           cytoscapeStyles: [{
             selector: '.conclusion',
             style: {
@@ -80,10 +89,16 @@ export default {
             }
           }],
           toCytoscape: function(vertexData, language) {
+            if(vertexData.has('conclusion.'+language)){
+              return {
+                label: vertexData.get('conclusion.'+language)
+              }
+            }
             return {
               label: 'Conclusion'
             }
-          }
+          },
+          component: 'wanderer-conclusion-editor',
         }
       }
     })

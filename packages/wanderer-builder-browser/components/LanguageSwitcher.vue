@@ -1,7 +1,7 @@
 <template>
 
   <builder-button-group>
-    <builder-button :size="size" v-bind:class="{'btn-primary': currentLanguage==enabledLanguage,'btn-secondary': currentLanguage!=enabledLanguage}" v-for="(enabledLanguage) in enabledLanguages" v-bind:key="enabledLanguage" v-on:click="localize(enabledLanguage)">{{languages[enabledLanguage]['name']}}</builder-button>
+    <builder-button :size="size" :color="(currentLanguage==enabledLanguage?'blue':'gray-dark')" v-for="(enabledLanguage) in enabledLanguages" v-bind:key="enabledLanguage" v-on:click="localize(enabledLanguage)">{{languages[enabledLanguage]['name']}}</builder-button>
   </builder-button-group>
 
 </template>

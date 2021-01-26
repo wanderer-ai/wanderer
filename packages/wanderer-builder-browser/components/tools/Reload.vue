@@ -3,7 +3,7 @@
 
   <div>
 
-    <portal to="actionbar" :order="1">
+    <portal to="actionbar" :order="4">
       <builder-button color="green" title="Reload Tutorial" v-on:click="reload" v-if="tutorialMode">
         <icon name="sync"></icon>
       </builder-button>

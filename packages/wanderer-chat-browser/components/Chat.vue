@@ -3,69 +3,73 @@
 
   <div class="chat--container" v-if="vertexCount">
 
-    <div v-if="!isVisible">
-      <div class="chat--opener" @click="show()" :class="(actionRequired?'chat--shake':'')">
+    <div v-if="!isVisible" class="chat--opener">
+      <div class="chat--opener-button" @click="show()" :class="(actionRequired?'chat--shake':'')">
         {{openLabel}}
       </div>
     </div>
 
     <div v-if="isVisible" class="chat--panel" @click="focus()">
 
-      <div class="chat--header">
-        <div class="chat--title">
-          {{name}}
-        </div>
+      <div class="chat--stack">
 
-        <div class="chat--controls">
-          <div class="chat--controls-icon chat--restart" @click="restart()">
-            <icon name="sync"></icon>
+        <div class="chat--header">
+          <div class="chat--title">
+            {{name}}
           </div>
-          <div class="chat--controls-icon chat--close" @click="hide()">
-            <icon name="times"></icon>
+
+          <div class="chat--controls">
+            <div class="chat--controls-icon chat--restart" @click="restart()">
+              <icon name="sync"></icon>
+            </div>
+            <div class="chat--controls-icon chat--close" @click="hide()">
+              <icon name="times"></icon>
+            </div>
           </div>
+
         </div>
 
-      </div>
+        <div class="chat--body" ref="chatbody">
 
-      <div class="chat--body" ref="chatbody">
-
-        <div class="chat--messages">
-          <div
-            v-for="(messageId, key) in messages"
-            :key="key">
-            <component v-bind:is="getMessageComponentByMessageId(messageId)" :messageId="messageId" ></component>
+          <div class="chat--messages">
+            <div
+              v-for="(messageId, key) in messages"
+              :key="key">
+              <component v-bind:is="getMessageComponentByMessageId(messageId)" :messageId="messageId" ></component>
+            </div>
           </div>
+
+          <div class="chat--typing" v-if="typing">
+            <span class="chat--typing-circle"></span>
+            <span class="chat--typing-circle"></span>
+            <span class="chat--typing-circle"></span>
+          </div>
+
+          <div class="chat--interactions">
+            <div
+              v-for="(vertexId, key) in interactions"
+              :key="key">
+              <component v-if="!isInteractionInsideNavigation(vertexId)" v-bind:is="getInteractionComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
+            </div>
+          </div>
+
+          <div class="chat--spacer"></div>
+
         </div>
 
-        <div class="chat--typing" v-if="typing">
-          <span class="chat--typing-circle"></span>
-          <span class="chat--typing-circle"></span>
-          <span class="chat--typing-circle"></span>
-        </div>
-
-        <div class="chat--interactions">
+        <div class="chat--navigation">
           <div
             v-for="(vertexId, key) in interactions"
             :key="key">
-            <component v-if="!isInteractionInsideNavigation(vertexId)" v-bind:is="getInteractionComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
+            <component v-if="isInteractionInsideNavigation(vertexId)" v-bind:is="getInteractionComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
           </div>
         </div>
 
-        <div class="chat--spacer"></div>
-
-      </div>
-
-      <div class="chat--navigation">
-        <div
-          v-for="(vertexId, key) in interactions"
-          :key="key">
-          <component v-if="isInteractionInsideNavigation(vertexId)" v-bind:is="getInteractionComponentByVertexId(vertexId)" :vertexId="vertexId"></component>
-        </div>
       </div>
 
     </div>
 
-    <div class="chat--dot" v-if="actionRequired"></div>
+    <div class="chat--indicator" v-if="actionRequired"></div>
 
   </div>
 </template>
@@ -206,15 +210,19 @@ export default {
 <style>
 
 .chat--container {
-  @apply fixed right-0 bottom-0 m-4 z-50;
+  @apply fixed right-0 bottom-0 z-50;
 }
 
 .chat--opener {
-  @apply relative bg-blue p-4 rounded-md shadow-md text-white;
+  @apply p-4;
+}
+
+.chat--opener-button {
+  @apply relative bg-blue p-4 shadow-lg text-white;
   cursor:pointer;
 }
 
-.chat--opener:after {
+.chat--opener-button:after {
   @apply absolute block w-0 h-0;
   content: "";
   right: 2rem;
@@ -225,11 +233,15 @@ export default {
 }
 
 .chat--panel {
-  @apply flex h-full items-stretch flex-col rounded-md shadow-lg border-2 border-blue overflow-hidden;
   width:400px;
   height:700px;
   max-height:100vh;
   max-width:100vw;
+  @apply overflow-hidden p-4;
+}
+
+.chat--stack {
+  @apply shadow-lg h-full flex items-stretch flex-col shadow-md;
 }
 
 .chat--header {
@@ -337,10 +349,10 @@ export default {
   10% { transform: translate(0px, 0px) rotate(0deg); }
 }
 
-.chat--dot {
+.chat--indicator {
   position: absolute;
-  top: -0.5rem;
-  left: -0.5rem;
+  top: 0.5rem;
+  left: 0.5rem;
   @apply bg-green;
   height:1rem;
   width:1rem;

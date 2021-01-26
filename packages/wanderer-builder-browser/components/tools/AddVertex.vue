@@ -10,7 +10,7 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <builder-modal title="Add vertex" :show="showModal"  v-on:closeButton="showModal=false">
+      <builder-modal title="Add node" :show="showModal"  v-on:closeButton="showModal=false">
 
         <builder-button-group v-if="selectedVertexIds.length==0">
           <builder-button class="" v-for="(collection, name) in possibleVertexCollections" v-if="collection.creatable" v-bind:key="name" :style="'background-color:'+collection.color+';'" v-on:click="add(name)">

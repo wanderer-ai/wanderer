@@ -97,7 +97,8 @@ export default {
 <style>
 
 .modal--container {
-  max-width:100%;
+  max-width:100vw;
+  max-height: 100vh;
 }
 
 @screen lg {

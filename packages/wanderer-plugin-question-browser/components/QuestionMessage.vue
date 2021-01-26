@@ -2,11 +2,11 @@
 
   <div>
 
-    <chat-message from="remote">
+    <chat-message from="remote" :spawn="false">
       <div v-html="question"></div>
     </chat-message>
 
-    <chat-message from="local">
+    <chat-message from="local" :spawn="false">
       <span>{{answers}}</span>
       <span class="cursor-pointer" v-if="repeatable" v-on:click="askAgain()">↺</span>
     </chat-message>

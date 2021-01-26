@@ -5,6 +5,7 @@
     <div
       class="chat--message-bubble"
       v-bind:class="{
+        'chat--message-spawn': spawn,
         'chat--message-bubble-local': from=='local',
         'chat--message-bubble-remote': from=='remote'
       }">
@@ -26,6 +27,10 @@ export default {
     from: {
       default: 'remote',
       type: String
+    },
+    spawn: {
+      default: true,
+      type: Boolean
     }
   }
 }
@@ -45,6 +50,19 @@ export default {
     display: inline-block;
     width:auto;
     position: relative;
+  }
+
+  .chat--message-spawn {
+    animation: message-spawn .25s;
+  }
+
+  @keyframes message-spawn {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
   }
 
   .chat--message-bubble-local {

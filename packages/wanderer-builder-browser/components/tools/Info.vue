@@ -3,14 +3,14 @@
 
   <div>
 
-    <portal to="actionbar" :order="1">
+    <portal to="actionbar" :order="3">
       <builder-button color="gray-dark" title="Show Info" v-on:click="showModal=true">
         <icon name="info"></icon>
       </builder-button>
     </portal>
 
     <portal to="modals" :order="1">
-      <builder-modal title="Conversation Builder" :show="showModal"  v-on:closeButton="showModal=false">
+      <builder-modal title="Wanderer.ai Conversation Builder" :show="showModal"  v-on:closeButton="showModal=false">
         <builder-content>
           <p>
             Hey! This is a free service! Use it for commercial or private projects as long as you use it with the wanderer.ai domain.

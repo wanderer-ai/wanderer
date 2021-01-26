@@ -3,7 +3,7 @@
 
   <div>
 
-    <portal to="actionbar" :order="1">
+    <portal to="actionbar" :order="2">
       <builder-button color="gray-dark" title="Switch language" v-on:click="showModal=true">
         <icon name="flag"></icon>
       </builder-button>
