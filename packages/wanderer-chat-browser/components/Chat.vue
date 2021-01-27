@@ -253,8 +253,12 @@ export default {
   @apply flex justify-between items-center bg-blue p-4 text-white;
 }
 
+.chat--avatar {
+
+}
+
 .chat--title {
-  @apply flex-grow font-bold pl-2;
+  @apply flex-grow font-bold px-2;
 }
 
 .chat--controls {

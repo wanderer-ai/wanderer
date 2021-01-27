@@ -222,7 +222,7 @@ export default {
               // 'label': 'data(label)'
             }
           },{
-            selector: '.leadsTo[DC3545 = "not"]',
+            selector: '.leadsTo[type = "not"]',
             style: {
               'line-color': '#DC3545',
               'target-arrow-color': '#DC3545',

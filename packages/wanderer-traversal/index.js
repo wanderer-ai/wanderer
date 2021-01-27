@@ -13,7 +13,6 @@ class Traversal {
 
     this.traversedRequiredEdgeIds = []
     this.traversedForbiddenEdgeIds = []
-    this.lastTraversedForbiddenEdgeIds = []
 
     subscriber.on('truncateLifecycle', () => {
       this.truncate()
@@ -28,10 +27,9 @@ class Traversal {
     // Reset the edge information
     this.traversedRequiredEdgeIds = []
     this.traversedForbiddenEdgeIds = []
-    this.lastTraversedForbiddenEdgeIds = []
   }
 
-  // Check for a given vertex, if all inbound edges will allow to enter this vertex
+  // Check for a given node, if all inbound edges will allow to execute the vertex action
   isVertexActionAllowed (vertex) {
 
     // Check for every edge if there is a allowTargetTraversal function that would allow or restrict the traversal of the current vertex
@@ -54,11 +52,7 @@ class Traversal {
           if (this.traversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1) {
             actionAllowed = false
           }
-          // Have I not visited this forbidden edges one cycle before?
-          // So I can check if there was an forbidden edge to a node after I have visited this node
-          if (this.lastTraversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1) {
-            actionAllowed = false
-          }
+
         }
       }
 
@@ -155,10 +149,10 @@ class Traversal {
         this.activatedEdgeIds = []
 
         this.traversedRequiredEdgeIds = []
-        this.traversedForbiddenEdgeIds = []
 
       }
 
+      // Check if this vertex can be activated by checking the incomming edges
       if (this.isVertexActionAllowed(vertex)) {
 
         // Remember this vertex as activated in the current traversal
@@ -172,33 +166,23 @@ class Traversal {
           })
         }
 
+        // This value is important because all outgoing edes will check it later
+        vertex.setLifecycleValue('active', true)
+
         // Is there a action available for this kind of node?
         // Only execute the action if we are not in exploration mode
         if (!explore) {
-
           vertex.collection.with('action', (action) => {
-
             action(vertex, this)
           })
         }
 
-        if(explore) {
-          // Note: Only set the active state inside the exploration cycle
-          // This is important because the active state is only clear at the end of a cycle
-          // Because Required or Forbid edges will controll the activity of the vertex
-          vertex.setLifecycleValue('active', true)
-        }
-
       } else {
-
-        if(explore) {
-          // Note: Only set the active state inside the exploration cycle
-          // This is important because the active state is only clear at the end of a cycle
-          // Because Required or Forbid edges will controll the activity of the vertex
-          vertex.setLifecycleValue('active', false)
-        }
+        // This value is important because all outgoing edes will check it later
+        vertex.setLifecycleValue('active', false)
       }
 
+      // Get outbound edges of the current node
       var outboundEdges = vertex.getOutboundEdges()
 
       // Is there a expander available for this kind of node which will alter the expand edges?
@@ -215,6 +199,7 @@ class Traversal {
       // For each outbound edge
       outboundEdges.each((edge) => {
 
+        // Check if the edge is traversable
         if(this.isEdgeTraversable(edge, vertex)) {
 
           // Remember this edges in case they have defined types
@@ -225,7 +210,7 @@ class Traversal {
             if (edge.data.get('type') == 'and') {
               this.traversedRequiredEdgeIds.push(edge.data.get('_id'))
             }
-            // Use the action to get a List of all the NOT edges
+            // Build a list of all the NOT edges
             if (edge.data.get('type') == 'not') {
               this.traversedForbiddenEdgeIds.push(edge.data.get('_id'))
             }
@@ -257,9 +242,6 @@ class Traversal {
             this.traverse(targetVertex, true, explore)
           }
 
-          // Store this into the vuex store
-          // relatedVertexIds.push(expandEdges[i].target().id());
-
         }
 
       }) // each outbound edge
@@ -272,6 +254,8 @@ class Traversal {
     }
 
     // Is this the first function call in the recursive stack?
+    // That means that we have now followed all the outgoing edges of the origin node
+    // This is the finish of one cycle
     if (!recursive) {
 
       if(explore) {
@@ -289,8 +273,8 @@ class Traversal {
         // Update the last reachable vertices
         this.lastActivatedVertexIds = [...this.activatedVertexIds]
 
-        // Remember the forbidden Edges for one more cycle
-        this.lastTraversedForbiddenEdgeIds = [...this.traversedForbiddenEdgeIds]
+        // We are at the end of the live-tick. So clear now the forbidden edges
+        this.traversedForbiddenEdgeIds = []
 
         // Start the next traversal tick
         setTimeout(() => {
