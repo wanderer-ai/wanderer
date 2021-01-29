@@ -28,7 +28,8 @@ export default {
       var message = ''
 
       if(this.messageData.vertexId != undefined) {
-        message = this.$chat.evaluateVertexDataValue(this.messageData.vertexId,'message')
+        var template = this.$chat.getTranslatableVertexDataValue(this.messageData.vertexId, 'message')
+        message = this.$chat.evaluateMustache(template, this.messageData.payload.lifecycleData, false)
       }
 
       return message

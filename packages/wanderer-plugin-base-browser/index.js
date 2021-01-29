@@ -74,14 +74,14 @@ export default {
               en: 'New conclusion',
               de: 'Neue Schlussfolgerung'
             },
-            forgetful: false
+            expression: ''
           },
           cytoscapeStyles: [{
             selector: '.conclusion',
             style: {
               'height': '50px',
               'width': '50px',
-              'font-size': '30px',
+              'font-size': '20px',
               'background-color': '#FEC106',
               'border-color': '#FEC106',
               'border-width': '5px',
@@ -99,6 +99,12 @@ export default {
             }
           },
           component: 'wanderer-conclusion-editor',
+          lifecycleData: {
+            value: {
+              label: 'Value',
+              exposeDefault: true
+            }
+          }
         }
       }
     })
@@ -146,10 +152,7 @@ export default {
             }
           },
           lifecycleData: {
-            // sent: {
-            //   label: 'sent',
-            //   exposeDefault: false
-            // }
+
           },
           edgeConditions: {
             sent: {

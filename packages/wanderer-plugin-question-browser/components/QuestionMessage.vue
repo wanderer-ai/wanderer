@@ -25,8 +25,7 @@ export default {
   },
   data: function () {
     return {
-      computedMessage: '',
-      computedAnswers: ''
+
     }
   },
   computed: {
@@ -34,63 +33,73 @@ export default {
       return this.$chat.getMessageDataById(this.messageId)
     },
     answeredSuggestionVertexIds: function () {
-      return this.messageData.payload.answeredSuggestionVertexIds
+      var answeredSuggestionVertexIds = this.messageData.payload.answeredSuggestionVertexIds
+
+      answeredSuggestionVertexIds = answeredSuggestionVertexIds.sort((a, b) => {
+        return this.$vueGraph.getVertexDataValue(b, 'priority')-this.$vueGraph.getVertexDataValue(a, 'priority')
+      })
+
+      return answeredSuggestionVertexIds
+
+    },
+    answeredSuggestionsLifecycleData: function () {
+      return this.messageData.payload.answeredSuggestionsLifecycleData
     },
     question: function () {
-      var dynamicMode = false
 
-      var message = this.computedMessage
+      var message = ''
 
-      // Calculate the template only once
-      // The only exception is the dynamic mode
-      if(dynamicMode||this.computedMessage=='') {
-        if(this.messageData.vertexId != undefined) {
-          message = this.$chat.evaluateVertexDataValue(this.messageData.vertexId, 'question')
-          // this.computedMessage = message
-        }
+      if(this.messageData.vertexId != undefined) {
+
+        var template = this.$chat.getTranslatableVertexDataValue(this.messageData.vertexId, 'question')
+        message = this.$chat.evaluateMustache(template, this.messageData.payload.lifecycleData, false)
+
       }
 
       return message
     },
     answers: function () {
 
-      var dynamicMode = false
+      var message = ''
 
-      var message = this.computedAnswers
+      if(this.messageData.vertexId != undefined) {
 
-      // Calculate the template only once
-      // The only exception is the dynamic mode
-      if(dynamicMode||this.computedAnswers=='') {
-        if(this.messageData.vertexId != undefined) {
+        message = ''
 
-          message = ''
+        if (this.answeredSuggestionVertexIds != undefined) {
 
-          if (this.answeredSuggestionVertexIds != undefined) {
+          // Foreach answered suggestion
+          for(let suggestionId in this.answeredSuggestionVertexIds) {
 
-            // Foreach answered suggestion
-            for(let suggestionId in this.answeredSuggestionVertexIds) {
+            var type = this.$vueGraph.getVertexDataValue(this.answeredSuggestionVertexIds[suggestionId],'type')
+            var template = this.$chat.getTranslatableVertexDataValue(this.answeredSuggestionVertexIds[suggestionId], 'suggestion')
 
-              var type = this.$vueGraph.getVertexDataValue(this.answeredSuggestionVertexIds[suggestionId],'type')
-              var suggestion = this.$chat.getTranslatableVertexDataValue(this.answeredSuggestionVertexIds[suggestionId],'suggestion')
-              var value = this.$vueGraph.getVertexLifecycleValue(this.answeredSuggestionVertexIds[suggestionId],'value')
+            // Get immutable version of lifecycle data
+            var lifecacleData = this.answeredSuggestionsLifecycleData[this.answeredSuggestionVertexIds[suggestionId]]
 
-              if(type=='button' || type=='checkbox') {
-                message = message+suggestion
-              }
+            // Get immutable version of the value
+            var value = lifecacleData['value']
 
-              if(type=='text' || type=='textarea') {
-                message = message+value
-              }
-
-              if(suggestionId != Object.keys(this.answeredSuggestionVertexIds).length - 1) {
-                message = message + ', '
-              }
-
+            // Render the suggestion template
+            if(type=='button' || type=='checkbox') {
+              message = message+this.$chat.evaluateMustache(template, lifecacleData, true)
             }
-          }
 
+            // Just output the value
+            if(type=='text' || type=='textarea') {
+              message = message+value
+            }
+
+            // Add comma
+            if(suggestionId != Object.keys(this.answeredSuggestionVertexIds).length - 1) {
+              message = message + ', '
+            }
+
+          }
         }
+
       }
+
 
       return message
     },

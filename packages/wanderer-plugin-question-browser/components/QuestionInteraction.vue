@@ -67,7 +67,9 @@ export default {
   computed: {
     question: function () {
       if(this.vertexId != undefined) {
-        return this.$chat.evaluateVertexDataValue(this.vertexId,'question')
+        var template = this.$chat.getTranslatableVertexDataValue(this.vertexId, 'question')
+        var message = this.$chat.evaluateMustache(template, this.$vueGraph.getPlainVertexLifecycleValuesById(this.vertexId), false)
+        return message
       }
       return false
     },
@@ -123,9 +125,11 @@ export default {
 
             for(let i in suggestionIds) {
 
+              var template = this.$chat.getTranslatableVertexDataValue(suggestionIds[i], 'suggestion')
+
               returnData.push({
                 _id: suggestionIds[i],
-                suggestion: this.$chat.evaluateVertexDataValue(suggestionIds[i], 'suggestion', true),
+                suggestion: this.$chat.evaluateMustache(template, this.$vueGraph.getPlainVertexLifecycleValuesById(suggestionIds[i]), true),
                 type: this.$vueGraph.getVertexDataValue(suggestionIds[i],'type'),
                 priority: this.$vueGraph.getVertexDataValue(suggestionIds[i],'priority'),
                 required: this.$vueGraph.getVertexDataValue(suggestionIds[i],'required'),
@@ -197,6 +201,9 @@ export default {
         // Remember the answered suggestions
         var answeredSuggestionVertexIds = []
 
+        // Copy the answered suggestions lifecycle data
+        var answeredSuggestionsLifecycleData = {}
+
         // For each suggestion
         for(var s in this.suggestions) {
 
@@ -208,6 +215,7 @@ export default {
             this.$vueGraph.setVertexLifecycleValue(suggestionVertexId, 'answered', true)
 
             answeredSuggestionVertexIds.push(suggestionVertexId)
+            answeredSuggestionsLifecycleData[suggestionVertexId] = this.$vueGraph.getPlainVertexLifecycleValuesById(suggestionVertexId)
 
           } else {
 
@@ -223,6 +231,7 @@ export default {
               this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'value', this.values[this.suggestions[s]._id])
 
               answeredSuggestionVertexIds.push(this.suggestions[s]._id)
+              answeredSuggestionsLifecycleData[this.suggestions[s]._id] = this.$vueGraph.getPlainVertexLifecycleValuesById(this.suggestions[s]._id)
 
             } else {
 
@@ -246,7 +255,9 @@ export default {
           this.$store.commit('wandererChat/addMessage', {
             vertexId: this.vertexId,
             payload: {
-              answeredSuggestionVertexIds: answeredSuggestionVertexIds
+              lifecycleData: this.$vueGraph.getPlainVertexLifecycleValuesById(this.vertexId),
+              answeredSuggestionVertexIds: answeredSuggestionVertexIds,
+              answeredSuggestionsLifecycleData: answeredSuggestionsLifecycleData
             },
           })
         }

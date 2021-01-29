@@ -1,4 +1,6 @@
+import jexl from 'jexl'
 
+jexl.addTransform('number', (val) => Number(val))
 
 export default {
   install (wanderer) {
@@ -63,7 +65,11 @@ export default {
                   thread.postMessage({
                     'event': 'sendChatMessage',
                     'payload': {
-                      vertexId: vertex.data.get('_id')
+                      vertexId: vertex.data.get('_id'),
+                      // Send a copy of the vertex lifecycle data to the message because this should be immutable now
+                      payload: {
+                        lifecycleData: vertex.lifecycle.plain()
+                      }
                     }
                   })
 
@@ -84,6 +90,42 @@ export default {
       }
     })
 
+    // Add conclusion collection props
+    wanderer.subscriber.emit('addVertexCollectionProps', {
+      name: 'conclusion',
+      props: {
+        graph: {
+          edgeConditions: {
+
+          },
+          activator: function (vertex) {
+
+          },
+          action: async function (vertex) {
+
+            if(vertex.data.has('expression')) {
+
+              let expression = vertex.data.get('expression')
+              let context = vertex.lifecycle.plain()
+
+              try {
+                const result = await jexl.eval(expression, context)
+                vertex.setLifecycleValue('value', result)
+                // console.log(result)
+              } catch (e) {
+
+              }
+
+            } else {
+              vertex.setLifecycleValue('value', null)
+            }
+
+          }
+        }
+      }
+    })
+
+    // The leads to edge
     wanderer.subscriber.emit('addEdgeCollectionProps', {
       name: 'leadsTo',
       props: {
@@ -92,7 +134,6 @@ export default {
         }
       }
     })
-
 
   } // Install
 }

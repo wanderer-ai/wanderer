@@ -181,8 +181,23 @@ export default class VueGraph {
     }
   }
 
-  getVertexLifecycleValuesById (id) {
-    return this.store.state.wandererGraph.vertexLifecycleData[id]
+  // Sometimes we need the plain data from vue instead of the reactive version
+  // Than we have to convert it first
+  vueDataToPlain (vueData) {
+    var returnData = {}
+    for (const [key, value] of Object.entries(vueData)) {
+      if(typeof vueData[key] === 'object' && vueData[key] !== null) {
+        returnData[key] = this.vueDataToPlain(value.data)
+      } else {
+        returnData[key] = value
+      }
+    }
+    return returnData
+  }
+
+  // Return the whole data as plain
+  getPlainVertexLifecycleValuesById (id) {
+    return this.vueDataToPlain(this.store.state.wandererGraph.vertexLifecycleData[id])
   }
 
   getVertexLifecycleValue (id, key) {

@@ -116,18 +116,14 @@ export default class Chat {
     return this.vueGraph.getOriginDataValue(key, currentLanguage)
   }
 
-  evaluateVertexDataValue (vertexId, templateKey, inline) {
+  evaluateMustache (template, data, inline) {
 
     if(inline == undefined) {
       inline = false
     }
 
-    // Get the template string
-    var template = this.getTranslatableVertexDataValue(vertexId, templateKey)
-
     // Render template
     if(typeof template === 'string') {
-      var data = this.vueGraph.getVertexLifecycleValuesById(vertexId)
 
       try {
         template = Mustache.render(template, data)
@@ -141,12 +137,10 @@ export default class Chat {
 
       }
 
-
     }
 
     return template
 
   }
-
 
 }

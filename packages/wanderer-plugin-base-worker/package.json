@@ -5,6 +5,6 @@
   "author": "",
   "main": "index.js",
   "dependencies": {
-
+    "jexl": "latest"
   }
 }
