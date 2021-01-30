@@ -21,16 +21,22 @@ Static data is always reactive. This means that you will always see changes to s
 
 Lifecycle data generated during the chat, on the other hand, is not always reactive because that doesn't always make sense. So you don't want the chat history to change, for example, if the user repeats a question and answers it differently. That is why the lifecycle data is frozen during the chat for each message. Active questions and suggested answers, however, remain fully reactive. For example, questions can change their text while an interaction is offered because the underlying lifecycle data has changed.
 
-## Composing data within templates
+## Compose data within templates
 Some nodes allow the use of lifecycle data in their own fields. Most of these fields work like templates. You can output data in them with the help of [mustache.js](https://github.com/janl/mustache.js). An example of this are questions or messages nodes. For example, if you have transferred a user name to one of these nodes with the help of an edge, you can use this value by writing it in curly brackets:
 
-`Hey! Nice to see you, {{name}}!`
+```
+Hey! Nice to see you, {{name}}!
+```
 
 ## Calculate data with expressions
 Some other nodes offer the possibility to generate new data with the help of expressions. The result is then new variables or objects that can be processed again. Conclusions are an example of this. To compose new data we will use the [Jexl](https://github.com/TomFrost/Jexl) expression language. For example, if you want to generate a full name from a first name and a surname, you can do that as follows:
-`first + last`
+```
+first + last
+```
 
 But you could also do some math for exaple:
-`(figure_a * figure_b) + figure_b`
+```
+(figure_a * figure_b) + figure_b
+```
 
 > Note: You can access the data in the expression directly without the curly braces.
