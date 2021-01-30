@@ -47,7 +47,7 @@ At the moment, the hiker tries to explore all the paths on the map once a second
 
 You can see that on the map. The yellow pulsating nodes and connections are currently be traversed.
 
-Note: Since extremely large structures with thousands of nodes can also be traversed, the traversal animation is only displayed for flows with fewer than 100 nodes in order not to affect performance of the builder.
+> Note: Since extremely large structures with thousands of nodes can also be traversed, the traversal animation is only displayed for flows with fewer than 100 nodes in order not to affect performance of the builder.
 
 ## The node lifecycle in detail
 A node can have different states in the graph. During the traverse, a node can also switch between these states.
