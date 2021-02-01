@@ -72,14 +72,14 @@ A jump node gives you the opportunity to jump from your current flow into anothe
 __Fields in detail:__
 * __Jump Url:__ Enter the full URL of the flow you want to jump to.
 
-> Warning: A jump node jumps immediately as soon as it becomes active. Therefore, you should make sure that the jump is always dependent on a condition. For example, you could ask the user before jumping.
+> Warning: A jump node jumps immediately as soon as it becomes active. Therefore, you should make sure that the jump is always dependent on a condition. For example, you could ask the user before jumping. A jump cannot currently be undone. You could lose some data!
 
 ## Import
 An Import node helps you to break down your flow into smaller reusable units, similar to a jump node. But instead of jumping to the target, the target is loaded into the current conversation. In this way you can reload smaller components and connect them to several edges. A flow can be imported multiple times. In this way you can build up several edges and conditions to the imported structure and exchange data between them.
 
 __Fields in detail:__
 * __Import URL:__ Enter the full URL of the flow you want to import.
-* __Vertex ID:__ Optionally, you can enter the ID of a vertex within the FLow to be imported to which you want to connect.
+* __Vertex ID:__ Optionally, you can enter the ID of a vertex within the flow to be imported to which you want to connect.
 
 ## Language
 A language node can change the language of the chat within the conversation. The account changes the set language immediately after it becomes active. This node only changes the language once. If it becomes inactive, it can change the language again.
@@ -90,4 +90,4 @@ __Fields in detail:__
 ## Reset
 A reset node does what it says. It resets the current chat flow and starts the chat again. This node has no setting options.
 
-> Warning: This node resets the conversation as soon as it becomes active. Therefore, you should make sure that it always dependents on a condition. For example, you could ask the user before resetting.
+> Warning: This node resets the conversation as soon as it becomes active. Therefore, you should make sure that it always dependents on a condition. For example, you could ask the user before resetting. A reset cannot be undone. You will lose your entire lifecycle data!

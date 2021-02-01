@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>The flow file format | Wanderer.ai Docs</title>
+    <meta name="generator" content="VuePress 1.8.0">
+    
+    <meta name="description" content="Wanderer.ai documentation">
+    <meta name="theme-color" content="#3eaf7c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <link rel="preload" href="/docs/assets/css/0.styles.f73b9119.css" as="style"><link rel="preload" href="/docs/assets/js/app.a1b6ef57.js" as="script"><link rel="preload" href="/docs/assets/js/2.e44d4757.js" as="script"><link rel="preload" href="/docs/assets/js/12.0177ab55.js" as="script"><link rel="prefetch" href="/docs/assets/js/10.7388820b.js"><link rel="prefetch" href="/docs/assets/js/11.37369645.js"><link rel="prefetch" href="/docs/assets/js/13.930a6bae.js"><link rel="prefetch" href="/docs/assets/js/14.4717439b.js"><link rel="prefetch" href="/docs/assets/js/15.7193473e.js"><link rel="prefetch" href="/docs/assets/js/16.c75ae82a.js"><link rel="prefetch" href="/docs/assets/js/17.162231bd.js"><link rel="prefetch" href="/docs/assets/js/18.2f7281ee.js"><link rel="prefetch" href="/docs/assets/js/19.040f6007.js"><link rel="prefetch" href="/docs/assets/js/20.c739e9e1.js"><link rel="prefetch" href="/docs/assets/js/21.2f0b8a07.js"><link rel="prefetch" href="/docs/assets/js/22.ad523e59.js"><link rel="prefetch" href="/docs/assets/js/23.23366da5.js"><link rel="prefetch" href="/docs/assets/js/24.2721c66a.js"><link rel="prefetch" href="/docs/assets/js/25.eba4b317.js"><link rel="prefetch" href="/docs/assets/js/3.ecb299b1.js"><link rel="prefetch" href="/docs/assets/js/4.ff3f8220.js"><link rel="prefetch" href="/docs/assets/js/5.744a4355.js"><link rel="prefetch" href="/docs/assets/js/6.6e8c67be.js"><link rel="prefetch" href="/docs/assets/js/7.2605c6ec.js"><link rel="prefetch" href="/docs/assets/js/8.32d93165.js"><link rel="prefetch" href="/docs/assets/js/9.17f2ad84.js">
+    <link rel="stylesheet" href="/docs/assets/css/0.styles.f73b9119.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/docs/" class="home-link router-link-active"><!----> <span class="site-name">Wanderer.ai Docs</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/docs/user-guide/" class="nav-link">
+  User guide
+</a></div><div class="nav-item"><a href="/docs/dev-guide/" class="nav-link router-link-active">
+  Developer guide
+</a></div><div class="nav-item"><a href="https://wanderer.ai" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Wanderer.ai
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/docs/user-guide/" class="nav-link">
+  User guide
+</a></div><div class="nav-item"><a href="/docs/dev-guide/" class="nav-link router-link-active">
+  Developer guide
+</a></div><div class="nav-item"><a href="https://wanderer.ai" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Wanderer.ai
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Developer guide</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/docs/dev-guide/website-integration.html" class="sidebar-link">Website integration</a></li><li><a href="/docs/dev-guide/dev-environment.html" class="sidebar-link">Spin up a local dev environment</a></li><li><a href="/docs/dev-guide/flow-files.html" aria-current="page" class="active sidebar-link">The flow file format</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/docs/dev-guide/flow-files.html#vertices" class="sidebar-link">Vertices</a></li><li class="sidebar-sub-header"><a href="/docs/dev-guide/flow-files.html#edges" class="sidebar-link">Edges</a></li></ul></li><li><a href="/docs/dev-guide/performance.html" class="sidebar-link">Performance</a></li><li><a href="/docs/dev-guide/packages.html" class="sidebar-link">Wanderer packages</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="the-flow-file-format"><a href="#the-flow-file-format" class="header-anchor">#</a> The flow file format</h1> <p>The flow file is a common JSON format. To edit it by hand, you need to know how it's built.</p> <p>To keep it compatible with graph databases, there are essentially only two large arrays in the document. A <code>vertices</code> array and an <code>edges</code> array.</p> <p>The vertices array contains all nodes and the edges array contains all edges. Thats it.</p> <p>Within a graph database, all data must always belong to an edge or to a node. If you want to add metadata to the document yourself, you can just do that. This data is then loaded into the Builder when the file gets restored and its beeing stored back to the file, if you download it again. The only requirement is that this data must be inside a vertex or edge object.</p> <p>For example add new data by adding a new field to a message vertex:</p> <div class="language- extra-class"><pre class="language-text"><code>{
+  &quot;my_personal_comment&quot;: &quot;This message sucks&quot;,
+  &quot;message&quot;: {
+    &quot;en&quot;: &quot;Hey!&quot;,
+    &quot;de&quot;: &quot;Hey!&quot;
+  },
+  &quot;forgetful&quot;: false,
+  &quot;_id&quot;: &quot;67f84baa-9a90-4dda-8823-3b72a1de5c24&quot;,
+  &quot;_collection&quot;: &quot;message&quot;,
+  &quot;_origin&quot;: false,
+  &quot;_x&quot;: -397.0000000000001,
+  &quot;_y&quot;: -27.000000000000032
+  }
+</code></pre></div><h1 id="underscore-fields"><a href="#underscore-fields" class="header-anchor">#</a> Underscore Fields</h1> <p>If you take a closer look at the data, you will notice that some fields begin with an underscore. These data is very important for the function of the builder and the flow. Please only change it if you know what you are doing. Incorrect values ​​can mean that the flow can no longer be loaded.</p> <h2 id="vertices"><a href="#vertices" class="header-anchor">#</a> Vertices</h2> <ul><li><strong>collection:</strong> The collection this vertex belongs to. For example &quot;message&quot; or &quot;conclusion&quot;.</li> <li><strong>id:</strong> A unique, automatically generated ID for this vertex.</li> <li><strong>origin:</strong> Is this the origin starting node?.</li> <li><strong>x:</strong> The x coordinates within the builder.</li> <li><strong>y:</strong> The y coordinates within the builder.</li></ul> <h2 id="edges"><a href="#edges" class="header-anchor">#</a> Edges</h2> <ul><li><strong>collection:</strong> The collection this edge belongs to. For example &quot;leadsTo&quot; or &quot;isAnswerableBy&quot;.</li> <li><strong>id:</strong> A unique, automatically generated ID for this edge.</li> <li><strong>from:</strong> The ID of the Edge's source node.</li> <li><strong>to:</strong> The ID of the Edge's target node.</li></ul></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/docs/dev-guide/dev-environment.html" class="prev">
+        Spin up a local dev environment
+      </a></span> <span class="next"><a href="/docs/dev-guide/performance.html">
+        Performance
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/docs/assets/js/app.a1b6ef57.js" defer></script><script src="/docs/assets/js/2.e44d4757.js" defer></script><script src="/docs/assets/js/12.0177ab55.js" defer></script>
+  </body>
+</html>

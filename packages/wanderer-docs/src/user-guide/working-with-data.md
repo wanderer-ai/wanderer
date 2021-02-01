@@ -5,14 +5,16 @@ There are two basic forms of data in this system. Static data and lifecycle data
 
 `Lifecycle data`, on the other hand, is all data that is generated automatically and dynamically when the bot is running. This can be the user's answers to questions but also the different states of nodes during the conversation. Only this data can be exchanged between nodes.
 
-Since only lifecycle data can be used dynamically inside nodes, this chapter is all about that.
+Since only lifecycle data can be used dynamically inside other nodes, this chapter is all about that.
 
 ## Exchange lifecycle data
-Certain nodes generate certain data. In order to be able to use this data in other nodes, this `data must first be sent there`. You cannot access all data of the flow within a node. This is important to understand as it is a fundamental part of the strict design pattern. Data can only be transferred from one node to another within "leads to" edges. Access is not possible without this transfer.
+Certain nodes generate certain data. In order to be able to use lifecycle data in other nodes, the `data must first be sent there`. You cannot access all data of the flow within a node. This is important to understand as it is a fundamental part of the strict design pattern. Data can only be transferred from one node to another within "leads to" edges. Access is not possible without this transfer. Direct access would break the logical context.
 
 For example, if you want to use the value of an input field of a suggestion inside a message node, you have to connect both nodes together. The edge must point from the suggestion to the message and the data must be exposed within the edge. Each edge can only transmit one value at a time. If you want to transfer several values, use several edges in parallel.
 
 You can also give the transferred values ​​a different name. This will help you keep them apart in the destination node.
+
+[Look at this example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Flifecycle_exchange.json)
 
 ## Data reactivity
 If you edit fields in the Builder, you will find that the output of the chat also changes immediately in most cases. That's because `the data is reactive`. For example, if you are editing the text of a message, you can see how the text changes in chat.
@@ -38,5 +40,7 @@ But you could also do some math for exaple:
 ```
 (figure_a * figure_b) + figure_b
 ```
+
+[Calculator example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fcalculator.json)
 
 > Note: You can access the data in the expression directly without the curly braces.

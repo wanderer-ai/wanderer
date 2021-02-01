@@ -23,19 +23,31 @@ If we come across a node on our journey, we will fulfill the task stored there. 
 
 We'll go into depth first. So we only continue with the next edge when all paths below the previous edge have been traversed. We call this hiking strategy `depth first`.
 
+[Depth first example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fdepth_first.json)
+
 ## Bigger edges first
 Often a node has several outgoing connections. You can choose the strength of most connections separately. So you can make some outgoing paths wider.
 The widest paths are always taken first. The narrower ones come last. We call this the `bigger edgest first` principle.
 
-## Node lifecycle and edge conditions
-All nodes have internal states that can be set. For example, a question can have the state answered, not answered or invalid.
-But nodes have no logic. The logic is fully embodied in the Edges.
-The edges can be configured in such a way that they can only be traversed when a certain state of the source node is met.
-Nodes can only change their state. But edges decide whether paths are walkable or not.
+[Bigger edges first example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fbigger_edges_first.json)
 
+## Edge conditions
+All nodes have internal states that can be set. For example, a question can have the state "answered", "not answered" or "invalid".
+But nodes have no logic. The logic is fully embodied in the edges.
+The edges can be configured in such a way that they can only be traversed when a certain state of the source node is met.
+Nodes can only change their state. But edges decide whether paths are walkable or not. We call this `edge conditions`.
+For example, a question can have different states. Outgoing edges can be crossed when the question has reached the respective state.
+
+[Edges decide example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fedge_conditions.json)
+
+## Edge logic
 In addition, all incomming edges can also be configured so that they are absolutely necessary for the activation of a target node in combination with other incomming edges or they can suppress the activation of it.
 
-Edges therefore decide whether they can be traversed and whether the target node can be activated. We call this principle `edge-centered logic`.
+To achieve this, "leads to" type edges can be configured in three ways: `default`, `require` and `forbid`.
+
+* __Default__: If an edge is of type default, it will try to activate the target node. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fdefault_edge_logic.json)
+* __Require__: Edges of type require will hold back the activation of the target node until all edges of this type have been traversed. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Frequired_edge_logic.json)
+* __Forbid__: However, if a node is reached by a forbidden edge, its activation is always suppressed. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fforbidden_edge_logic.json)
 
 ## Beating heart
 Some of the trails have conditions and cannot be used immediately. Other paths may close again.
@@ -54,6 +66,8 @@ A node can have different states in the graph. During the traverse, a node can a
 
 ### 1. Unconnected nodes
 If you create a node it doesn't have to be connected to the flow, a node can just be there. In this way you can isolate individual nodes but larger structures from the flow and simply keep them for later. But they will do just nothing until they get connected.
+
+Check out these unconnected message nodes. They are just there but do nothing: [Unconnected nodes example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Funconnected_nodes.json)
 
 ### 2. Nodes connected to the flow
 Usually, however, you want your nodes to be part of the flow too. The nodes are part of the flow if they are directly or indirectly connected to the origin node through edges or other nodes.

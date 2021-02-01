@@ -72,6 +72,7 @@ module.exports = {
             'website-integration',
             'dev-environment',
             'flow-files',
+            'performance',
             'packages'
           ]
         },
