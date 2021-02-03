@@ -7,7 +7,7 @@
 
     <builder-select-input label="Condition" v-model="condition" :options="edgeConditions"/>
 
-    <div v-if="type!='not'">
+    <div v-if="type!='not' && condition!='inactive'">
       <builder-select-input label="Expose" v-model="expose" :options="lifecycleData"/>
 
       <div v-if="expose!='none'">
@@ -65,9 +65,9 @@ export default {
     },
     types: function () {
       return {
-        'or': 'default (Visit the target vertex)',
-        'and': 'require (The target vertex can only visited if the source was visited too)',
-        'not': 'forbid (Forbid visiting the target vertex)'
+        'or': 'default (Try to activate the target)',
+        'and': 'require (Required for target activation)',
+        'not': 'forbid (Forbid activation of the target)'
       }
     },
     lifecycleData: function () {
@@ -89,8 +89,8 @@ export default {
     },
     edgeConditions: function () {
       var returnEdgeConditions = {
-        'active': 'active',
-        'inactive': 'inactive'
+        'inactive': 'inactive',
+        'active': 'active'
       }
       if (this.$store.state.wandererBuilder.editEdge !== 0) {
         let cytoscapeEdge = this.$builder.cytoscape.getElementById(this.$store.state.wandererBuilder.editEdge)

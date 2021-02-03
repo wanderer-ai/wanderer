@@ -104,6 +104,28 @@ export default {
               label: 'Value',
               exposeDefault: true
             }
+          },
+          edgeConditions: {
+            isTrue: {
+              default: false,
+              label: 'is true'
+            },
+            isFalse: {
+              default: false,
+              label: 'is false'
+            },
+            isEmpty: {
+              default: false,
+              label: 'is empty'
+            },
+            isNumber: {
+              default: false,
+              label: 'is a number'
+            },
+            isNaN: {
+              default: false,
+              label: 'is not a number'
+            }
           }
         }
       }
@@ -214,7 +236,8 @@ export default {
               'source-arrow-color': '#6c757d',
               'width': 'data(priority)',
               'label': 'data(label)',
-              'line-style': 'data(line)'
+              'line-style': 'data(line)',
+              'line-dash-pattern': 'data(pattern)'
             }
           },{
             selector: '.leadsTo[type = "and"]',
@@ -249,21 +272,42 @@ export default {
               })
             })
 
+            // Define the line weight
             var priority = edgeData.get('priority') / 5
-            if (priority < 1) {
-              priority = 1
-            }
+            if (priority < 1) { priority = 1 }
 
+            // Define the dash pattern
+            var dash = edgeData.get('priority') / 5;
+            if (dash < 1) { dash = 1 }
+            var pattern = [
+              dash * 1.5,
+              dash * 1.5
+            ]
+
+            // Create line style
             var line = 'solid'
+
+            // Create display label
             var displayLabel = ''
 
+            // Display the exported variable
             if (!edgeData.isEmpty('name')) {
               displayLabel = displayLabel+'{{'+edgeData.get('name')+'}}'
             }
 
             edgeData.with('condition', (condition) => {
+
+              // Make the line dashed, if there is any kind of a condition
+              line = 'dashed'
+
+              // Make the line solid for "active" conditions
+              if(condition == 'active') {
+                line = 'solid'
+              }
+
               if(defaultCondition!=condition) {
 
+                // Set the name for the inative condition here since this is not defined by the node
                 if(condition == 'inactive') {
                   displayLabel = displayLabel+' [inactive]'
                 }
@@ -273,22 +317,15 @@ export default {
                   displayLabel = displayLabel+' ['+label+']'
                 })
               }
-              line = 'dashed'
-            })
 
-            // edgeData.with('method', (method) => {
-            //   if(targetCollectionProps) {
-            //     targetCollectionProps.with('edgeMethods.'+method+'.label', (label) => {
-            //       displayLabel = displayLabel+' ('+label+')'
-            //     })
-            //   }
-            // })
+            })
 
             return {
               line: line,
               label: displayLabel,
               type: edgeData.get('type'),
-              priority: priority
+              priority: priority,
+              pattern: pattern
             }
           }
         }

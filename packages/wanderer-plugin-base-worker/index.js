@@ -1,6 +1,7 @@
 import jexl from 'jexl'
 
-jexl.addTransform('number', (val) => Number(val))
+jexl.addTransform('Number', (val) => Number(val))
+jexl.addTransform('isNaN', (val) => isNaN(val))
 
 export default {
   install (wanderer) {
@@ -96,12 +97,41 @@ export default {
       props: {
         graph: {
           edgeConditions: {
-
+            isTrue: function (vertex) {
+              if(vertex.lifecycle.get('value') === true) {
+                return true
+              }
+              return false
+            },
+            isFalse: function (vertex) {
+              if(vertex.lifecycle.get('value') === false) {
+                return true
+              }
+              return false
+            },
+            isEmpty: function (vertex) {
+              if(!vertex.lifecycle.get('value')) {
+                return true
+              }
+              return false
+            },
+            isNumber: function (vertex) {
+              if(isNaN(vertex.lifecycle.get('value'))) {
+                return false
+              }
+              return true
+            },
+            isNaN: function (vertex) {
+              if(isNaN(vertex.lifecycle.get('value'))) {
+                return true
+              }
+              return false
+            },
           },
           activator: function (vertex) {
 
           },
-          action: async function (vertex) {
+          action: function (vertex) {
 
             if(vertex.data.has('expression')) {
 
@@ -109,9 +139,11 @@ export default {
               let context = vertex.lifecycle.plain()
 
               try {
-                const result = await jexl.eval(expression, context)
+                // Warning! Do not use async version of jexl in here!
+                // We need this value imediatelly for the edge conditions because the value should be already there on the active state
+                // Otherwise the isNumber condition for example will return wrong results
+                const result = jexl.evalSync(expression, context)
                 vertex.setLifecycleValue('value', result)
-                // console.log(result)
               } catch (e) {
 
               }
