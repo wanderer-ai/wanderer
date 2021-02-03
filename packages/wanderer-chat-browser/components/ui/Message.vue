@@ -1,13 +1,13 @@
 <template>
 
-  <div class="chat--message">
+  <div class="wanderer-chat__message">
 
     <div
-      class="chat--message-bubble"
+      class="wanderer-chat__message-bubble"
       v-bind:class="{
-        'chat--message-spawn': spawn,
-        'chat--message-bubble-local': from=='local',
-        'chat--message-bubble-remote': from=='remote'
+        'wanderer-chat__message-spawn': spawn,
+        'wanderer-chat__message-bubble-local': from=='local',
+        'wanderer-chat__message-bubble-remote': from=='remote'
       }">
 
       <slot>
@@ -39,24 +39,24 @@ export default {
 
 <style>
 
-  .chat--message {
+  .wanderer-chat__message {
     width:100%;
     display: flex;
     flex-direction: column;
   }
 
-  .chat--message-bubble {
+  .wanderer-chat__message-bubble {
     @apply bg-gray-dark p-2 text-white text-sm mb-2;
     display: inline-block;
     width:auto;
     position: relative;
   }
 
-  .chat--message-spawn {
-    animation: message-spawn .25s;
+  .wanderer-chat__message-spawn {
+    animation: wanderer-message-spawn .25s;
   }
 
-  @keyframes message-spawn {
+  @keyframes wanderer-message-spawn {
     from {
       transform: scale(0);
     }
@@ -65,12 +65,12 @@ export default {
     }
   }
 
-  .chat--message-bubble-local {
+  .wanderer-chat__message-bubble-local {
     border-radius: 0.5rem 0.5rem 0 0.5rem;
     align-self: flex-end;
   }
 
-  .chat--message-bubble-remote {
+  .wanderer-chat__message-bubble-remote {
     border-radius: 0.5rem 0.5rem 0.5rem 0;
     align-self: flex-start;
   }

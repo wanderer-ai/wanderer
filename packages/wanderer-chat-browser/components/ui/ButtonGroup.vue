@@ -1,6 +1,6 @@
 <template>
 
-  <div class="chat--button-group">
+  <div class="wanderer-chat__button-group">
     <slot></slot>
   </div>
 
@@ -21,11 +21,11 @@ export default {
 
 <style>
 
-.chat--button-group {
+.wanderer-chat__button-group {
   @apply -mx-1 -my-1 flex flex-wrap items-stretch;
 }
 
-.chat--button-group .chat--button{
+.wanderer-chat__button-group .wanderer-chat__button{
   @apply mx-1;
   @apply my-1;
 }

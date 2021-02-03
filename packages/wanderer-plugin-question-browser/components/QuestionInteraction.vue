@@ -12,28 +12,28 @@
       <div v-for="suggestion in suggestions" :key="suggestion._id">
 
         <div class="mb-2" v-if="suggestion.type=='checkbox'">
-          <label class="chat-checkinput">
-            <div :class="'chat-checkinput--box'+(suggestion.invalid?' chat--invalid':'')">
-              <icon name="check" class="chat-checkinput--icon" v-if="values[suggestion._id]"></icon>
-              <input class="chat-checkinput--checkbox" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]">
+          <label class="wanderer-chat__checkinput">
+            <div :class="'wanderer-chat__checkinput-box'+(suggestion.invalid?' wanderer-chat__input--invalid':'')">
+              <icon name="check" class="wanderer-chat__checkinput-icon" v-if="values[suggestion._id]"></icon>
+              <input class="wanderer-chat__checkinput-checkbox" type="checkbox" :value="suggestion._id" v-model="values[suggestion._id]">
             </div>
             <div>{{suggestion.suggestion}}</div>
           </label>
         </div>
 
-        <div class="mb-2" v-if="suggestion.type=='text'">
+        <div class="mb-2" v-if="['text', 'password', 'number', 'email'].includes(suggestion.type)">
           <label :for="suggestion._id" v-if="suggestion.suggestion">{{suggestion.suggestion}}</label>
-          <input type="text" :class="'chat--input'+(suggestion.invalid?' chat--invalid':'')" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
+          <input :type="suggestion.type" :class="'wanderer-chat__input'+(suggestion.invalid?' wanderer-chat__input--invalid':'')" :id="suggestion._id" v-model="values[suggestion._id]" @keyup.enter="answer()">
         </div>
 
         <div class="mb-2" v-if="suggestion.type=='textarea'">
           <label v-if="suggestion.suggestion" :for="suggestion._id">{{suggestion.suggestion}}</label>
-          <textarea :class="'chat--input'+(suggestion.invalid?' chat--invalid':'')" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
+          <textarea :class="'wanderer-chat__input'+(suggestion.invalid?' wanderer-chat__input--invalid':'')" :id="suggestion._id" v-model="values[suggestion._id]"></textarea>
         </div>
 
       </div>
 
-      <chat-button-group :class="(showInNavigation? '':'chat--shake')">
+      <chat-button-group :class="(showInNavigation? '':'wanderer-chat__button-shake')">
         <template v-for="suggestion in suggestions" >
           <chat-button v-if="suggestion.type=='button'" :key="suggestion._id+'_button'" :disabled="answered" :theme="(showInNavigation?'secondary':'primary')" :size="(showInNavigation?'small':'normal')" v-on:click="answer(suggestion._id)">{{suggestion.suggestion}}</chat-button>
         </template>
@@ -277,42 +277,42 @@ export default {
 
 <style>
 
-.chat--input {
+.wanderer-chat__input {
   @apply w-full text-black p-2;
 }
 
-.chat--invalid {
+.wanderer-chat__input--invalid {
   @apply border-2 border-red;
 }
 
-.chat-checkinput {
+.wanderer-chat__checkinput {
   @apply flex items-center;
 }
 
-.chat-checkinput--box {
+.wanderer-chat__checkinput-box {
   @apply bg-white flex flex-shrink-0 flex-grow-0 items-center justify-center cursor-pointer mr-2;
   height: 1rem;
   width: 1rem;
   padding: 0.05rem;
 }
 
-.chat-checkinput--icon {
+.wanderer-chat__checkinput-icon {
   @apply text-black;
 }
 
-.chat-checkinput--checkbox {
+.wanderer-chat__checkinput-checkbox {
   display: none;
 }
 
-.chat--shake {
+.wanderer-chat__button-shake {
   /* Start the shake animation and make the animation last for 0.5 seconds */
-  animation: shake 5s;
+  animation: wanderer-chat__button-shake 5s;
 
   /* When the animation is finished, start again */
   animation-iteration-count: infinite;
 }
 
-@keyframes shake {
+@keyframes wanderer-chat__button-shake {
   0% { transform: translate(0px, 0px) rotate(0deg); }
   1% { transform: translate(-1px, -2px) rotate(-1deg); }
   2% { transform: translate(-3px, 0px) rotate(1deg); }

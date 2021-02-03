@@ -44,11 +44,11 @@ Note: A question and its suggestions are treated as a single super node. Connect
 A possible weighting of the edges therefore applies to all nodes in this micro network.
 
 ## Suggestion
-A suggestion is an answer to a question. A question can have several suggestions. Suggestions together generate a kind of form for answering a question. Suggestions can be buttons as well as text fields or checkboxes. In order to be able to answer a question, you need at least one button suggestion.
+A suggestion is a answer option to a question. A question can have several suggestions. All suggestions together will compose a form inside the chat. Suggestions can be buttons as well as text fields or checkboxes. In order to be able to answer a question, you need at least one button suggestion.
 
 __Fields in detail:__
 * __Suggestion:__ That is the suggestion message. This is displayed either in the form of a button or as a label on an INput field. It also appears later in the chat as an answer bubble.  This field supports dynamic [mustache.js](https://github.com/janl/mustache.js) templates.
-* __Type:__ The type determines the appearance of the suggestion. You can choose between various input styles. Note: Your suggestion always needs an additional button suggestion if, for example, you have only created a text field as a suggestion. This is the only way you can answer the question.
+* __Type:__ The type determines the appearance of the suggestion. You can choose between various input styles. Note: Your suggestion always needs an additional button suggestion if, for example, you have only created a text field as a suggestion. This is the only way you can answer a question without hitting return key.
 * __Priority:__ The priority determines in which order the suggestions are shown in the question form. The higher the value, the greater the suggestion is shown on the map and the further it wanders up in the question form.
 * __Required:__ If checked, the suggestion must be filled in or checked so that the question can be answered.
 

@@ -721,13 +721,13 @@ export default class Builder {
       {
         selector: 'node.pulse',
         style: {
-          'border-color': '#FEC106'
+          'border-color': '#c334eb'
         }
       },
       {
         selector: 'edge.pulse',
         style: {
-          'line-color': '#FEC106'
+          'line-color': '#c334eb'
         }
       },
       {

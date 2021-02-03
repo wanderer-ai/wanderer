@@ -25,7 +25,10 @@ export default {
         button: 'Button',
         checkbox: 'Checkbox',
         text: 'Text',
-        textarea: 'Textarea'
+        textarea: 'Textarea',
+        number: 'Number',
+        email: 'Email',
+        password: 'Password'
       }
     }
   },

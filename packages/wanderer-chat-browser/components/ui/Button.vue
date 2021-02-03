@@ -1,6 +1,6 @@
 <template>
 
-  <button @click="$emit('click')" :class="'chat--button chat--button-'+size+' chat--button-'+theme">
+  <button @click="$emit('click')" :class="'wanderer-chat__button wanderer-chat__button-'+size+' wanderer-chat__button-'+theme">
     <slot></slot>
   </button>
 
@@ -25,25 +25,25 @@ export default {
 
 <style>
 
-.chat--button {
+.wanderer-chat__button {
   @apply rounded flex-grow;
 }
 
-.chat--button-normal {
+.wanderer-chat__button-normal {
   @apply text-sm p-2;
   min-width: 2.5rem;
 }
 
-.chat--button-small {
+.wanderer-chat__button-small {
   @apply text-xs p-1;
   min-width: 1.5rem;
 }
 
-.chat--button-primary {
+.wanderer-chat__button-primary {
   @apply bg-blue text-white;
 }
 
-.chat--button-secondary {
+.wanderer-chat__button-secondary {
   @apply bg-gray text-black;
 }
 

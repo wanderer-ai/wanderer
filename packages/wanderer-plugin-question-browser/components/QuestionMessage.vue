@@ -81,12 +81,12 @@ export default {
             var value = lifecacleData['value']
 
             // Render the suggestion template
-            if(type=='button' || type=='checkbox') {
+            if(['button', 'checkbox', 'password'].includes(type)) {
               message = message+this.$chat.evaluateMustache(template, lifecacleData, true)
             }
 
             // Just output the value
-            if(type=='text' || type=='textarea') {
+            if(['text', 'textarea', 'number', 'email'].includes(type)) {
               message = message+value
             }
 

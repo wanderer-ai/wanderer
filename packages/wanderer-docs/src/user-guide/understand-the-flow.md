@@ -38,7 +38,7 @@ The edges can be configured in such a way that they can only be traversed when a
 Nodes can only change their state. But edges decide whether paths are walkable or not. We call this `edge conditions`.
 For example, a question can have different states. Outgoing edges can be crossed when the question has reached the respective state.
 
-[Edges decide example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fedge_conditions.json)
+[Edges decide example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fedges_decide.json)
 
 ## Edge logic
 In addition, all incomming edges can also be configured so that they are absolutely necessary for the activation of a target node in combination with other incomming edges or they can suppress the activation of it.

@@ -1,41 +1,41 @@
 
 <template>
 
-  <div class="chat--container" v-if="vertexCount">
+  <div class="wanderer-chat__container" v-if="vertexCount">
 
-    <div v-if="!isVisible" class="chat--opener">
-      <div class="chat--opener-button" @click="show()" :class="(actionRequired?'chat--shake':'')">
+    <div v-if="!isVisible" class="wanderer-chat__opener">
+      <div class="wanderer-chat__opener-button" @click="show()" :class="(actionRequired?'wanderer-chat__shake':'')">
         <icon name="robot" scale="2"></icon>
       </div>
     </div>
 
-    <div v-if="isVisible" class="chat--panel" @click="focus()">
+    <div v-if="isVisible" class="wanderer-chat__panel" @click="focus()">
 
-      <div class="chat--stack">
+      <div class="wanderer-chat__stack">
 
-        <div class="chat--header">
-          <div class="chat--avatar">
+        <div class="wanderer-chat__header">
+          <div class="wanderer-chat__avatar">
             <icon name="robot" scale="2"></icon>
           </div>
 
-          <div class="chat--title">
+          <div class="wanderer-chat__title">
             {{name}}
           </div>
 
-          <div class="chat--controls">
-            <div class="chat--controls-icon chat--restart" @click="restart()">
+          <div class="wanderer-chat__controls">
+            <div class="wanderer-chat__controls-icon wanderer-chat__restart" @click="restart()">
               <icon name="sync"></icon>
             </div>
-            <div class="chat--controls-icon chat--close" @click="hide()">
+            <div class="wanderer-chat__controls-icon wanderer-chat__close" @click="hide()">
               <icon name="times"></icon>
             </div>
           </div>
 
         </div>
 
-        <div class="chat--body" ref="chatbody">
+        <div class="wanderer-chat__body" ref="chatbody">
 
-          <div class="chat--messages">
+          <div class="wanderer-chat__messages">
             <div
               v-for="(messageId, key) in messages"
               :key="key">
@@ -43,13 +43,13 @@
             </div>
           </div>
 
-          <div class="chat--typing" v-if="typing">
-            <span class="chat--typing-circle"></span>
-            <span class="chat--typing-circle"></span>
-            <span class="chat--typing-circle"></span>
+          <div class="wanderer-chat__typing" v-if="typing">
+            <span class="wanderer-chat__typing-circle"></span>
+            <span class="wanderer-chat__typing-circle"></span>
+            <span class="wanderer-chat__typing-circle"></span>
           </div>
 
-          <div class="chat--interactions">
+          <div class="wanderer-chat__interactions">
             <div
               v-for="(vertexId, key) in interactions"
               :key="key">
@@ -57,11 +57,11 @@
             </div>
           </div>
 
-          <div class="chat--spacer"></div>
+          <div class="wanderer-chat__spacer"></div>
 
         </div>
 
-        <div class="chat--navigation">
+        <div class="wanderer-chat__navigation">
           <div
             v-for="(vertexId, key) in interactions"
             :key="key">
@@ -73,7 +73,7 @@
 
     </div>
 
-    <div class="chat--indicator" v-if="actionRequired"></div>
+    <div class="wanderer-chat__indicator" v-if="actionRequired"></div>
 
   </div>
 </template>
@@ -214,20 +214,20 @@ export default {
 
 <style>
 
-.chat--container {
+.wanderer-chat__container {
   @apply fixed right-0 bottom-0 z-50;
 }
 
-.chat--opener {
+.wanderer-chat__opener {
   @apply p-4;
 }
 
-.chat--opener-button {
+.wanderer-chat__opener-button {
   @apply relative bg-blue p-4 shadow-lg text-white;
   cursor:pointer;
 }
 
-.chat--opener-button:after {
+.wanderer-chat__opener-button:after {
   @apply absolute block w-0 h-0;
   content: "";
   right: 2rem;
@@ -237,7 +237,7 @@ export default {
   border-top: 0.5rem solid theme('colors.blue');
 }
 
-.chat--panel {
+.wanderer-chat__panel {
   width:400px;
   height:700px;
   max-height:100vh;
@@ -245,106 +245,98 @@ export default {
   @apply overflow-hidden p-4;
 }
 
-.chat--stack {
+.wanderer-chat__stack {
   @apply shadow-lg h-full flex items-stretch flex-col shadow-md;
 }
 
-.chat--header {
+.wanderer-chat__header {
   @apply flex justify-between items-center bg-blue p-4 text-white;
 }
 
-.chat--avatar {
+.wanderer-chat__avatar {
 
 }
 
-.chat--title {
+.wanderer-chat__title {
   @apply flex-grow font-bold px-2;
 }
 
-.chat--controls {
+.wanderer-chat__controls {
   @apply -m-2 flex justify-between;
 }
 
-.chat--controls-icon {
+.wanderer-chat__controls-icon {
   @apply m-2;
 }
 
-.chat--restart {
+.wanderer-chat__restart {
   @apply cursor-pointer;
 }
 
-.chat--close {
+.wanderer-chat__close {
   @apply cursor-pointer;
 }
 
-.chat--body {
+.wanderer-chat__body {
   @apply flex-grow bg-gray p-4;
   overflow-y: auto;
   scroll-behavior: smooth;
 }
 
-.chat--messages {
+.wanderer-chat__messages {
 
 }
 
-.chat--spacer {
+.wanderer-chat__spacer {
   @apply pb-12;
 }
 
-.chat--navigation {
+.wanderer-chat__navigation {
   @apply bg-blue p-4 text-white;
 }
 
-.chat--typing {
+.wanderer-chat__typing {
   @apply flex mb-2 mt-4;
 }
 
-.chat--typing-circle {
+.wanderer-chat__typing-circle {
   @apply bg-gray-dark;
   display: block;
   height: 8px;
   width: 8px;
   border-radius: 50%;
   margin: 2px;
-  animation: hat-typing-bounce 600ms ease-in-out infinite;
-  /* animation: chat-typing-scale 600ms ease-in-out infinite; */
+  animation: wanderer-chat__typing-bounce 600ms ease-in-out infinite;
 }
 
-.chat--typing-circle:nth-child(1) {
+.wanderer-chat__typing-circle:nth-child(1) {
   animation-delay: 0ms;
 }
 
-.chat--typing-circle:nth-child(2) {
+.wanderer-chat__typing-circle:nth-child(2) {
   animation-delay: 200ms
 }
 
-.chat--typing-circle:nth-child(3) {
+.wanderer-chat__typing-circle:nth-child(3) {
   animation-delay: 400ms
 }
 
-@keyframes chat-typing-scale {
-  0% { transform: scale(1); }
-  33% { transform: scale(1); }
-  50% { transform: scale(1.4); }
-  100% { transform: scale(1); }
-}
-
-@keyframes hat-typing-bounce {
+@keyframes wanderer-chat__typing-bounce {
   0% { transform: translateY(0); }
   33% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0); }
 }
 
-.chat--shake {
+.wanderer-chat__shake {
   /* Start the shake animation and make the animation last for 0.5 seconds */
-  animation: shake 5s;
+  animation: wanderer-chat__shake 5s;
 
   /* When the animation is finished, start again */
   animation-iteration-count: infinite;
 }
 
-@keyframes shake {
+@keyframes wanderer-chat__shake {
   0% { transform: translate(0px, 0px) rotate(0deg); }
   1% { transform: translate(-1px, -2px) rotate(-1deg); }
   2% { transform: translate(-3px, 0px) rotate(1deg); }
@@ -358,7 +350,7 @@ export default {
   10% { transform: translate(0px, 0px) rotate(0deg); }
 }
 
-.chat--indicator {
+.wanderer-chat__indicator {
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
