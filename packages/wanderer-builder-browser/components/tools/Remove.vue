@@ -18,11 +18,11 @@
 
         <builder-button-group>
           <builder-button color="red" v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="removeSelectedVertices()">
-            Remove {{selectedVertexIds.length}} vertices
+            Delete {{selectedVertexIds.length}} nodes
           </builder-button>
 
           <builder-button color="red" v-if="selectedVertexIds.length" class="btn btn-danger" v-on:click="unlink()">
-            Unlink {{selectedVertexIds.length}} vertices
+            Unlink {{selectedVertexIds.length}} nodes
           </builder-button>
 
           <builder-button color="red" v-if="selectedEdgeIds.length" class="btn btn-danger" v-on:click="removeSelectedEdges()" >

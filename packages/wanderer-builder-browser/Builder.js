@@ -685,7 +685,7 @@ export default class Builder {
           'label': 'data(label)',
           'text-wrap': 'ellipsis',
           'text-max-width': '500px',
-          'border-width': 2,
+          'border-width': 5,
           'transition-property': 'border-color',
           'transition-duration': '0.2s',
         }

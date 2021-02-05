@@ -10,7 +10,7 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <builder-modal :showHeader="true" title="Project" :showFooter="true" :showClose="vertexCount>0" :show="showModal"  v-on:closeButton="showModal=false">
+      <builder-modal :showHeader="true" :title="(vertexCount>0)?'Project':'Welcome'" :showFooter="true" :showClose="vertexCount>0" :show="showModal"  v-on:closeButton="showModal=false">
 
         <div class="flex flex-col">
 
@@ -50,7 +50,7 @@
             <div>
               <div class="flex w-full justify-between items-center">
                 <icon name="upload"></icon>
-                <span>Restore from file</span>
+                <span>Load from file</span>
                 <icon name="arrow-right"></icon>
               </div>
               <input type="file" @change="loadFromFile">
@@ -60,7 +60,7 @@
           <builder-button class="w-full" v-on:click="loadFromUrl(url)">
             <div class="flex w-full justify-between items-center">
               <icon name="globe"></icon>
-              <span>Restore from URL</span>
+              <span>Load from URL</span>
               <icon name="arrow-right"></icon>
             </div>
           </builder-button>

@@ -8,7 +8,7 @@ So that you can imagine everything more easily, we will use the analogy of a `wa
 The flow, our hiking map, is actually a graph. A graph is the combination of many nodes that are connected to one another with edges.
 Since this paths between the individual nodes have specific directions, we can also refer to the flow as a `directed graph`.
 
-We store a lot of knowledge in the form of nodes in graph. For example questions and answers. Therefore we can also refer to the graph as a `knowledge graph`.
+We store a lot of knowledge in form of nodes in our graph. For example questions and answers. Therefore we can also refer to the graph as a `knowledge graph`.
 Because the graph also knows in which context the knowledge is valid, it can also be referred to as a `context graph` or `logic graph`.
 
 ## The traversal
@@ -19,7 +19,7 @@ We start our hike at the big yellow node. From there the journey starts. Every f
 On our journey we try to explore the whole network of nodes and the paths between them. So we will try to hike it completely.
 We call this wandering through the entire structure `graph traversal`.
 
-If we come across a node on our journey, we will fulfill the task stored there. After that, we will gradually traverse all the edges starting from this node and visit the next nodes.
+If we come across a node on our journey, we will try to `activate` this node and fulfill the task stored there. After that, we will gradually traverse all the edges starting from this node and visit the next nodes.
 
 We'll go into depth first. So we only continue with the next edge when all paths below the previous edge have been traversed. We call this hiking strategy `depth first`.
 
@@ -46,7 +46,7 @@ In addition, all incomming edges can also be configured so that they are absolut
 To achieve this, "leads to" type edges can be configured in three ways: `default`, `require` and `forbid`.
 
 * __Default__: If an edge is of type default, it will try to activate the target node. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fdefault_edge_logic.json)
-* __Require__: Edges of type require will hold back the activation of the target node until all edges of this type have been traversed. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Frequired_edge_logic.json)
+* __Require__: Edges of type require will hold back the activation of the target node until all incomming edges of this type have been traversed. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Frequired_edge_logic.json)
 * __Forbid__: However, if a node is reached by a forbidden edge, its activation is always suppressed. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fforbidden_edge_logic.json)
 
 ## Beating heart
@@ -57,7 +57,7 @@ Therefore it is necessary to research the paths again and again.
 Each of these cycles can be described as a `tick`. This is the heartbeat of the system.
 At the moment, the hiker tries to explore all the paths on the map once a second. It always starts with the origin node.
 
-You can see that on the map. The yellow pulsating nodes and connections are currently be traversed.
+You can see that on the map. The purple pulsating nodes and connections are currently be traversed.
 
 > Note: Since extremely large structures with thousands of nodes can also be traversed, the traversal animation is only displayed for flows with fewer than 100 nodes in order not to affect performance of the builder.
 
