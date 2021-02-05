@@ -127,13 +127,13 @@ export default {
           edgeConditions: {
             answered: {
               default: true,
-              label: 'answered'
+              label: 'The question has been answered'
             },
             notAnswered: {
-              label: 'not answered'
+              label: 'The question has not yet been answered'
             },
             invalid: {
-              label: 'invalid'
+              label: 'The answer is not valid'
             }
           }
         },
@@ -208,13 +208,13 @@ export default {
           edgeConditions: {
             answered: {
               default: true,
-              label: 'answered'
+              label: 'The suggestion has been answered'
             },
             notAnswered: {
-              label: 'not answered'
+              label: 'The suggestion has not yet been answered'
             },
             invalid: {
-              label: 'invalid'
+              label: 'The suggested answer is not valid'
             }
           }
         }

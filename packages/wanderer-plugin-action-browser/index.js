@@ -123,7 +123,7 @@ export default {
           edgeConditions: {
             imported: {
               default: true,
-              label: 'imported'
+              label: 'The flow was imported'
             }
           }
         }
@@ -200,7 +200,7 @@ export default {
           edgeConditions: {
             switched: {
               default: true,
-              label: 'switched'
+              label: 'The language was changed'
             }
           },
         }

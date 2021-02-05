@@ -179,11 +179,11 @@ export default {
           edgeConditions: {
             sent: {
               default: true,
-              label: 'sent'
+              label: 'message was sent'
             },
             notSent: {
               default: false,
-              label: 'not sent'
+              label: 'message has not yet been sent'
             }
           },
         },

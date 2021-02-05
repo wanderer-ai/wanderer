@@ -33,12 +33,12 @@ Hey! Nice to see you, {{name}}!
 ## Calculate data with expressions
 Some other nodes offer the possibility to generate new data with the help of expressions. The result is then new variables or objects that can be processed again. Conclusions are an example of this. To compose new data we will use the [Jexl](https://github.com/TomFrost/Jexl) expression language. For example, if you want to generate a full name from a first name and a surname, you can do that as follows:
 ```
-first + last
+first + ' ' + last
 ```
 
 But you could also do some math for exaple:
 ```
-(figure_a * figure_b) + figure_b
+(figure_a|Number * figure_b|Number) + figure_b|Number
 ```
 
 [Calculator example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fcalculator.json)

@@ -89,8 +89,8 @@ export default {
     },
     edgeConditions: function () {
       var returnEdgeConditions = {
-        'inactive': 'inactive',
-        'active': 'active'
+        'inactive': 'The node is inactive',
+        'active': 'The node is activated'
       }
       if (this.$store.state.wandererBuilder.editEdge !== 0) {
         let cytoscapeEdge = this.$builder.cytoscape.getElementById(this.$store.state.wandererBuilder.editEdge)
