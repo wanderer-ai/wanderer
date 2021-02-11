@@ -2,7 +2,7 @@
   "name": "wanderer-plugin-question-browser",
   "version": "0.0.1",
   "description": "Wanderer.ai question browser",
-  "author": "",
+  "author": "Wanderer.ai",
   "main": "index.js",
   "dependencies": {
     "vue-awesome": "^3.1.3"

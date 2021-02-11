@@ -3,16 +3,13 @@
   "version": "0.0.1",
   "description": "Wanderer.ai documentation",
   "main": "index.js",
-  "authors": {
-    "name": "",
-    "email": ""
-  },
+  "author": "Wanderer.ai",
+  "license": "AGPL-3.0-or-later",
   "repository": "/docs",
   "scripts": {
     "dev": "vuepress dev src",
     "build": "vuepress build src"
   },
-  "license": "MIT",
   "devDependencies": {
     "vuepress": "^1.5.3"
   }

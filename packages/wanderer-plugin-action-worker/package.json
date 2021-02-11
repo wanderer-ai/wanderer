@@ -2,8 +2,9 @@
   "name": "wanderer-plugin-action-worker",
   "version": "0.0.1",
   "description": "Wanderer.ai action Worker",
-  "author": "",
+  "author": "Wanderer.ai",
   "main": "index.js",
+  "license": "Wanderer.ai Professional License",
   "dependencies": {
 
   }

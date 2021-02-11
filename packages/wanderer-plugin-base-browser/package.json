@@ -2,8 +2,9 @@
   "name": "wanderer-plugin-base-browser",
   "version": "0.0.1",
   "description": "Wanderer.ai Base Browser",
-  "author": "",
+  "author": "Wanderer.ai",
   "main": "index.js",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
 
   }

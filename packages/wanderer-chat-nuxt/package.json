@@ -2,8 +2,8 @@
   "name": "wanderer-chat-nuxt",
   "version": "0.0.1",
   "description": "Wanderer.ai Builder Nuxt.js App",
-  "author": "",
-  "private": true,
+  "author": "Wanderer.ai",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",

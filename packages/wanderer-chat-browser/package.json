@@ -2,9 +2,9 @@
   "name": "wanderer-chat-browser",
   "version": "0.0.1",
   "description": "Wanderer Chat browser",
-  "author": "",
-  "private": true,
+  "author": "Wanderer.ai",
   "module": "plugin.js",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "vue-awesome": "^3.1.3",
     "wanderer-nested-data": "^0.0.1",

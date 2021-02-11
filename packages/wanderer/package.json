@@ -4,6 +4,7 @@
   "description": "Wanderer.ai",
   "main": "index.js",
   "author": "",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "wanderer-broadcast": "^0.0.1",
     "axios": "latest",

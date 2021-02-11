@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "Wanderer.ai Nested Data",
   "main": "index.js",
-  "author": "",
+  "author": "Wanderer.ai",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
 
   }

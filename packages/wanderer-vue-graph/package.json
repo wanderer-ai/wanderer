@@ -2,9 +2,9 @@
   "name": "wanderer-vue-graph",
   "version": "0.0.1",
   "description": "Wanderer.ai Vue Graph",
-  "author": "",
-  "private": true,
+  "author": "Wanderer.ai",
   "module": "plugin.js",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "wanderer-nested-data": "^0.0.1",
     "vue": "^2.5.2",
