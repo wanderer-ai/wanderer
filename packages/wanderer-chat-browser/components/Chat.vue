@@ -95,11 +95,7 @@ export default {
     flowUrl: {
       type: String,
       default: ''
-    },
-    openLabel: {
-      type: String,
-      default: 'Open Chat'
-    },
+    }
   },
   mounted: function() {
     if(this.flowUrl != '') {

@@ -1,6 +1,6 @@
 <template>
 
-  <div class="builder--checkbox flex mb-6 w-1/4 items-start">
+  <div class="builder--checkbox flex mb-6 w-full sm:w-1/2 md:w-1/4 items-start">
 
     <div class="w-1/5">
 

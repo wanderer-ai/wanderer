@@ -56,4 +56,8 @@ export default {
   height: 100%;
 }
 
+.cxtmenu-item {
+  color:white !important;
+}
+
 </style>

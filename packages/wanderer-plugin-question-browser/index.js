@@ -49,6 +49,8 @@ export default {
       props: {
         builder: {
           label: 'Question',
+          description: 'A simple question interaction for the chat. Connect some suggestions to build rich interactions.',
+          infoUrl: 'https://wanderer.ai/docs/user-guide/nodes.html#question',
           color: '#28A745',
           cytoscapeClasses: 'question',
           cytoscapeCxtMenuSelector: '.question',
@@ -150,6 +152,8 @@ export default {
       props: {
         builder: {
           label: 'Suggestion',
+          description: 'A suggestion offers buttons or input fields for answering questions.',
+          infoUrl: 'https://wanderer.ai/docs/user-guide/nodes.html#suggestion',
           color: '#28A745',
           cytoscapeClasses: 'suggestion',
           cytoscapeCxtMenuSelector: '.suggestion',
@@ -200,8 +204,8 @@ export default {
             }
           },
           lifecycleData: {
-            value: {
-              label: 'Value',
+            answer: {
+              label: 'Answer',
               exposeDefault: true
             }
           },

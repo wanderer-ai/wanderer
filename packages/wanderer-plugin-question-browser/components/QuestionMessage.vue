@@ -77,17 +77,17 @@ export default {
             // Get immutable version of lifecycle data
             var lifecacleData = this.answeredSuggestionsLifecycleData[this.answeredSuggestionVertexIds[suggestionId]]
 
-            // Get immutable version of the value
-            var value = lifecacleData['value']
+            // Get immutable version of the answer
+            var answer = lifecacleData['answer']
 
             // Render the suggestion template
             if(['button', 'checkbox', 'password'].includes(type)) {
               message = message+this.$chat.evaluateMustache(template, lifecacleData, true)
             }
 
-            // Just output the value
+            // Just output the answer
             if(['text', 'textarea', 'number', 'email'].includes(type)) {
-              message = message+value
+              message = message+answer
             }
 
             // Add comma

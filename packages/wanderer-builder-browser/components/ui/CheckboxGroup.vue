@@ -2,10 +2,10 @@
 
   <div class="builder--checkbox-group flex flex-wrap">
 
-    <div class="w-1/5">
+    <div class="w-full md:w-1/5">
 
     </div>
-    <div class="w-4/5 flex flex-wrap">
+    <div class="w-full md:w-4/5 flex flex-wrap">
 
       <slot></slot>
 

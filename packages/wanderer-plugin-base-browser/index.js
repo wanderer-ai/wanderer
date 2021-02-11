@@ -1,5 +1,6 @@
 import FlowEditor from './components/FlowEditor.vue'
 import MessageEditor from './components/MessageEditor.vue'
+import VoidEditor from './components/VoidEditor.vue'
 import LeadsToEditor from './components/LeadsToEditor.vue'
 import Message from './components/Message.vue'
 import ConclusionEditor from './components/ConclusionEditor.vue'
@@ -14,6 +15,7 @@ export default {
     Vue.component('wanderer-flow-editor', FlowEditor)
     Vue.component('wanderer-leads-to-editor', LeadsToEditor)
     Vue.component('wanderer-message-editor', MessageEditor)
+    Vue.component('wanderer-void-editor', VoidEditor)
     Vue.component('wanderer-message', Message)
     Vue.component('wanderer-conclusion-editor', ConclusionEditor)
 
@@ -23,6 +25,7 @@ export default {
       props: {
         builder: {
           label: 'Flow',
+          description: 'This is the starting point of every flow.',
           color: '#FEC106',
           cytoscapeClasses: 'flow',
           cytoscapeCxtMenuSelector: '.flow',
@@ -59,73 +62,40 @@ export default {
 
     // Register some vertices for the builder
     wanderer.subscriber.emit('addVertexCollectionProps', {
-      name: 'conclusion',
+      name: 'void',
       props: {
         builder: {
-          label: 'Conclusion',
-          color: '#FEC106',
-          cytoscapeClasses: 'conclusion',
-          cytoscapeCxtMenuSelector: '.conclusion',
+          label: 'Void',
+          description: 'A simple empty node. Use it to bundle or forward information.',
+          color: '#6c757d',
+          cytoscapeClasses: 'void',
+          cytoscapeCxtMenuSelector: '.void',
           creatable: true,
           ctxMenuAllowedEdge: 'leadsTo',
           appendableViaCxtMenu: true,
           defaultFields: {
-            conclusion: {
-              en: 'New conclusion',
-              de: 'Neue Schlussfolgerung'
-            },
-            expression: ''
           },
           cytoscapeStyles: [{
-            selector: '.conclusion',
+            selector: '.void',
             style: {
               'height': '50px',
               'width': '50px',
               'font-size': '20px',
-              'background-color': '#FEC106',
-              'border-color': '#FEC106',
+              'background-color': '#6c757d',
+              'border-color': '#6c757d',
               'border-width': '5px',
-              'label': 'data(label)'
+              'label': ''
             }
           }],
           toCytoscape: function(vertexData, language) {
-            if(vertexData.has('conclusion.'+language)){
-              return {
-                label: vertexData.get('conclusion.'+language)
-              }
-            }
             return {
-              label: 'Conclusion'
+
             }
           },
-          component: 'wanderer-conclusion-editor',
+          component: 'wanderer-void-editor',
           lifecycleData: {
-            value: {
-              label: 'Value',
-              exposeDefault: true
-            }
           },
           edgeConditions: {
-            isTrue: {
-              default: false,
-              label: 'is true'
-            },
-            isFalse: {
-              default: false,
-              label: 'is false'
-            },
-            isEmpty: {
-              default: false,
-              label: 'is empty'
-            },
-            isNumber: {
-              default: false,
-              label: 'is a number'
-            },
-            isNaN: {
-              default: false,
-              label: 'is not a number'
-            }
           }
         }
       }
@@ -136,6 +106,8 @@ export default {
       props: {
         builder: {
           label: 'Message',
+          description: 'A simple chat message that support Markdown.',
+          infoUrl: 'https://wanderer.ai/docs/user-guide/nodes.html#message',
           color: '#007BFF',
           cytoscapeClasses: 'message',
           cytoscapeCxtMenuSelector: '.message',
@@ -189,6 +161,82 @@ export default {
         },
         chat: {
           messageComponent: 'wanderer-message'
+        }
+      }
+    })
+
+    // Register some vertices for the builder
+    wanderer.subscriber.emit('addVertexCollectionProps', {
+      name: 'conclusion',
+      props: {
+        builder: {
+          label: 'Conclusion',
+          description: 'This node can calculate new data from incomming information.',
+          infoUrl: 'https://wanderer.ai/docs/user-guide/nodes.html#conclusion',
+          color: '#FEC106',
+          cytoscapeClasses: 'conclusion',
+          cytoscapeCxtMenuSelector: '.conclusion',
+          creatable: true,
+          ctxMenuAllowedEdge: 'leadsTo',
+          appendableViaCxtMenu: true,
+          defaultFields: {
+            conclusion: {
+              en: 'New conclusion',
+              de: 'Neue Schlussfolgerung'
+            },
+            expression: ''
+          },
+          cytoscapeStyles: [{
+            selector: '.conclusion',
+            style: {
+              'height': '50px',
+              'width': '50px',
+              'font-size': '20px',
+              'background-color': '#FEC106',
+              'border-color': '#FEC106',
+              'border-width': '5px',
+              'label': 'data(label)'
+            }
+          }],
+          toCytoscape: function(vertexData, language) {
+            if(vertexData.has('conclusion.'+language)){
+              return {
+                label: vertexData.get('conclusion.'+language)
+              }
+            }
+            return {
+              label: 'Conclusion'
+            }
+          },
+          component: 'wanderer-conclusion-editor',
+          lifecycleData: {
+            result: {
+              label: 'Result',
+              exposeDefault: true
+            }
+          },
+          edgeConditions: {
+            isTrue: {
+              default: false,
+              label: 'is true'
+            },
+            isFalse: {
+              default: false,
+              label: 'is false'
+            },
+            isEmpty: {
+              default: false,
+              label: 'is empty'
+            },
+            isNumber: {
+              default: false,
+              label: 'is a number'
+            },
+            isNaN: {
+              default: false,
+              label: 'is not a number'
+            }
+          }
         }
       }
     })

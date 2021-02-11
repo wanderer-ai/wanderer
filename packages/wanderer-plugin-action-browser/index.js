@@ -18,6 +18,9 @@ export default {
       props: {
         builder: {
           label: 'Jump',
+          description: 'Use this node to instantly jump to another flow.',
+          infoUrl: 'https://wanderer.ai/docs/user-guide/nodes.html#jump',
+          proprietary: true,
           color: '#DC3545',
           cytoscapeClasses: 'jump',
           cytoscapeCxtMenuSelector: '.jump',
@@ -63,6 +66,9 @@ export default {
       props: {
         builder: {
           label: 'Import',
+          description: 'Dynamically imports another flow to the current graph.',
+          infoUrl: 'https://wanderer.ai/docs/user-guide/nodes.html#import',
+          proprietary: true,
           color: '#DC3545',
           cytoscapeClasses: 'import',
           cytoscapeCxtMenuSelector: '.import',
@@ -162,6 +168,8 @@ export default {
       props: {
         builder: {
           label: 'Language',
+          description: 'Used to switch the current language from within the flow.',
+          infoUrl: 'https://wanderer.ai/docs/user-guide/nodes.html#language',
           color: '#DC3545',
           cytoscapeClasses: 'language',
           cytoscapeCxtMenuSelector: '.language',
@@ -212,6 +220,8 @@ export default {
       props: {
         builder: {
           label: 'Reset',
+          description: 'This node simply resets the entire chat when it is activated.',
+          infoUrl: 'https://wanderer.ai/docs/user-guide/nodes.html#reset',
           color: '#DC3545',
           cytoscapeClasses: 'reset',
           cytoscapeCxtMenuSelector: '.reset',

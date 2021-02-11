@@ -771,7 +771,7 @@ export default class Builder {
 
                     cxtmenuCommands.push({
                       fillColor: possibleOutgoingVertexCollection.get('color'),
-                      content: possibleOutgoingEdgeCollection.get('label')+' '+possibleOutgoingVertexCollection.get('label'),
+                      content: possibleOutgoingEdgeCollection.get('label')+' <strong>'+possibleOutgoingVertexCollection.get('label')+'</strong>',
                       select: function(vertex){
                         vertex.trigger('append', {
                           vertexCollectionName: possibleOutgoingVertexCollectionName,

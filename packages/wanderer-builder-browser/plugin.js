@@ -13,6 +13,7 @@ import UiSelectInput from './components/ui/SelectInput.vue'
 import UiRangeInput from './components/ui/RangeInput.vue'
 import UiCheckboxInput from './components/ui/CheckboxInput.vue'
 import UiCheckboxGroup from './components/ui/CheckboxGroup.vue'
+import VertexCard from './components/ui/VertexCard.vue'
 
 export default {
 
@@ -37,6 +38,7 @@ export default {
     Vue.component('builder-range-input', UiRangeInput)
     Vue.component('builder-checkbox-input', UiCheckboxInput)
     Vue.component('builder-checkbox-group', UiCheckboxGroup)
+    Vue.component('builder-vertex-card', VertexCard)
 
     // Extend vuex
     store.registerModule('wandererBuilder', {

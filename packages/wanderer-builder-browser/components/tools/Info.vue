@@ -14,8 +14,8 @@
         <builder-content>
           <p>
             Hey! This is a free service! Use it for commercial or private projects as long as you use it with the wanderer.ai domain.
-            If you want to run chatbots built with this software on your own domain, take a look at the
-            <a target="_blank" href="https://wanderer.ai/pricing/">licensing model</a>.
+            If you want to run Wanderer.ai chatbots on your own domain or within your Apps, take a look at the
+            <a target="_blank" href="https://wanderer.ai/pricing/">licensing model</a> since some nodes require a proffesional license.
           </p>
           <p>
             Do you have any questions? Do you need help and support? Then take a look at the <a target="_blank" href="https://wanderer.ai/docs/user-guide/">documentation</a> or start a tutorial.

@@ -228,7 +228,7 @@ export default {
               this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'answered', true)
 
               // Store the input value inside the lifecycle data of this node
-              this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'value', this.values[this.suggestions[s]._id])
+              this.$vueGraph.setVertexLifecycleValue(this.suggestions[s]._id, 'answer', this.values[this.suggestions[s]._id])
 
               answeredSuggestionVertexIds.push(this.suggestions[s]._id)
               answeredSuggestionsLifecycleData[this.suggestions[s]._id] = this.$vueGraph.getPlainVertexLifecycleValuesById(this.suggestions[s]._id)

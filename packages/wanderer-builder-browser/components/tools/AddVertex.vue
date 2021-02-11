@@ -10,27 +10,37 @@
     </portal>
 
     <portal to="modals" :order="1">
-      <builder-modal title="Add node" :show="showModal"  v-on:closeButton="showModal=false">
+      <builder-modal title="Add new node" :show="showModal"  v-on:closeButton="showModal=false">
 
-        <builder-button-group v-if="selectedVertexIds.length==0">
-          <builder-button class="" v-for="(collection, name) in possibleVertexCollections" v-if="collection.creatable" v-bind:key="name" :style="'background-color:'+collection.color+';'" v-on:click="add(name)">
-            <div class="flex justify-between items-center">
-              <icon class="mr-2" name="plus"></icon>
-              <span class="">{{collection.label}}</span>
-            </div>
-          </builder-button>
-        </builder-button-group>
+        <div class="flex flex-wrap -m-4" v-if="selectedVertexIds.length==0">
+          <builder-vertex-card
+            v-for="(collection, name) in possibleVertexCollections"
+            v-if="collection.creatable"
+            v-bind:key="name"
+            :info-url="collection.infoUrl"
+            :color="collection.color"
+            :title="collection.label"
+            :proprietary="collection.proprietary"
+            v-on:click="add(name)">
+            {{collection.description}}
+          </builder-vertex-card>
+        </div>
 
-        <builder-button-group>
+        <div class="flex flex-wrap -m-4">
           <template v-if="selectedVertexIds.length==1" v-for="(possibleOutgoing) in possibleOutgoingCollections">
-            <builder-button v-for="(through, throughName) in possibleOutgoing.through" v-bind:key="throughName" :style="'background-color:'+possibleOutgoing.to.collection.color+';'" v-on:click="append(possibleOutgoing.to.name, throughName)">
-              <div class="flex justify-between items-center">
-                <icon class="mr-2" name="plus"></icon>
-                <span>{{through.label}} {{possibleOutgoing.to.collection.label}}</span>
-              </div>
-            </builder-button>
+            <builder-vertex-card
+              v-for="(through, throughName) in possibleOutgoing.through"
+              v-bind:key="throughName"
+              :info-url="possibleOutgoing.to.collection.infoUrl"
+              :color="possibleOutgoing.to.collection.color"
+              :title="possibleOutgoing.to.collection.label"
+              :proprietary="possibleOutgoing.to.collection.proprietary"
+              :through="through.label"
+              v-on:click="append(possibleOutgoing.to.name, throughName)">
+              {{possibleOutgoing.to.collection.description}}
+            </builder-vertex-card>
           </template>
-        </builder-button-group>
+        </div>
 
       </builder-modal>
     </portal>

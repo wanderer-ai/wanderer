@@ -1,6 +1,6 @@
 <template>
 
-  <button @click="$emit('click')" :class="'builder--button builder--button-'+size+' bg-'+color+' rounded flex justify-center items-center text-center text-'+textColor">
+  <button @click="$emit('click')" :class="'builder--button builder--button-'+size+' bg-'+color+' rounded flex justify-center items-center shadow-md text-center text-'+textColor">
     <slot></slot>
   </button>
 

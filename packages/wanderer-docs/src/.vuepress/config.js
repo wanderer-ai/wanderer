@@ -60,7 +60,8 @@ module.exports = {
             'nodes',
             'understand-the-flow',
             'edge-logic',
-            'working-with-data'
+            'working-with-data',
+            'proprietary-nodes'
           ]
         },
       ],

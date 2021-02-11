@@ -98,31 +98,31 @@ export default {
         graph: {
           edgeConditions: {
             isTrue: function (vertex) {
-              if(vertex.lifecycle.get('value') === true) {
+              if(vertex.lifecycle.get('result') === true) {
                 return true
               }
               return false
             },
             isFalse: function (vertex) {
-              if(vertex.lifecycle.get('value') === false) {
+              if(vertex.lifecycle.get('result') === false) {
                 return true
               }
               return false
             },
             isEmpty: function (vertex) {
-              if(!vertex.lifecycle.get('value')) {
+              if(!vertex.lifecycle.get('result')) {
                 return true
               }
               return false
             },
             isNumber: function (vertex) {
-              if(isNaN(vertex.lifecycle.get('value'))) {
+              if(isNaN(vertex.lifecycle.get('result'))) {
                 return false
               }
               return true
             },
             isNaN: function (vertex) {
-              if(isNaN(vertex.lifecycle.get('value'))) {
+              if(isNaN(vertex.lifecycle.get('result'))) {
                 return true
               }
               return false
@@ -143,13 +143,13 @@ export default {
                 // We need this value imediatelly for the edge conditions because the value should be already there on the active state
                 // Otherwise the isNumber condition for example will return wrong results
                 const result = jexl.evalSync(expression, context)
-                vertex.setLifecycleValue('value', result)
+                vertex.setLifecycleValue('result', result)
               } catch (e) {
 
               }
 
             } else {
-              vertex.setLifecycleValue('value', null)
+              vertex.setLifecycleValue('result', null)
             }
 
           }

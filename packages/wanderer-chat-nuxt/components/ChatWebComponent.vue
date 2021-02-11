@@ -1,12 +1,12 @@
 <template>
   <div>
-    <wanderer-chat open-label="Chat" flow-url="https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json" />
+    <wanderer-chat flow-url="https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json" />
   </div>
 </template>
 
 <script>
 
-// This is the nuxt-custom-elements enty file
+// This is the nuxt-custom-elements entry file
 // We use this component as a wrapper to generate a web component with nuxt while building for production
 // See details here: https://github.com/GrabarzUndPartner/nuxt-custom-elements
 
