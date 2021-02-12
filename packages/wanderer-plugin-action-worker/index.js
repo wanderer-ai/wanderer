@@ -143,5 +143,13 @@ export default {
       }
     })
 
+    subscriber.on('truncate', function() {
+      currentSwitchedLanguage = ''
+    })
+
+    subscriber.on('truncateLifecycle', function() {
+      currentSwitchedLanguage = ''
+    })
+
   } // Install
 }

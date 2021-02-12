@@ -4,7 +4,7 @@ module.exports = {
     // The default tailwind-nuxt purge seems to strip out all the tailwind CSS from the project on generate
     // Hope this bug will be fixed in future
     // Until then I will use the generated Files for purging
-    // This is not ideal because the final HTML files will only be present after the built. So I currently need two build I I want to deploy new CSS classes
+    // This is not ideal because the final HTML files will only be present after the built. So I currently need two builds if I want to deploy new CSS classes
     enabled: process.env.NODE_ENV === 'production',
     content: ['./dist/*.html', './dist/_nuxt/*.js'],
   },

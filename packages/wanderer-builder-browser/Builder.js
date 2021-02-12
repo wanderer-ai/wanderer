@@ -117,8 +117,10 @@ export default class Builder {
 
   getVertexCollectionPropsById (vertexId) {
     var collection = this.vueGraph.getVertexDataValue(vertexId, '_collection')
-    if(this.vertexCollectionProps.has(collection)) {
-      return this.vertexCollectionProps.get(collection)
+    if(collection) {
+      if(this.vertexCollectionProps.has(collection)) {
+        return this.vertexCollectionProps.get(collection)
+      }
     }
   }
 
@@ -228,22 +230,27 @@ export default class Builder {
     var sourceCollectionProps = this.getVertexCollectionPropsById(edgeData.get('_from'))
     var targetCollectionProps = this.getVertexCollectionPropsById(edgeData.get('_to'))
 
-    var cytoscapeData = {}
-    this.edgeCollectionProps.with(edgeData.get('_collection')+'.toCytoscape', (toCytoscape) => {
-      cytoscapeData = toCytoscape(edgeData, sourceCollectionProps, targetCollectionProps, this.store.state.wandererBuilder.currentLanguage)
-    })
+    if(sourceCollectionProps && targetCollectionProps) {
 
-    // Erase label
-    // cytoscapeData.label = ''
+      var cytoscapeData = {}
+      this.edgeCollectionProps.with(edgeData.get('_collection')+'.toCytoscape', (toCytoscape) => {
+        cytoscapeData = toCytoscape(edgeData, sourceCollectionProps, targetCollectionProps, this.store.state.wandererBuilder.currentLanguage)
+      })
 
-    // You cannot override the id
-    cytoscapeData.id = edgeData.get('_id')
-    // Add debug information
-    if(this.store.state.wandererBuilder.debug) {
-      cytoscapeData.label = cytoscapeData.label+' ('+edgeData.get('_id')+')'
+      // Erase label
+      // cytoscapeData.label = ''
+
+      // You cannot override the id
+      cytoscapeData.id = edgeData.get('_id')
+      // Add debug information
+      if(this.store.state.wandererBuilder.debug) {
+        cytoscapeData.label = cytoscapeData.label+' ('+edgeData.get('_id')+')'
+      }
+      // Set the data
+      this.cytoscape.getElementById(edgeData.get('_id')).data(cytoscapeData)
+      
     }
-    // Set the data
-    this.cytoscape.getElementById(edgeData.get('_id')).data(cytoscapeData)
+
   }
 
   rebuildCytoscapeVertexById (vertexId) {
@@ -319,6 +326,7 @@ export default class Builder {
       cyData.classes = cytoscapeClasses
     })
 
+    // Add edge to cy
     this.cytoscape.add(cyData)
 
     // Convert data to Cytoscape

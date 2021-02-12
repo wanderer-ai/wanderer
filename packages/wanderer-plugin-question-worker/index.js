@@ -45,8 +45,6 @@ export default {
 
             if(vertex.data.is('forgetful')) {
 
-              console.log('forgetting everything...')
-
               // Reset the lifecycle data
               vertex.setLifecycleValue('answered', false)
               vertex.setLifecycleValue('invalid', false)
