@@ -54,7 +54,6 @@ module.exports = {
           collapsable: false,
           children: [
             'toolbar',
-            'map',
             'map-tools',
             'first-bot',
             'nodes',
@@ -64,8 +63,18 @@ module.exports = {
             'proprietary-nodes'
           ]
         },
+        {
+          title: 'Developer guide',
+          path: '/dev-guide/',
+          collapsable: false
+        },
       ],
       '/dev-guide/': [
+        {
+          title: 'User guide',
+          path: '/user-guide/',
+          collapsable: false
+        },
         {
           title: 'Developer guide',
           collapsable: false,

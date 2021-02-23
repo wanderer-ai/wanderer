@@ -1,4 +1,4 @@
-# Working with data
+# 💻 Working with data
 There are two basic forms of data in this system. Static data and lifecycle data.
 
 `Static data` is all of the data that you can create and maintain with the builder. This includes the nodes with all their values ​​and all edges with all their values. It is all data that exist in a finished flow file.

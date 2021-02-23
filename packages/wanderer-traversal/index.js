@@ -8,11 +8,16 @@ class Traversal {
 
     this.activatedEdgeIds = []
 
-    this.lastActivatedVertexIds = []
+    // this.lastActivatedVertexIds = []
     this.activatedVertexIds = []
 
     this.traversedRequiredEdgeIds = []
     this.traversedForbiddenEdgeIds = []
+
+    this.lastTraversedRequiredEdgeIds = []
+    this.lastTraversedForbiddenEdgeIds = []
+
+    // this.pendingNodes = graph.createItemList();
 
     subscriber.on('truncateLifecycle', () => {
       this.truncate()
@@ -27,38 +32,50 @@ class Traversal {
     // Reset the edge information
     this.traversedRequiredEdgeIds = []
     this.traversedForbiddenEdgeIds = []
+
+    this.lastTraversedRequiredEdgeIds = []
+    this.lastTraversedForbiddenEdgeIds = []
   }
 
   // Check for a given node, if all inbound edges will allow to execute the vertex action
-  isVertexActionAllowed (vertex) {
+  getVertexStateFromEdges (vertex, defaultUndefined) {
 
     // Check for every edge if there is a allowTargetTraversal function that would allow or restrict the traversal of the current vertex
-    var actionAllowed = true
+    var actionAllowed = 'active'
 
     var inboundEdges = vertex.getInboundEdges()
 
     inboundEdges.each((edge) => {
 
       if (edge.data.has('type')) {
+
         if (edge.data.get('type') == 'and') {
-          // Have I already visited this required edge?
-          if (this.traversedRequiredEdgeIds.indexOf(edge.data.get('_id')) === -1) {
-            actionAllowed = false
-          }
+
+            // If this required edge was not visited during the last traversal...
+            if (this.lastTraversedRequiredEdgeIds.indexOf(edge.data.get('_id')) === -1) {
+              // Than this node is definitly inactive
+              actionAllowed = 'inactive'
+            }
+
         }
+
         if (edge.data.get('type') == 'not') {
 
-          // Have I not visited this forbidden edge before?
-          if (this.traversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1) {
-            actionAllowed = false
-          }
+            // Have I visited this forbidden edge before?
+            if (this.lastTraversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1) {
+              actionAllowed = 'inactive'
+            }
 
         }
+
       }
 
       // If one of the inbound edges says NO...
       // Break the loop by returning false to the each callback
-      return actionAllowed
+      if(actionAllowed == 'inactive') {
+        return false
+      }
+
 
     })
 
@@ -78,14 +95,14 @@ class Traversal {
 
     // Check active condition
     if(condition=='active') {
-      if(!vertex.lifecycle.is('active')) {
+      if(vertex.lifecycle.get('state') != 'active') {
         allow = false
       }
     }
 
     // Check inactive condition
     if(condition=='inactive') {
-      if(vertex.lifecycle.is('active')) {
+      if(vertex.lifecycle.get('state') != 'inactive') {
         allow = false
       }
     }
@@ -93,7 +110,7 @@ class Traversal {
     // Check custom vertex conditions
     vertex.collection.with('edgeConditions.'+condition, (condition) => {
       // Check the custom conditions only if the vertex is active!
-      if(vertex.lifecycle.is('active')) {
+      if(vertex.lifecycle.get('state') == 'active') {
         allow = condition(vertex)
       } else {
         // The custom condition cannot be true if the vertex is inactive
@@ -115,7 +132,7 @@ class Traversal {
     this.traversing = false
   }
 
-  traverse (vertex, recursive, explore) {
+  traverse (vertex, recursive) {
 
     // Break the current traversal if it was stopped
     if(!this.traversing) {
@@ -125,11 +142,6 @@ class Traversal {
     // This is not an recursive call if undefined
     if (recursive == undefined) {
       recursive = false
-    }
-
-    // This is an test call if undefined
-    if (explore == undefined) {
-      explore = true
     }
 
     // Get the origin vertex
@@ -148,38 +160,54 @@ class Traversal {
 
         this.activatedEdgeIds = []
 
-        this.traversedRequiredEdgeIds = []
-
       }
 
-      // Check if this vertex can be activated by checking the incomming edges
-      if (this.isVertexActionAllowed(vertex)) {
+      // Set the initial lifecycle state if this state is not there
+      // This state is always undefined until the node gets activated or "officially" inactive
+      if(vertex.lifecycle.isEmpty('state')) {
+        vertex.setLifecycleValue('state', 'undefined')
+        // console.log(vertex.data.get('_id'), state, 'initial')
+      }
+
+      // Calculate the current state based on the incomming edges
+      var state = this.getVertexStateFromEdges(vertex)
+
+      // console.log(vertex.data.get('_id'), state, 'traversal')
+
+      if (state == 'active') {
+        vertex.setLifecycleValue('state', 'active')
+      }
+
+      if (state == 'inactive') {
+        vertex.setLifecycleValue('state', 'inactive')
+      }
+
+      if (state == 'undefined') {
+        vertex.setLifecycleValue('state', 'undefined')
+      }
+
+      // Run the vertex action
+      if (vertex.lifecycle.get('state') == 'active') {
 
         // Remember this vertex as activated in the current traversal
         this.activatedVertexIds.push(vertex.data.get('_id'))
 
         // Check if the node was also reachable within the last traversal
-        if(this.lastActivatedVertexIds.indexOf(vertex.data.get('_id'))==-1) {
+        // if(this.lastActivatedVertexIds.indexOf(vertex.data.get('_id'))==-1) {
           // If this node was not reachable during the last traversal...
           vertex.collection.with('activator', (activator) => {
             activator(vertex)
           })
-        }
-
-        // This value is important because all outgoing edes will check it later
-        vertex.setLifecycleValue('active', true)
+        // }
 
         // Is there a action available for this kind of node?
         // Only execute the action if we are not in exploration mode
-        if (!explore) {
+        //if (!explore) {
           vertex.collection.with('action', (action) => {
             action(vertex, this)
           })
-        }
+        //}
 
-      } else {
-        // This value is important because all outgoing edes will check it later
-        vertex.setLifecycleValue('active', false)
       }
 
       // Get outbound edges of the current node
@@ -239,7 +267,7 @@ class Traversal {
           var targetVertex = edge.getTargetVertex()
           if(this.activatedVertexIds.indexOf(targetVertex.data.get('_id')) == -1) {
             // Traverse into deep
-            this.traverse(targetVertex, true, explore)
+            this.traverse(targetVertex, true)
           }
 
         }
@@ -258,12 +286,6 @@ class Traversal {
     // This is the finish of one cycle
     if (!recursive) {
 
-      if(explore) {
-        // Now start the real traversal.
-        // Without testing the track
-        this.traverse(vertex, false, false)
-      } else {
-
         // Finish the current traversal by emittig the event
         this.subscriber.emit('traversalFinished', {
           activatedVertexIds: this.activatedVertexIds,
@@ -271,10 +293,14 @@ class Traversal {
         })
 
         // Update the last reachable vertices
-        this.lastActivatedVertexIds = [...this.activatedVertexIds]
+        // this.lastActivatedVertexIds = [...this.activatedVertexIds]
+
+        this.lastTraversedForbiddenEdgeIds = [...this.traversedForbiddenEdgeIds]
+        this.lastTraversedRequiredEdgeIds = [...this.traversedRequiredEdgeIds]
 
         // We are at the end of the live-tick. So clear now the forbidden edges
         this.traversedForbiddenEdgeIds = []
+        this.traversedRequiredEdgeIds = []
 
         // Start the next traversal tick
         setTimeout(() => {
@@ -282,7 +308,7 @@ class Traversal {
         }, 1000)
 
 
-      }
+      //}
 
     }
 

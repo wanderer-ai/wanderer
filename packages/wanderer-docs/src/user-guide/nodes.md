@@ -1,4 +1,4 @@
-# Nodes in detail
+# 🔍 Nodes in detail
 Different nodes have different tasks. Here you can see the functions in detail.
 
 ## Flow

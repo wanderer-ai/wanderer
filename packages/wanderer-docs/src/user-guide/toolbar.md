@@ -1,4 +1,4 @@
-# Toolbar
+# 💾 Toolbar
 On the top right corner of the screen you will notice the toolbar. This is the place from where you can start or restore projects and where you can download your current work.
 
 ## Start a tutorial
@@ -12,11 +12,11 @@ Save your project by clicking on the file symbol inside the toolbar. Then, insid
 You will be asked where you want to store the file. Store the file wherever you want.
 Important note: Wanderer.ai will not store any files for you! So it's a good idea to download your current work before you close the browser.
 
-## Restore a project from a local file
-Click on the disk icon and select "Restore from file" from the project dialog. A file browser will appear. Just navigate to a folder containing your Wanderer.ai .json files and select it.
+## Load a project from a local file
+Click on the disk icon and select "Load from file" from the project dialog. A file browser will appear. Just navigate to a folder containing your Wanderer.ai .json files and select it.
 
-## Restore a project from URL
-You can also restore a file from a URL. Just copy the full URL to the dialog and click on "Restore from URL".
+## Load a project from URL
+You can also restore a file from a URL. Just copy the full URL to the dialog and click on "Load from URL".
 
 ## Switch languages for your project
 Your chat project can hold several translations for all nodes in the flow. You can view and edit those languages by switching the current language inside the language manager.

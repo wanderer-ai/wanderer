@@ -101,7 +101,7 @@ export default {
               if(edge.data.get('_collection') == 'isAnswerableBy') {
 
                 var suggestionVertex = edge.targetVertex
-                if (traversal.isVertexActionAllowed(suggestionVertex)) {
+                if (traversal.getVertexStateFromEdges(suggestionVertex) == 'active') {
 
                   // For each outbound child edge
                   var suggestionVertexOutboundEdges = suggestionVertex.getOutboundEdges()

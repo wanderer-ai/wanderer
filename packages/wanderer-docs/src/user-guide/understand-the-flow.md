@@ -1,4 +1,4 @@
-# Understand the flow
+# 🚶 Understand the flow
 In order to build really good bots and to be able to use all features, you have to understand the flow.
 Even more. You have to breathe the flow. You have to be the flow.
 
@@ -48,6 +48,8 @@ To achieve this, "leads to" type edges can be configured in three ways: `default
 * __Default__: If an edge is of type default, it will try to activate the target node. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fdefault_edge_logic.json)
 * __Require__: Edges of type require will hold back the activation of the target node until all incomming edges of this type have been traversed. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Frequired_edge_logic.json)
 * __Forbid__: However, if a node is reached by a forbidden edge, its activation is always suppressed. [Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fforbidden_edge_logic.json)
+
+[Find more examples in the edge logic section.](https://wanderer.ai/docs/user-guide/edge-logic.html)
 
 ## Beating heart
 Some of the trails have conditions and cannot be used immediately. Other paths may close again.

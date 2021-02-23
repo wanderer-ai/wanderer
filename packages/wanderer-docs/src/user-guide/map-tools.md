@@ -1,5 +1,10 @@
-# Map tools
-This tools will appear on the top left corner of the map if some nodes are selected. These tools will provide functions like edit, remove or connecting nodes and edges.
+# 🔨 Map tools
+The whole conversation builder is optimized to edit and view the chat flow graph. Imagine the graph like some kind of a mind map. The map tools will appear on the top left corner of the map if some nodes are selected. These tools will provide functions like edit, remove or connecting nodes and edges.
+
+## Map navigation
+* Zoom and pan: Use you mousewheel to zoom in and out of your graph. Grap the flow at some white area and use the mouse to pan the map.
+* Drag and drop vertices: You can move selected vertices around by grabbing them with the mouse. Note: The origin node cannot be moved.
+* Select vertices and edges: Click an a vertex or an edge to select them. You can also hold down the ctrl or shift key and use the left mouse button to select multiple edges and vertices.
 
 ## Delete vertices and edges
 Select one or more vertices or edges and click the trash symbol inside the toolbar.

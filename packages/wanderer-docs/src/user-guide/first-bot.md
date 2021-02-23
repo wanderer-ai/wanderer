@@ -1,4 +1,4 @@
-# Build your first bot
+# 🤖 Build your first bot
 Here's how to build your first simple bot.
 
 ## Quick start
