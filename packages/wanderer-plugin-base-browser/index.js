@@ -83,13 +83,12 @@ export default {
               'font-size': '20px',
               'background-color': '#6c757d',
               'border-color': '#6c757d',
-              'border-width': '5px',
-              'label': ''
+              'border-width': '5px'
             }
           }],
           toCytoscape: function(vertexData, language) {
             return {
-
+              label: ''
             }
           },
           component: 'wanderer-void-editor',

@@ -8,7 +8,10 @@ class Traversal {
 
     this.activatedEdgeIds = []
 
-    // this.lastActivatedVertexIds = []
+    this.traversedVertexIds = []
+    this.lastTraversedVertexIds = []
+
+    this.lastActivatedVertexIds = []
     this.activatedVertexIds = []
 
     this.traversedRequiredEdgeIds = []
@@ -29,6 +32,13 @@ class Traversal {
   }
 
   truncate () {
+    // Reset vertex information
+    this.traversedVertexIds = []
+    this.lastTraversedVertexIds = []
+
+    this.lastActivatedVertexIds = []
+    this.activatedVertexIds = []
+
     // Reset the edge information
     this.traversedRequiredEdgeIds = []
     this.traversedForbiddenEdgeIds = []
@@ -38,33 +48,52 @@ class Traversal {
   }
 
   // Check for a given node, if all inbound edges will allow to execute the vertex action
-  getVertexStateFromEdges (vertex, defaultUndefined) {
+  getVertexStateFromEdges (vertex) {
 
-    // Check for every edge if there is a allowTargetTraversal function that would allow or restrict the traversal of the current vertex
-    var actionAllowed = 'active'
+    // console.log('checking edges of vertex', vertex.data.get('_id'))
 
+    var state = 'active'
+
+    var isPending = false
+
+    // Get the inbound edges
     var inboundEdges = vertex.getInboundEdges()
 
+    // For each inbound edge
     inboundEdges.each((edge) => {
+
+      // console.log('checking edge', edge.data.get('_id'))
 
       if (edge.data.has('type')) {
 
         if (edge.data.get('type') == 'and') {
 
-            // If this required edge was not visited during the last traversal...
-            if (this.lastTraversedRequiredEdgeIds.indexOf(edge.data.get('_id')) === -1) {
-              // Than this node is definitly inactive
-              actionAllowed = 'inactive'
-            }
+          isPending = true
+
+          // If this required edge was not visited during the last traversal...
+          if (
+            this.lastTraversedRequiredEdgeIds.indexOf(edge.data.get('_id')) === -1 &&
+            this.traversedRequiredEdgeIds.indexOf(edge.data.get('_id')) === -1
+          ) {
+            // Than this node is definitly inactive
+            state = 'inactive'
+          }
 
         }
 
         if (edge.data.get('type') == 'not') {
 
-            // Have I visited this forbidden edge before?
-            if (this.lastTraversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1) {
-              actionAllowed = 'inactive'
-            }
+          isPending = true
+
+          // Have I visited this forbidden edge before?
+          // Note check if the edges have been travered in the current traversal or in the last traversal
+          // Because maybe the structure blocks itself
+          if (
+            this.lastTraversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1 ||
+            this.traversedForbiddenEdgeIds.indexOf(edge.data.get('_id')) !== -1
+          ) {
+            state = 'inactive'
+          }
 
         }
 
@@ -72,14 +101,35 @@ class Traversal {
 
       // If one of the inbound edges says NO...
       // Break the loop by returning false to the each callback
-      if(actionAllowed == 'inactive') {
+      if(state == 'inactive') {
         return false
       }
 
 
     })
 
-    return actionAllowed
+    // Is this node pending?
+    if(isPending) {
+
+      // If this node was not disabled before
+      if(state != 'inactive') {
+
+        // Set it only active if it was traversed in the traversal before too
+        // Because only in this case the state of all pending edges is known
+        if(this.lastTraversedVertexIds.indexOf(vertex.data.get('_id')) !== -1) {
+          state = 'active'
+        } else {
+          // Keep it pending
+          state = 'pending'
+        }
+        
+      }
+
+    } else {
+      state = 'active'
+    }
+
+    return state
 
   }
 
@@ -162,10 +212,13 @@ class Traversal {
 
       }
 
+      // Remember this vertex as part of the current traversal
+      this.traversedVertexIds.push(vertex.data.get('_id'))
+
       // Set the initial lifecycle state if this state is not there
       // This state is always undefined until the node gets activated or "officially" inactive
       if(vertex.lifecycle.isEmpty('state')) {
-        vertex.setLifecycleValue('state', 'undefined')
+        vertex.setLifecycleValue('state', 'pending')
         // console.log(vertex.data.get('_id'), state, 'initial')
       }
 
@@ -182,8 +235,8 @@ class Traversal {
         vertex.setLifecycleValue('state', 'inactive')
       }
 
-      if (state == 'undefined') {
-        vertex.setLifecycleValue('state', 'undefined')
+      if (state == 'pending') {
+        vertex.setLifecycleValue('state', 'pending')
       }
 
       // Run the vertex action
@@ -193,20 +246,18 @@ class Traversal {
         this.activatedVertexIds.push(vertex.data.get('_id'))
 
         // Check if the node was also reachable within the last traversal
-        // if(this.lastActivatedVertexIds.indexOf(vertex.data.get('_id'))==-1) {
+        if(this.lastActivatedVertexIds.indexOf(vertex.data.get('_id'))==-1) {
           // If this node was not reachable during the last traversal...
           vertex.collection.with('activator', (activator) => {
             activator(vertex)
           })
-        // }
+        }
 
         // Is there a action available for this kind of node?
         // Only execute the action if we are not in exploration mode
-        //if (!explore) {
-          vertex.collection.with('action', (action) => {
-            action(vertex, this)
-          })
-        //}
+        vertex.collection.with('action', (action) => {
+          action(vertex, this)
+        })
 
       }
 
@@ -293,14 +344,21 @@ class Traversal {
         })
 
         // Update the last reachable vertices
-        // this.lastActivatedVertexIds = [...this.activatedVertexIds]
+        this.lastTraversedVertexIds = [...this.traversedVertexIds]
 
+        // Update the last activated vertices
+        this.lastActivatedVertexIds = [...this.activatedVertexIds]
+
+        // Remember the pending edges for the next traversal
         this.lastTraversedForbiddenEdgeIds = [...this.traversedForbiddenEdgeIds]
         this.lastTraversedRequiredEdgeIds = [...this.traversedRequiredEdgeIds]
 
         // We are at the end of the live-tick. So clear now the forbidden edges
         this.traversedForbiddenEdgeIds = []
         this.traversedRequiredEdgeIds = []
+
+        // Also clear the traversed vertices
+        this.traversedVertexIds = []
 
         // Start the next traversal tick
         setTimeout(() => {
