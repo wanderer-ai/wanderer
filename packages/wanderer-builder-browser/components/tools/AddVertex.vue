@@ -30,7 +30,7 @@
           <template v-if="selectedVertexIds.length==1" v-for="(possibleOutgoing) in possibleOutgoingCollections">
             <builder-vertex-card
               v-for="(through, throughName) in possibleOutgoing.through"
-              v-bind:key="throughName"
+              v-bind:key="throughName+'-'+possibleOutgoing.to.name"
               :info-url="possibleOutgoing.to.collection.infoUrl"
               :color="possibleOutgoing.to.collection.color"
               :title="possibleOutgoing.to.collection.label"

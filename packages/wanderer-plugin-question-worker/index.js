@@ -197,7 +197,7 @@ export default {
       traversedQuestions = []
     })
 
-    subscriber.on('truncateLifecycle', function() {
+    subscriber.on('resetLifecycle', function() {
       openQuestions = {}
       traversedQuestions = []
     })

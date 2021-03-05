@@ -147,7 +147,7 @@ export default {
       currentSwitchedLanguage = ''
     })
 
-    subscriber.on('truncateLifecycle', function() {
+    subscriber.on('resetLifecycle', function() {
       currentSwitchedLanguage = ''
     })
 

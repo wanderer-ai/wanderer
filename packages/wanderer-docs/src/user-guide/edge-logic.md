@@ -28,3 +28,14 @@ You may want a node NOT to be activated when certain conditions are met. For thi
 
 ## Negating nodes
 You can also specify that actions should take place if a particular node has not been activated. To do this, select the `inactive` condition for an outgoing edge of the `leads to` type. For this it is important that this node is inactive but still part of the traversal. In order to determine whether a node is inactive, it must have at least one active incoming edge.
+
+[Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Feven_odd.json)
+
+## Self blocking structures
+Structures can block themselves. This is helpful, for example, if you want to repeat questions or messages. For this it is necessary that these are first cut off from the traversal. The next example shows a question that blocks itself after answering and therefore resets itself. So that the question is actually repeated, it is important to set the "forbid on inactive" option.
+
+[Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fself_repeating_question.json)
+
+Self-repeating messages are also possible. After the message has been sent, an outgoing edge blocks its own path. During the next run, the blocking edge is no longer found and everything starts all over again.
+
+[Look at the example](https://wanderer.ai/builder/?flow=https%3A%2F%2Fraw.githubusercontent.com%2Fwanderer-ai%2Fwanderer-flows%2Fmaster%2Fdocs%2Fself_repeating_message.json)

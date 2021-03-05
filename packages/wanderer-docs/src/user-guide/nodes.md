@@ -66,6 +66,11 @@ __Fields in detail:__
 * __Label:__ A label that makes the node on the map easier to identify.
 * __Expression:__ Here you can enter a [Jexl](https://github.com/TomFrost/Jexl) expression. This can then calculate a new value based on incoming data.
 
+## Timer
+A timer node is only activated when the given time has passed. It can be used, for example, to display help texts if questions are not answered in time.
+* __Seconds:__ The number of seconds until the node gets activated.
+* __Forget on inactive:__ The node will forget that the message has already been sent to the chat if it should become inactive during the course of the conversation.
+
 ## Jump
 A jump node gives you the opportunity to jump from your current flow into another flow. In this way you can connect flows with each other. This allows you to break your conversation down into smaller chunks that are easier to maintain. It also makes your flows easier to recycle.
 

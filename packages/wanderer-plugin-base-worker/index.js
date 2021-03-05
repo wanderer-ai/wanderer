@@ -14,9 +14,21 @@ export default {
     // Define a few traversal variables
     var typingTimeout = false
 
+    // The timer timeouts
+    var timerTimeouts = {}
+
     function truncate () {
 
+      // Clear the message typing timeout
       clearTimeout(typingTimeout)
+
+      // Clear all timer timeouts
+      for(var [key, value] of Object.entries(timerTimeouts)) {
+        clearTimeout(timerTimeouts[value])
+      }
+
+      timerTimeouts = {}
+
     }
 
     // Add message collection props
@@ -157,6 +169,58 @@ export default {
       }
     })
 
+    // Add conclusion collection props
+    wanderer.subscriber.emit('addVertexCollectionProps', {
+      name: 'timer',
+      props: {
+        graph: {
+          edgeConditions: {
+            expired: function (vertex) {
+              if(vertex.lifecycle.get('expired') === true) {
+                return true
+              }
+              return false
+            }
+          },
+          activator: function (vertex) {
+            // Am I forgetful?
+            if(vertex.data.is('forgetful')) {
+
+              // If the timer is running
+              if(timerTimeouts[vertex.data.get('_id')] !== undefined) {
+                // Stop the timer
+                clearTimeout(timerTimeouts[vertex.data.get('_id')])
+                delete timerTimeouts[vertex.data.get('_id')]
+              }
+
+              // Ok. Please reset my lifecycle data
+              vertex.setLifecycleValue('expired', false)
+            }
+          },
+          action: function (vertex) {
+
+            if(vertex.data.has('seconds')) {
+
+              // If the timer is not running
+              if(!timerTimeouts[vertex.data.get('_id')]) {
+
+                // Init and store the timer
+                timerTimeouts[vertex.data.get('_id')] = setTimeout(() => {
+
+                  // The timer has expired
+                  vertex.setLifecycleValue('expired', true)
+
+                }, vertex.data.get('seconds'))
+
+              }
+
+            }
+
+          }
+        }
+      }
+    })
+
     // The leads to edge
     wanderer.subscriber.emit('addEdgeCollectionProps', {
       name: 'leadsTo',
@@ -165,6 +229,14 @@ export default {
 
         }
       }
+    })
+
+    subscriber.on('truncate', function() {
+      truncate()
+    })
+
+    subscriber.on('resetLifecycle', function() {
+      truncate()
     })
 
   } // Install

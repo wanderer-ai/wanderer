@@ -4,6 +4,7 @@ import VoidEditor from './components/VoidEditor.vue'
 import LeadsToEditor from './components/LeadsToEditor.vue'
 import Message from './components/Message.vue'
 import ConclusionEditor from './components/ConclusionEditor.vue'
+import TimerEditor from './components/TimerEditor.vue'
 
 export default {
   install (wanderer) {
@@ -18,6 +19,7 @@ export default {
     Vue.component('wanderer-void-editor', VoidEditor)
     Vue.component('wanderer-message', Message)
     Vue.component('wanderer-conclusion-editor', ConclusionEditor)
+    Vue.component('wanderer-timer-editor', TimerEditor)
 
     // Register some vertices for the builder
     wanderer.subscriber.emit('addVertexCollectionProps', {
@@ -234,6 +236,55 @@ export default {
             isNaN: {
               default: false,
               label: 'is not a number'
+            }
+          }
+        }
+      }
+    })
+
+    // Register some vertices for the builder
+    wanderer.subscriber.emit('addVertexCollectionProps', {
+      name: 'timer',
+      props: {
+        builder: {
+          label: 'Timer',
+          description: 'This node becomes active when a certain number of seconds has passed.',
+          infoUrl: 'https://wanderer.ai/docs/user-guide/nodes.html#timer',
+          color: '#a136ff',
+          cytoscapeClasses: 'timer',
+          cytoscapeCxtMenuSelector: '.timer',
+          creatable: true,
+          ctxMenuAllowedEdge: 'leadsTo',
+          appendableViaCxtMenu: false,
+          defaultFields: {
+            seconds: 5000,
+            forgetful: false
+          },
+          cytoscapeStyles: [{
+            selector: '.timer',
+            style: {
+              'height': '50px',
+              'width': '50px',
+              'font-size': '20px',
+              'background-color': '#a136ff',
+              'border-color': '#a136ff',
+              'border-width': '5px',
+              'label': 'data(label)'
+            }
+          }],
+          toCytoscape: function(vertexData, language) {
+            return {
+              label: 'Timer '+(vertexData.get('seconds')/1000)
+            }
+          },
+          component: 'wanderer-timer-editor',
+          lifecycleData: {
+
+          },
+          edgeConditions: {
+            expired: {
+              default: true,
+              label: 'expired'
             }
           }
         }
