@@ -5,7 +5,7 @@ To keep it compatible with graph databases, there are essentially only two large
 
 The vertices array contains all node objects and the edges array contains all edge objects. Thats it.
 
-Within a graph database, all data must always belong to an edge or to a node. If you want to add metadata to the document yourself, you can just do that. This data is then loaded into the Builder when the file gets restored and its beeing stored back to the file, if you download it again. The only requirement is that this data must be inside a vertex or edge object.
+Within a graph database, all data must always belong to an edge or to a node. If you want to add metadata to the document yourself, you can just do that. This data is then loaded into the builder when the file gets restored and its beeing stored back to the file, if you download it again. The only requirement is that this data must be inside a vertex or edge object.
 
 For example add new data by adding a new field to a message vertex:
 
