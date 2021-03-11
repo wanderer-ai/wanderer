@@ -1,0 +1,11 @@
+{
+  "name": "wanderer-vue-persistedstate",
+  "version": "0.0.1",
+  "description": "Wanderer.ai Vue Persistedstate",
+  "author": "Wanderer.ai",
+  "module": "plugin.js",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "vuex-persistedstate": "latest"
+  }
+}

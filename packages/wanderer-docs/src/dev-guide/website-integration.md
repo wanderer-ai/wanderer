@@ -4,10 +4,10 @@ You can integrate the wanderer.ai chat easily to your website. At the moment you
 ## CDN - Jsdelivr
 Just include the JavaScript file to your HTML
 ```
-<script src="https://cdn.jsdelivr.net/gh/wanderer-ai/cdn/blob/main/chat-webcomponent/wanderer-chat.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wanderer-ai/cdn/chat-webcomponent/wanderer-chat.js"></script>
 ```
 
-Then include the webcomponent to your HTML
+Then include the webcomponent to your HTML. Use the `flow-url` parameter to define the URL of your flow.
 ```
 <wanderer-chat flow-url="https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json" base-path="/"></wanderer-chat>
 ```
@@ -27,7 +27,7 @@ Complete example:
     <wanderer-chat flow-url="https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json" base-path="/"></wanderer-chat>
 
     <!-- Include the chat JavaScript file -->
-    <script src="https://cdn.jsdelivr.net/gh/wanderer-ai/cdn/blob/main/chat-webcomponent/wanderer-chat.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/wanderer-ai/cdn/chat-webcomponent/wanderer-chat.js"></script>
 
   </body>
 </html>

@@ -96,22 +96,12 @@ export default {
   components: {
     Icon
   },
-  props: {
-    show: {
-      type: Boolean,
-      default: false
-    }
-  },
   data: function () {
     return {
-      showModal: this.show,
       url: 'https://raw.githubusercontent.com/wanderer-ai/wanderer-flows/master/tutorial/intro/welcome.json'
     }
   },
   watch: {
-    show: function (show) {
-      this.showModal = show
-    },
     showModal: function (showModal) {
 
       // Unselect all items because I dont want to trigger the delete key event inside the file tool because we have a text input in here
@@ -122,6 +112,14 @@ export default {
     }
   },
   computed: {
+    showModal: {
+      get() {
+        return this.$store.state.wandererBuilder.showFileTool
+      },
+      set(value) {
+        this.$store.commit('wandererBuilder/setShowFileTool', value)
+      }
+    },
     vertexCount () {
       return this.$store.state.wandererGraph.vertexDocumentIds.length;
     },

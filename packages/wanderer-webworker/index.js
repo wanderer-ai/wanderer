@@ -7,6 +7,9 @@ export let client = {
     // Register a subscriber
     var subscriber = broadcast.subscribe('worker-client')
 
+    // This subscriber will wait for the ready consensus
+    subscriber.await('pluginsReady')
+
     subscriber.on('truncate', () => {
       worker.postMessage({
         'event': 'truncate'
@@ -85,6 +88,11 @@ export let client = {
     // Listen to worker messages
     worker.addEventListener('message', function(e) {
       switch(e.data.event) {
+        case 'ready':
+          // Listen for the ready signal from the worker
+          // Then consent that the plugin is ready
+          subscriber.consent('pluginsReady')
+          break;
         case 'truncate':
           subscriber.emit('truncate')
           break;
@@ -262,6 +270,11 @@ export let thread = {
           break;
       }
     }, false);
+
+    // Send the ready signal
+    thread.postMessage({
+      'event': 'ready'
+    })
 
   }
 }

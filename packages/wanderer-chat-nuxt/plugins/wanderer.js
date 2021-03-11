@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Wanderer from 'wanderer'
 import vueGraphPlugin from 'wanderer-vue-graph'
+import vuePersistedstatePlugin from 'wanderer-vue-persistedstate'
 import chatPlugin from 'wanderer-chat-browser'
 import Worker from "../wanderer.worker.js"
 import { client as workerClient } from 'wanderer-webworker'
@@ -23,6 +24,7 @@ export default ({ app, store }) => {
   wanderer.provide('worker', worker)
 
   // Initiate Wanderer plugins
+  wanderer.use(vuePersistedstatePlugin)
   wanderer.use(vueGraphPlugin)
   wanderer.use(chatPlugin)
   wanderer.use(workerClient)

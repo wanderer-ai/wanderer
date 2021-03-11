@@ -52,7 +52,8 @@ export default {
         editVertex: 0,
         editEdge: 0,
         selectedVertexIds: [],
-        selectedEdgeIds: []
+        selectedEdgeIds: [],
+        showFileTool: true
       },
       mutations: {
         setCurrentLanguage (state, language) {
@@ -97,6 +98,9 @@ export default {
         },
         removeFirstAlert(state){
           state.alerts.shift();
+        },
+        setShowFileTool (state, show) {
+          state.showFileTool = show
         },
         truncate (state) {
           this._vm.$set(state, 'alerts', [])

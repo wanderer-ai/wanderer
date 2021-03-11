@@ -24,7 +24,7 @@
 
     <alerts />
 
-    <file-tool :show="showFileTool" v-on:startTutorial="startTutorial()" v-on:viewExamples="viewExamples()"/>
+    <file-tool v-on:startTutorial="startTutorial()" v-on:viewExamples="viewExamples()"/>
     <info-tool />
     <edit-vertex-tool />
     <edit-edge-tool />
@@ -73,29 +73,8 @@ export default {
   },
   data: function () {
     return {
-      showChatPanel: false,
-      showFileTool: true
+      showChatPanel: false
     }
-  },
-  async mounted () {
-
-    // Note: URLSearchParams is not available on InternetExplorer
-    // Note: Use a urlEncoder for this to work: https://meyerweb.com/eric/tools/dencoder/
-    const urlParams = new URLSearchParams(window.location.search)
-    const flowUrl = urlParams.get('flow')
-
-    if(flowUrl) {
-
-      try {
-        await this.$wanderer.loadFromUrl(flowUrl)
-        this.$store.commit('wandererChat/setVisible', true)
-        this.showFileTool = false
-      } catch (e) {
-        this.$store.dispatch('wandererBuilder/addAlert',{message: e, type: 'error'})
-      }
-
-    }
-
   }
 }
 </script>

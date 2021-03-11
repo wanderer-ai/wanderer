@@ -1,4 +1,3 @@
-
 export default class VueGraph {
 
   constructor (wanderer, broadcast, vue, store) {
@@ -69,6 +68,32 @@ export default class VueGraph {
     // Listen for traversed edges
     this.subscriber.on('setTraversedEdges', (data) => {
       this.store.commit('wandererGraph/setTraversedEdges', data)
+    })
+
+    // Listen for rehydration
+    this.subscriber.on('storeRehydrated', () => {
+
+      // Rehydrate the vertices
+      for (const [key, value] of Object.entries(this.store.state.wandererGraph.vertexDocumentData)) {
+        this.subscriber.emit('addVertexFromData', value)
+      }
+
+      // Rehydrate the edges
+      for (const [key, value] of Object.entries(this.store.state.wandererGraph.edgeDocumentData)) {
+        this.subscriber.emit('addEdgeFromData', value)
+      }
+
+      // Rehydrate the lifecycle
+      for (const [id, data] of Object.entries(this.store.state.wandererGraph.vertexLifecycleData)) {
+        for (const [key, value] of Object.entries(this.getPlainVertexLifecycleValuesById(id))) {
+          this.subscriber.emit('setVertexLifecycleValue', {
+            id: id,
+            key: key,
+            value: value
+          })
+        }
+      }
+
     })
 
   }

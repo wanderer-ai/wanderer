@@ -1,6 +1,6 @@
 {
-  "name": "Wanderer.ai root",
-  "author": "Wanderer.ai",
+  "name": "root",
+  "private": true,
   "devDependencies": {
     "lerna": "^3.22.1"
   }

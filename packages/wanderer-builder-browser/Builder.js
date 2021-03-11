@@ -23,6 +23,9 @@ export default class Builder {
 
     this.subscriber = this.broadcast.subscribe('builder')
 
+    // This subscriber will wait for the ready consensus
+    this.subscriber.await('pluginsReady')
+
     // Listen for new vertex collection props
     this.subscriber.on('addVertexCollectionProps', ({name, props}) => {
       props = new WandererNestedData(props)
@@ -90,7 +93,29 @@ export default class Builder {
 
     })
 
-    // Listen to worker messages
+    this.subscriber.on('storeRehydrated', async () => {
+
+      // Load a flow by URL
+      // Note: URLSearchParams is not available on InternetExplorer
+      // Note: Use a urlEncoder for this to work: https://meyerweb.com/eric/tools/dencoder/
+      const urlParams = new URLSearchParams(window.location.search)
+      const flowUrl = urlParams.get('flow')
+
+      if(flowUrl) {
+
+        try {
+          await this.wanderer.loadFromUrl(flowUrl)
+          this.store.commit('wandererChat/setVisible', true)
+          this.store.commit('wandererBuilder/setShowFileTool', false)
+        } catch (e) {
+          this.store.dispatch('wandererBuilder/addAlert',{message: e, type: 'error'})
+        }
+
+      }
+
+    })
+
+    // Listen to worker messages directly
     this.worker.addEventListener('message', (e) => {
       switch(e.data.event) {
         case 'animateTraversal':
@@ -248,7 +273,7 @@ export default class Builder {
       }
       // Set the data
       this.cytoscape.getElementById(edgeData.get('_id')).data(cytoscapeData)
-      
+
     }
 
   }
@@ -910,6 +935,9 @@ export default class Builder {
       }
 
     });
+
+    // Consent the plugin is ready
+    this.subscriber.consent('pluginsReady')
 
   }
 
