@@ -25,7 +25,7 @@ export default {
       panningEnabled: true,
       userPanningEnabled: true,
       boxSelectionEnabled: true,
-      selectionType: 'single',
+      selectionType: 'additive',
       touchTapThreshold: 8,
       desktopTapThreshold: 4,
       autolock: false,
@@ -50,11 +50,6 @@ export default {
 </script>
 
 <style>
-
-#cy {
-  width: 100%;
-  height: 100%;
-}
 
 .cxtmenu-item {
   color:white !important;

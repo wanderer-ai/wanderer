@@ -323,7 +323,7 @@ export default class Builder {
     })
 
     // Add vertex to Cytoscape
-    this.cytoscape.add(cyData)
+    var newCyVertex = this.cytoscape.add(cyData)
 
     // Convert data to Cytoscape if needed
     this.vertexDataToCytoscape(vertexData)
@@ -333,6 +333,9 @@ export default class Builder {
       this.cytoscape.center(vertexData.get('_id'))
       this.cytoscape.zoom(1)
     }
+
+    // Return the new cy vertex
+    return newCyVertex
 
   }
 
@@ -382,7 +385,13 @@ export default class Builder {
     this.subscriber.emit('addVertexFromData', newVertexData)
 
     // Add this new node to the builder
-    this.addVertexListener(new WandererNestedData(newVertexData))
+    var newCyVertex = this.addVertexListener(new WandererNestedData(newVertexData))
+
+    // Unselect all
+    this.unselect()
+
+    // Select the new vertex
+    newCyVertex.select()
 
     return newVertexData._id
 

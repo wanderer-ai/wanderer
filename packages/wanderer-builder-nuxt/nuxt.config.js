@@ -7,6 +7,11 @@ module.exports = {
   },
   ssr: false,
 
+  // For development: Allow other devices to connect via LAN
+  server: {
+      host: "0.0.0.0"
+  },
+
   /*
   ** Headers of the page
   */

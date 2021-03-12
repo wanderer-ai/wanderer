@@ -237,6 +237,7 @@ export default {
   width:400px;
   height:700px;
   max-height:100vh;
+  min-height: -webkit-fill-available;
   max-width:100vw;
   @apply overflow-hidden p-4;
 }

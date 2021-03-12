@@ -8,13 +8,13 @@
         <toolbar />
       </div>
 
-      <div class="flex-grow flex-shrink overflow-hidden relative ">
+      <div class="flex flex-col items-stretch flex-grow flex-shrink overflow-hidden relative">
 
-        <div class="builder--toolbar absolute z-30 top-2 left-2">
+        <div class="builder__toolbar absolute z-30 top-2 left-2">
           <portal-target tag="builder-button-group" name="toolbar" multiple />
         </div>
 
-        <cytoscape />
+        <cytoscape class="flex-grow" />
 
       </div>
 
@@ -81,7 +81,7 @@ export default {
 
 <style>
 
-.builder--toolbar {
+.builder__toolbar {
   top:2rem;
   left:2rem;
 }
